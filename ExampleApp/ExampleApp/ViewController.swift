@@ -14,10 +14,16 @@ class ViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cellId")
+        
+        //for quick debugging
+        presentPickerModally(animated: false)
     }
 
-    func presentPickerModally() {
+    func presentPickerModally(animated: Bool) {
         print("presenting modally")
+        let vc = ImagePickerViewController()
+        let nc = UINavigationController(rootViewController: vc)
+        present(nc, animated: animated, completion: nil)
     }
     
 }
@@ -40,7 +46,7 @@ extension ViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.row {
-        case 0: presentPickerModally()
+        case 0: presentPickerModally(animated: true)
         default: fatalError("not implemented")
         }
     }
