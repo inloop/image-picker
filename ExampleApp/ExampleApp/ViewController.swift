@@ -11,12 +11,17 @@ import ImagePicker
 
 class ViewController: UITableViewController {
 
+    private var allowsFirstResponser = false
+    private var currentInputView: UIView?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cellId")
+        tableView.keyboardDismissMode = .onDrag
         
         //for quick debugging
-        presentPickerModally(animated: false)
+        //presentPickerModally(animated: false)
     }
 
     func presentPickerModally(animated: Bool) {
@@ -24,6 +29,26 @@ class ViewController: UITableViewController {
         let vc = ImagePickerViewController()
         let nc = UINavigationController(rootViewController: vc)
         present(nc, animated: animated, completion: nil)
+    }
+    
+    func presentPickerAsInputView() {
+        print("presenting as input view")
+        
+        let vc = ImagePickerViewController()
+        vc.view.autoresizingMask = .flexibleHeight
+        currentInputView = vc.view
+        
+        allowsFirstResponser = true
+        
+        becomeFirstResponder()
+    }
+    
+    override var canBecomeFirstResponder: Bool {
+        return allowsFirstResponser
+    }
+    
+    override var inputView: UIView? {
+        return currentInputView
     }
     
 }
@@ -35,18 +60,23 @@ extension ViewController {
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 1
+        return 2
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cellId", for: indexPath)
-        cell.textLabel?.text = "Presented view controller"
+        switch indexPath.row {
+        case 0: cell.textLabel?.text = "Presented view controller"
+        case 1: cell.textLabel?.text = "As input view"
+        default: fatalError("not implemented")
+        }
         return cell
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.row {
         case 0: presentPickerModally(animated: true)
+        case 1: presentPickerAsInputView()
         default: fatalError("not implemented")
         }
     }
