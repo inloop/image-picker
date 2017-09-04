@@ -27,8 +27,13 @@ class ViewController: UITableViewController {
     func presentPickerModally(animated: Bool) {
         print("presenting modally")
         let vc = ImagePickerViewController()
+        vc.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Dismiss", style: .done, target: self, action: #selector(dismissPresentedImagePicker(sender:)))
         let nc = UINavigationController(rootViewController: vc)
         present(nc, animated: animated, completion: nil)
+    }
+    
+    dynamic func dismissPresentedImagePicker(sender: UIBarButtonItem) {
+        navigationController?.visibleViewController?.dismiss(animated: true, completion: nil)
     }
     
     func presentPickerAsInputView() {

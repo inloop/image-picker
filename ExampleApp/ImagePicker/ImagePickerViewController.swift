@@ -19,6 +19,10 @@ import UIKit
 
 open class ImagePickerViewController : UIViewController {
    
+    deinit {
+        print("deinit: \(self.classForCoder)")
+    }
+    
     private var collectionViewDataSource = ImagePickerDataSource()
     private var collectionViewDelegate = ImagePickerDelegate()
     
