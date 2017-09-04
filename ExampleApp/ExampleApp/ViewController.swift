@@ -32,10 +32,6 @@ class ViewController: UITableViewController {
         present(nc, animated: animated, completion: nil)
     }
     
-    dynamic func dismissPresentedImagePicker(sender: UIBarButtonItem) {
-        navigationController?.visibleViewController?.dismiss(animated: true, completion: nil)
-    }
-    
     func presentPickerAsInputView() {
         print("presenting as input view")
         
@@ -46,6 +42,10 @@ class ViewController: UITableViewController {
         allowsFirstResponser = true
         
         becomeFirstResponder()
+    }
+    
+    dynamic func dismissPresentedImagePicker(sender: UIBarButtonItem) {
+        navigationController?.visibleViewController?.dismiss(animated: true, completion: nil)
     }
     
     override var canBecomeFirstResponder: Bool {
