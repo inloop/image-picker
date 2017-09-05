@@ -57,8 +57,8 @@ final class ImagePickerDelegate : NSObject, UICollectionViewDelegateFlowLayout {
             fatalError("currently only UICollectionViewFlowLayout is supported")
         }
         
-        /// Returns size for item considering number of rows, if preferredWidth is nil, square size is returned
-        func sizeForItemInRow(numberOfItemsInRow: Int, preferredWidth: CGFloat?) -> CGSize {
+        /// Returns size for item considering number of rows and scroll direction, if preferredWidth is nil, square size is returned
+        func sizeForItem(numberOfItemsInRow: Int, preferredWidth: CGFloat?) -> CGSize {
             
             switch layout.scrollDirection {
             case .horizontal:
@@ -69,7 +69,11 @@ final class ImagePickerDelegate : NSObject, UICollectionViewDelegateFlowLayout {
                 return CGSize(width: preferredWidth ?? itemHeight, height: itemHeight)
                 
             case .vertical:
-                fatalError("unsupported scroll direction")
+                var itemWidth = collectionView.frame.width
+                itemWidth -= (collectionView.contentInset.left + collectionView.contentInset.right)
+                itemWidth -= (CGFloat(numberOfItemsInRow) - 1) * layoutConfiguration.interitemSpacing
+                itemWidth /= CGFloat(numberOfItemsInRow)
+                return CGSize(width: itemWidth, height: preferredWidth ?? itemWidth)
             }
 
         }
@@ -80,16 +84,17 @@ final class ImagePickerDelegate : NSObject, UICollectionViewDelegateFlowLayout {
         case 0:
             //this will make sure that action item is either square if there are 2 items,
             //or a recatangle if there is only 1 item
-            let width = sizeForItemInRow(numberOfItemsInRow: 2, preferredWidth: nil).width
-            return sizeForItemInRow(numberOfItemsInRow: layoutModel.numberOfItems(in: 0), preferredWidth: width)
+            let width = sizeForItem(numberOfItemsInRow: 2, preferredWidth: nil).width
+            return sizeForItem(numberOfItemsInRow: layoutModel.numberOfItems(in: 0), preferredWidth: width)
         
         case 1:
+            //lets keep this ratio so camera item is a nice rectangle
             let ratio: CGFloat = 0.734
             let width: CGFloat = collectionView.frame.height * ratio
-            return sizeForItemInRow(numberOfItemsInRow: layoutModel.numberOfItems(in: 1), preferredWidth: width)
+            return sizeForItem(numberOfItemsInRow: layoutModel.numberOfItems(in: 1), preferredWidth: width)
         
         case 2:
-            return sizeForItemInRow(numberOfItemsInRow: layoutConfiguration.numberOfAssetItemsInRow, preferredWidth: nil)
+            return sizeForItem(numberOfItemsInRow: layoutConfiguration.numberOfAssetItemsInRow, preferredWidth: nil)
         
         default:
             fatalError("unexpected sections count")
@@ -99,13 +104,25 @@ final class ImagePickerDelegate : NSObject, UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
         
+        guard let layout = collectionViewLayout as? UICollectionViewFlowLayout else {
+            fatalError("currently only UICollectionViewFlowLayout is supported")
+        }
+        
+        /// helper method that creates edge insets considering scroll direction
+        func sectionInsets(_ inset: CGFloat) -> UIEdgeInsets {
+            switch layout.scrollDirection {
+            case .horizontal: return UIEdgeInsets(top: 0, left: 0, bottom: 0, right: inset)
+            case .vertical: return UIEdgeInsets(top: 0, left: 0, bottom: inset, right: 0)
+            }
+        }
+        
         let layoutModel = LayoutModel(configuration: layoutConfiguration, assets: 0)
         
         switch section {
         case 0 where layoutModel.numberOfItems(in: section) > 0:
-            return UIEdgeInsets(top: 0, left: 0, bottom: 0, right: layoutConfiguration.actionSectionSpacing)
+            return sectionInsets(layoutConfiguration.actionSectionSpacing)
         case 1 where layoutModel.numberOfItems(in: section) > 0:
-            return UIEdgeInsets(top: 0, left: 0, bottom: 0, right: layoutConfiguration.cameraSectionSpacing)
+            return sectionInsets(layoutConfiguration.cameraSectionSpacing)
         default:
             return .zero
         }
