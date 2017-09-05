@@ -41,6 +41,7 @@ open class ImagePickerViewController : UIViewController {
         
         let view = UICollectionView(frame: .zero, collectionViewLayout: layout)
         view.backgroundColor = UIColor.red
+        view.contentInset = UIEdgeInsets.zero
         view.dataSource = self.collectionViewDataSource
         view.delegate = self.collectionViewDelegate
         view.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cellId")
