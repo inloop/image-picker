@@ -9,49 +9,6 @@
 import Foundation
 
 ///
-/// A helper struct that is used by ImagePickerLayout when configuring and laying out
-/// collection view items.
-///
-struct LayoutConfiguration {
-    
-    var showsFirstActionItem = true
-    var showsSecondActionItem = true
-    
-    var showsCameraActionItem = true
-    let showsAssetItems = true
-    
-    ///
-    /// Defines how many image assets will be in a row
-    ///
-    var numberOfAssetItemsInRow: Int = 2
-    
-    ///
-    /// Spacing between items within a section
-    ///
-    var interitemSpacing: CGFloat = 1
-    
-    ///
-    /// Spacing between actions section and camera section
-    ///
-    var actionSectionSpacing: CGFloat = 1
-    
-    ///
-    /// Spacing between camera section and assets section
-    ///
-    var cameraSectionSpacing: CGFloat = 10
-    
-}
-
-extension LayoutConfiguration {
-    
-    var hasAnyAction: Bool {
-        return showsFirstActionItem || showsSecondActionItem
-    }
-    
-    static var defaultConfiguration = LayoutConfiguration()
-}
-
-///
 /// A helper class that contains all code and logic when doing layout of collection
 /// view cells. This is used sollely by collection view's delegate. Typically 
 /// this code should be part of regular subclass of UICollectionViewLayout, however,

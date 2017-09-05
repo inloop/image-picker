@@ -23,17 +23,19 @@ open class ImagePickerViewController : UIViewController {
         print("deinit: \(self.classForCoder)")
     }
     
+    public var configuration = LayoutConfiguration.default
+    
     private var collectionViewDataSource = ImagePickerDataSource()
     private var collectionViewDelegate = ImagePickerDelegate()
     
     private lazy var collectionView: UICollectionView = {
         
-        let configuration = LayoutConfiguration()
+        let configuration = self.configuration
         let model = LayoutModel(configuration: configuration, assets: 50)
         let layout = ImagePickerLayout(configuration: configuration)
         
         let collectionViewLayout = UICollectionViewFlowLayout()
-        collectionViewLayout.scrollDirection = .horizontal
+        collectionViewLayout.scrollDirection = configuration.scrollDirection
         collectionViewLayout.minimumInteritemSpacing = configuration.interitemSpacing
         collectionViewLayout.minimumLineSpacing = configuration.interitemSpacing
         
@@ -55,6 +57,7 @@ open class ImagePickerViewController : UIViewController {
         self.view = collectionView
     }
     
+    //this will make sure that collection view layout is reloaded when interface rotates/changes
     open override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         coordinator.animate(alongsideTransition: { (context) in
             self.collectionView.collectionViewLayout.invalidateLayout()

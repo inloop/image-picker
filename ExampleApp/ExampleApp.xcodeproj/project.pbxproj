@@ -15,11 +15,12 @@
 		420C241A1F5D82F9008935D4 /* ImagePicker.h in Headers */ = {isa = PBXBuildFile; fileRef = 420C24181F5D82F9008935D4 /* ImagePicker.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		420C241D1F5D82F9008935D4 /* ImagePicker.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 420C24161F5D82F9008935D4 /* ImagePicker.framework */; };
 		420C241E1F5D82F9008935D4 /* ImagePicker.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 420C24161F5D82F9008935D4 /* ImagePicker.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		420C24241F5D830B008935D4 /* ImageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 420C24231F5D830B008935D4 /* ImageModel.swift */; };
 		420C24261F5D8393008935D4 /* ImagePickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 420C24251F5D8393008935D4 /* ImagePickerViewController.swift */; };
 		420C24281F5D925A008935D4 /* ImagePickerDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 420C24271F5D925A008935D4 /* ImagePickerDataSource.swift */; };
 		420C24341F5DA022008935D4 /* ImagePickerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 420C24331F5DA022008935D4 /* ImagePickerDelegate.swift */; };
 		420C24361F5ED4AB008935D4 /* ImagePickerLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 420C24351F5ED4AA008935D4 /* ImagePickerLayout.swift */; };
+		420C243F1F5EEA19008935D4 /* LayoutModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 420C243E1F5EEA19008935D4 /* LayoutModel.swift */; };
+		420C24411F5EEA3C008935D4 /* LayoutConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 420C24401F5EEA3C008935D4 /* LayoutConfiguration.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,11 +58,12 @@
 		420C24161F5D82F9008935D4 /* ImagePicker.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ImagePicker.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		420C24181F5D82F9008935D4 /* ImagePicker.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ImagePicker.h; sourceTree = "<group>"; };
 		420C24191F5D82F9008935D4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		420C24231F5D830B008935D4 /* ImageModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageModel.swift; sourceTree = "<group>"; };
 		420C24251F5D8393008935D4 /* ImagePickerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImagePickerViewController.swift; sourceTree = "<group>"; };
 		420C24271F5D925A008935D4 /* ImagePickerDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImagePickerDataSource.swift; sourceTree = "<group>"; };
 		420C24331F5DA022008935D4 /* ImagePickerDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImagePickerDelegate.swift; sourceTree = "<group>"; };
 		420C24351F5ED4AA008935D4 /* ImagePickerLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImagePickerLayout.swift; sourceTree = "<group>"; };
+		420C243E1F5EEA19008935D4 /* LayoutModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LayoutModel.swift; sourceTree = "<group>"; };
+		420C24401F5EEA3C008935D4 /* LayoutConfiguration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LayoutConfiguration.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -118,11 +120,12 @@
 			isa = PBXGroup;
 			children = (
 				420C24181F5D82F9008935D4 /* ImagePicker.h */,
-				420C24231F5D830B008935D4 /* ImageModel.swift */,
 				420C24251F5D8393008935D4 /* ImagePickerViewController.swift */,
 				420C24271F5D925A008935D4 /* ImagePickerDataSource.swift */,
 				420C24331F5DA022008935D4 /* ImagePickerDelegate.swift */,
 				420C24351F5ED4AA008935D4 /* ImagePickerLayout.swift */,
+				420C243E1F5EEA19008935D4 /* LayoutModel.swift */,
+				420C24401F5EEA3C008935D4 /* LayoutConfiguration.swift */,
 				420C24191F5D82F9008935D4 /* Info.plist */,
 			);
 			path = ImagePicker;
@@ -258,8 +261,9 @@
 				420C24361F5ED4AB008935D4 /* ImagePickerLayout.swift in Sources */,
 				420C24341F5DA022008935D4 /* ImagePickerDelegate.swift in Sources */,
 				420C24281F5D925A008935D4 /* ImagePickerDataSource.swift in Sources */,
+				420C243F1F5EEA19008935D4 /* LayoutModel.swift in Sources */,
+				420C24411F5EEA3C008935D4 /* LayoutConfiguration.swift in Sources */,
 				420C24261F5D8393008935D4 /* ImagePickerViewController.swift in Sources */,
-				420C24241F5D830B008935D4 /* ImageModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
