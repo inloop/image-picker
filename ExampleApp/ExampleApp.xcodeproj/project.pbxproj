@@ -19,6 +19,7 @@
 		420C24261F5D8393008935D4 /* ImagePickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 420C24251F5D8393008935D4 /* ImagePickerViewController.swift */; };
 		420C24281F5D925A008935D4 /* ImagePickerDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 420C24271F5D925A008935D4 /* ImagePickerDataSource.swift */; };
 		420C24341F5DA022008935D4 /* ImagePickerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 420C24331F5DA022008935D4 /* ImagePickerDelegate.swift */; };
+		420C24361F5ED4AB008935D4 /* ImagePickerLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 420C24351F5ED4AA008935D4 /* ImagePickerLayout.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -60,6 +61,7 @@
 		420C24251F5D8393008935D4 /* ImagePickerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImagePickerViewController.swift; sourceTree = "<group>"; };
 		420C24271F5D925A008935D4 /* ImagePickerDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImagePickerDataSource.swift; sourceTree = "<group>"; };
 		420C24331F5DA022008935D4 /* ImagePickerDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImagePickerDelegate.swift; sourceTree = "<group>"; };
+		420C24351F5ED4AA008935D4 /* ImagePickerLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImagePickerLayout.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -120,6 +122,7 @@
 				420C24251F5D8393008935D4 /* ImagePickerViewController.swift */,
 				420C24271F5D925A008935D4 /* ImagePickerDataSource.swift */,
 				420C24331F5DA022008935D4 /* ImagePickerDelegate.swift */,
+				420C24351F5ED4AA008935D4 /* ImagePickerLayout.swift */,
 				420C24191F5D82F9008935D4 /* Info.plist */,
 			);
 			path = ImagePicker;
@@ -252,6 +255,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				420C24361F5ED4AB008935D4 /* ImagePickerLayout.swift in Sources */,
 				420C24341F5DA022008935D4 /* ImagePickerDelegate.swift in Sources */,
 				420C24281F5D925A008935D4 /* ImagePickerDataSource.swift in Sources */,
 				420C24261F5D8393008935D4 /* ImagePickerViewController.swift in Sources */,

@@ -30,16 +30,17 @@ open class ImagePickerViewController : UIViewController {
         
         let configuration = LayoutConfiguration()
         let model = LayoutModel(configuration: configuration, assets: 50)
+        let layout = ImagePickerLayout(configuration: configuration)
         
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .horizontal
-        layout.minimumInteritemSpacing = configuration.interitemSpacing
-        layout.minimumLineSpacing = configuration.interitemSpacing
+        let collectionViewLayout = UICollectionViewFlowLayout()
+        collectionViewLayout.scrollDirection = .horizontal
+        collectionViewLayout.minimumInteritemSpacing = configuration.interitemSpacing
+        collectionViewLayout.minimumLineSpacing = configuration.interitemSpacing
         
         self.collectionViewDataSource.layoutModel = model
-        self.collectionViewDelegate.layoutConfiguration = configuration
+        self.collectionViewDelegate.layout = layout
         
-        let view = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        let view = UICollectionView(frame: .zero, collectionViewLayout: collectionViewLayout)
         view.backgroundColor = UIColor.red
         view.contentInset = UIEdgeInsets.zero
         view.dataSource = self.collectionViewDataSource
