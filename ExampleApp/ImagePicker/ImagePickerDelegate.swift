@@ -57,6 +57,7 @@ final class ImagePickerDelegate : NSObject, UICollectionViewDelegateFlowLayout {
             fatalError("currently only UICollectionViewFlowLayout is supported")
         }
         
+        /// Returns size for item considering number of rows, if preferredWidth is nil, square size is returned
         func sizeForItemInRow(numberOfItemsInRow: Int, preferredWidth: CGFloat?) -> CGSize {
             
             switch layout.scrollDirection {
@@ -76,10 +77,22 @@ final class ImagePickerDelegate : NSObject, UICollectionViewDelegateFlowLayout {
         let layoutModel = LayoutModel(configuration: layoutConfiguration, assets: 0)
         
         switch indexPath.section {
-        case 0: return sizeForItemInRow(numberOfItemsInRow: layoutModel.numberOfItems(in: 0), preferredWidth: nil)
-        case 1: return sizeForItemInRow(numberOfItemsInRow: layoutModel.numberOfItems(in: 1), preferredWidth: 200)
-        case 2: return sizeForItemInRow(numberOfItemsInRow: layoutConfiguration.numberOfAssetItemsInRow, preferredWidth: nil)
-        default: fatalError("unexpected sections count")
+        case 0:
+            //this will make sure that action item is either square if there are 2 items,
+            //or a recatangle if there is only 1 item
+            let width = sizeForItemInRow(numberOfItemsInRow: 2, preferredWidth: nil).width
+            return sizeForItemInRow(numberOfItemsInRow: layoutModel.numberOfItems(in: 0), preferredWidth: width)
+        
+        case 1:
+            let ratio: CGFloat = 0.734
+            let width: CGFloat = collectionView.frame.height * ratio
+            return sizeForItemInRow(numberOfItemsInRow: layoutModel.numberOfItems(in: 1), preferredWidth: width)
+        
+        case 2:
+            return sizeForItemInRow(numberOfItemsInRow: layoutConfiguration.numberOfAssetItemsInRow, preferredWidth: nil)
+        
+        default:
+            fatalError("unexpected sections count")
         }
         
     }
