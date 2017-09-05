@@ -55,4 +55,11 @@ open class ImagePickerViewController : UIViewController {
         self.view = collectionView
     }
     
+    open override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        coordinator.animate(alongsideTransition: { (context) in
+            self.collectionView.collectionViewLayout.invalidateLayout()
+        }) { (context) in }
+        super.viewWillTransition(to: size, with: coordinator)
+    }
+    
 }

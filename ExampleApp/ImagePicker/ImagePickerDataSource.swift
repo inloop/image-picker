@@ -9,10 +9,13 @@
 import Foundation
 
 ///
+/// A model that contains info that is used by layout code and collection view data source
+/// when figuring out layout structure.
+///
 /// Always contains 3 sections:
-/// 1. for actions
-/// 2. for camera
-/// 3. for image assets
+/// 1. for actions (supports up to 2 action items)
+/// 2. for camera (1 camera item)
+/// 3. for image assets (any number of image asset items)
 /// Each section can be empty.
 ///
 struct LayoutModel {
