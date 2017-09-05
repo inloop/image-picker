@@ -9,21 +9,54 @@
 import Foundation
 
 ///
+/// Always contains 3 sections:
+/// 1. for actions
+/// 2. for camera
+/// 3. for image assets
+/// Each section can be empty.
+///
+struct LayoutModel {
+    
+    private var sections: [Int] = [0, 0, 0]
+    
+    init(configuration: LayoutConfiguration, assets: Int) {
+        var actionItems: Int = configuration.showsFirstActionItem ? 1 : 0
+        actionItems += configuration.showsSecondActionItem ? 1 : 0
+        sections[0] = actionItems
+        sections[1] = configuration.showsCameraActionItem ? 1 : 0
+        sections[2] = assets
+    }
+    
+    var numberOfSections: Int {
+        return sections.count
+    }
+    
+    func numberOfItems(in section: Int) -> Int {
+        return sections[section]
+    }
+    
+    static var empty: LayoutModel {
+        return LayoutModel(configuration: LayoutConfiguration.defaultConfiguration, assets: 0)
+    }
+}
+
+///
 /// Datasource for a collection view that is used by Image Picker VC.
 ///
 final class ImagePickerDataSource : NSObject, UICollectionViewDataSource {
     
-    var showsActionsSection = true
-    var showsCameraSection = true
+    var layoutModel = LayoutModel.empty
     
-    var sections = [UICollectionViewDataSource]()
+    override init() {
+        super.init()
+    }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 1
+        return layoutModel.numberOfSections
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 55
+        return layoutModel.numberOfItems(in: section)
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {

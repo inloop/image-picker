@@ -9,6 +9,9 @@
 import UIKit
 import ImagePicker
 
+///
+/// This is an example view controller that shows how Image Picker can be used
+///
 class ViewController: UITableViewController {
 
     private var allowsFirstResponser = false
@@ -36,6 +39,10 @@ class ViewController: UITableViewController {
         print("presenting as input view")
         
         let vc = ImagePickerViewController()
+        
+        //if you want to present view as input view, you have to set flexible height
+        //to adopt natural keyboard height or just set an layout constraint height 
+        //for specific height.
         vc.view.autoresizingMask = .flexibleHeight
         currentInputView = vc.view
         

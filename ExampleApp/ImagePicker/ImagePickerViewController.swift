@@ -28,8 +28,16 @@ open class ImagePickerViewController : UIViewController {
     
     private lazy var collectionView: UICollectionView = {
         
+        let configuration = LayoutConfiguration()
+        let model = LayoutModel(configuration: configuration, assets: 50)
+        
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
+        layout.minimumInteritemSpacing = configuration.interitemSpacing
+        layout.minimumLineSpacing = configuration.interitemSpacing
+        
+        self.collectionViewDataSource.layoutModel = model
+        self.collectionViewDelegate.layoutConfiguration = configuration
         
         let view = UICollectionView(frame: .zero, collectionViewLayout: layout)
         view.backgroundColor = UIColor.red
