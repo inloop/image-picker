@@ -65,8 +65,12 @@ class ViewController: UITableViewController {
         registrator.registerNibForActionItems(actionNib)
         registrator.register(nib: assetNib, forAssetItemOf: .image)
         
+        var configuration = LayoutConfiguration.default
+        configuration.showsSecondActionItem = false
+        
         let vc = ImagePickerViewController()
         vc.cellRegistrator = registrator
+        vc.layoutConfiguration = configuration
         vc.delegate = self
         
         //if you want to present view as input view, you have to set flexible height
