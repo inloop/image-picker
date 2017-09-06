@@ -61,11 +61,7 @@ open class ImagePickerViewController : UIViewController {
     public var cellRegistrator = CellRegistrator()
     
     /// get informed about user interaction and changes
-    public weak var delegate: ImagePickerViewControllerDelegate? {
-        didSet {
-            collectionViewDelegate.viewControllerDelegate = delegate
-        }
-    }
+    public weak var delegate: ImagePickerViewControllerDelegate?
     
     // MARK: Private Methods
     
@@ -86,6 +82,7 @@ open class ImagePickerViewController : UIViewController {
         self.collectionViewDataSource.layoutModel = model
         self.collectionViewDataSource.cellRegistrator = self.cellRegistrator
         self.collectionViewDelegate.layout = layout
+        self.collectionViewDelegate.delegate = self
         
         let view = UICollectionView(frame: .zero, collectionViewLayout: collectionViewLayout)
         view.backgroundColor = UIColor.red
@@ -113,6 +110,19 @@ open class ImagePickerViewController : UIViewController {
             self.collectionView.collectionViewLayout.invalidateLayout()
         }) { (context) in }
         super.viewWillTransition(to: size, with: coordinator)
+    }
+    
+}
+
+extension ImagePickerViewController : ImagePickerDelegateDelegate {
+    
+    func imagePicker(delegate: ImagePickerDelegate, didSelectActionItemAt index: Int) {
+        self.delegate?.imagePicker(controller: self, didSelectActionItemAt: index)
+    }
+        
+    func imagePicker(delegate: ImagePickerDelegate, didSelectAssetItemAt index: Int) {
+        //TODO: to be implemented when we have assets
+        //self.delegate?.imagePicker(controller: self, didSelect: <#T##Asset#>)
     }
     
 }

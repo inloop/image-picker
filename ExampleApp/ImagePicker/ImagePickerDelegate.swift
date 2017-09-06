@@ -8,10 +8,20 @@
 
 import Foundation
 
+/// Informs a delegate what is going on in ImagePickerDelegate
+protocol ImagePickerDelegateDelegate : class {
+    
+    /// Called when user selects one of action items
+    func imagePicker(delegate: ImagePickerDelegate, didSelectActionItemAt index: Int)
+    
+    /// Called when user selects one of asset items
+    func imagePicker(delegate: ImagePickerDelegate, didSelectAssetItemAt index: Int)
+}
+
 final class ImagePickerDelegate : NSObject, UICollectionViewDelegateFlowLayout {
     
     var layout: ImagePickerLayout?
-    weak var viewControllerDelegate: ImagePickerViewControllerDelegate?
+    weak var delegate: ImagePickerDelegateDelegate?
     
     private let selectionPolicy = ImagePickerSelectionPolicy()
     
@@ -26,6 +36,9 @@ final class ImagePickerDelegate : NSObject, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let rows = (collectionView.indexPathsForSelectedItems ?? []).map { $0.row }
         print("selected \(rows)")
+        if indexPath.section == 2 {
+            delegate?.imagePicker(delegate: self, didSelectAssetItemAt: indexPath.row)
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
@@ -38,6 +51,10 @@ final class ImagePickerDelegate : NSObject, UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, didHighlightItemAt indexPath: IndexPath) {
         print("highlighted \(indexPath)")
+        if indexPath.section == 0 {
+            delegate?.imagePicker(delegate: self, didSelectActionItemAt: indexPath.row)
+        }
+        
     }
     
 }
