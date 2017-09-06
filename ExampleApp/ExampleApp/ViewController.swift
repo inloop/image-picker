@@ -58,10 +58,11 @@ class ViewController: UITableViewController {
         let registrator = CellRegistrator()
         let actionNib = UINib(nibName: "IconWithTextCell", bundle: nil)
         let assetNib = UINib(nibName: "ImageCell", bundle: nil)
-        registrator.registerForActionItem(actionNib)
-        registrator.register(nib: assetNib, forActionItemAt: 0)
+        //registrator.registerForActionItem(actionNib)
+        //registrator.register(nib: assetNib, forActionItemAt: 0)
         //registrator.register(nib: assetNib, forActionItemAt: 1)
         registrator.register(nib: assetNib, forAssetItemOf: .image)
+        //registrator.register(cellClass: GreenCell.self, forActionItemAt: 1)
         
         let vc = ImagePickerViewController()
         vc.cellRegistrator = registrator

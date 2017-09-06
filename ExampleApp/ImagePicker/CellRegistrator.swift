@@ -62,9 +62,16 @@ public final class CellRegistrator {
     /// Registers a nib for all action items. Use this method if all action items
     /// have the same nib.
     ///
-    public func registerForActionItem(_ nib: UINib) {
-        //Int.max is reserved for registering for all indexes
+    public func registerNibForActionItems(_ nib: UINib) {
         register(nib: nib, forActionItemAt: Int.max)
+    }
+    
+    ///
+    /// Registers a cell class for all action items. Use this method if all action items
+    /// have the same nib.
+    ///
+    public func registerCellClassForActionItems(_ cellClass: UICollectionViewCell.Type) {
+        register(cellClass: cellClass, forActionItemAt: Int.max)
     }
     
     ///
@@ -87,20 +94,20 @@ public final class CellRegistrator {
         assetItemNibsData?[type] = (nib, cellIdentifier)
     }
     
-    public func register(class: UICollectionViewCell.Type, forActionItemAt index: Int) {
+    public func register(cellClass: UICollectionViewCell.Type, forActionItemAt index: Int) {
         if actionItemClassesData == nil {
             actionItemClassesData = [:]
         }
         let cellIdentifier = actionItemIdentifierPrefix + String(index)
-        actionItemClassesData?[index] = (`class`, cellIdentifier)
+        actionItemClassesData?[index] = (cellClass, cellIdentifier)
     }
     
-    public func register(class: UICollectionViewCell.Type, forAssetItemOf type: AssetType) {
+    public func register(cellClass: UICollectionViewCell.Type, forAssetItemOf type: AssetType) {
         if assetItemClassesData == nil {
             assetItemClassesData = [:]
         }
         let cellIdentifier = assetItemIdentifierPrefix + String(describing: type)
-        assetItemClassesData?[type] = (`class`, cellIdentifier)
+        assetItemClassesData?[type] = (cellClass, cellIdentifier)
     }
     
 }
