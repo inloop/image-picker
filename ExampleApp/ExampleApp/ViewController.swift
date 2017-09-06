@@ -66,7 +66,7 @@ class ViewController: UITableViewController {
         registrator.register(nib: assetNib, forAssetItemOf: .image)
         
         var configuration = LayoutConfiguration.default
-        configuration.showsSecondActionItem = false
+        configuration.showsSecondActionItem = true
         
         let vc = ImagePickerViewController()
         vc.cellRegistrator = registrator
@@ -110,6 +110,23 @@ extension ViewController : ImagePickerViewControllerDelegate {
     
     public func imagePicker(controller: ImagePickerViewController, didTake image: UIImage) {
         print("did take image \(image.size)")
+    }
+    
+    func imagePicker(controller: ImagePickerViewController, willDisplayActionItem cell: UICollectionViewCell, at index: Int) {
+        switch cell {
+        case let iconWithTextCell as IconWithTextCell:
+            switch index {
+            case 0:
+                iconWithTextCell.titleLabel.text = "Camera"
+                iconWithTextCell.imageView.image = #imageLiteral(resourceName: "ic-camera")
+            case 1:
+                iconWithTextCell.titleLabel.text = "Photo Library"
+                iconWithTextCell.imageView.image = #imageLiteral(resourceName: "ic-photo")
+            default: break
+            }
+        default:
+            break
+        }
     }
     
 }

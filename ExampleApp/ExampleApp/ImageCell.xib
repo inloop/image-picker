@@ -18,6 +18,11 @@
                 <rect key="frame" x="0.0" y="0.0" width="105" height="105"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
+                    <view opaque="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="YfK-4X-cT5" userLabel="Selected View">
+                        <rect key="frame" x="0.0" y="0.0" width="105" height="105"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <color key="backgroundColor" red="0.50196078430000002" green="0.50196078430000002" blue="0.50196078430000002" alpha="0.5" colorSpace="calibratedRGB"/>
+                    </view>
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="3Yb-Ok-Cvg">
                         <rect key="frame" x="0.0" y="0.0" width="105" height="105"/>
                     </imageView>
@@ -31,7 +36,10 @@
                 <constraint firstItem="3Yb-Ok-Cvg" firstAttribute="leading" secondItem="Gxi-EQ-8gg" secondAttribute="leading" id="kJJ-xg-Ryo"/>
             </constraints>
             <size key="customSize" width="105" height="105"/>
-            <point key="canvasLocation" x="-170.5" y="-69.5"/>
+            <connections>
+                <outlet property="selectedBackgroundView" destination="YfK-4X-cT5" id="iis-Zl-H1K"/>
+            </connections>
+            <point key="canvasLocation" x="-445.5" y="-47.5"/>
         </collectionViewCell>
     </objects>
 </document>

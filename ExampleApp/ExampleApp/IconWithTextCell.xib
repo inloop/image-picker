@@ -18,17 +18,17 @@
                 <rect key="frame" x="0.0" y="0.0" width="130" height="128"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="TqH-DD-Z09">
-                        <rect key="frame" x="31" y="33" width="68" height="62"/>
+                    <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="TqH-DD-Z09">
+                        <rect key="frame" x="53" y="52" width="24" height="24"/>
                         <color key="backgroundColor" red="0.078431372550000003" green="0.078431372550000003" blue="0.078431372550000003" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
-                            <constraint firstAttribute="width" constant="68" id="NKT-1h-Ed5"/>
-                            <constraint firstAttribute="height" constant="62" id="rM0-AQ-zQQ"/>
+                            <constraint firstAttribute="width" constant="24" id="NKT-1h-Ed5"/>
+                            <constraint firstAttribute="height" constant="24" id="rM0-AQ-zQQ"/>
                         </constraints>
                     </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Title label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5vY-pq-zu7">
-                        <rect key="frame" x="28" y="98" width="74" height="21"/>
-                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                        <rect key="frame" x="32" y="79" width="66.5" height="18"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>

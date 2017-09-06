@@ -31,6 +31,7 @@ class IconWithTextCell : UICollectionViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         originalBackgroundColor = backgroundColor
+        imageView.backgroundColor = UIColor.clear
     }
     
 }

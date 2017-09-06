@@ -37,6 +37,12 @@ public protocol ImagePickerViewControllerDelegate : class {
     
     func imagePicker(controller: ImagePickerViewController, didTake image: UIImage)
     
+    ///
+    /// Called right before an action item collection view cell is displayed. Use this method
+    /// to configure your cell.
+    ///
+    func imagePicker(controller: ImagePickerViewController, willDisplayActionItem cell: UICollectionViewCell, at index: Int)
+    
 }
 
 //this will make sure all delegate methods are optional
@@ -44,6 +50,7 @@ extension ImagePickerViewControllerDelegate {
     public func imagePicker(controller: ImagePickerViewController, didSelectActionItemAt index: Int) {}
     public func imagePicker(controller: ImagePickerViewController, didSelect asset: Asset) {}
     public func imagePicker(controller: ImagePickerViewController, didTake image: UIImage) {}
+    public func imagePicker(controller: ImagePickerViewController, willDisplayActionItem cell: UICollectionViewCell, at index: Int) {}
 }
 
 open class ImagePickerViewController : UIViewController {
@@ -68,7 +75,7 @@ open class ImagePickerViewController : UIViewController {
     private var collectionViewDataSource = ImagePickerDataSource()
     private var collectionViewDelegate = ImagePickerDelegate()
     
-    private lazy var collectionView: UICollectionView = {
+    fileprivate lazy var collectionView: UICollectionView = {
         
         let configuration = self.layoutConfiguration
         let model = LayoutModel(configuration: configuration, assets: 50)
@@ -123,6 +130,10 @@ extension ImagePickerViewController : ImagePickerDelegateDelegate {
     func imagePicker(delegate: ImagePickerDelegate, didSelectAssetItemAt index: Int) {
         //TODO: to be implemented when we have assets
         //self.delegate?.imagePicker(controller: self, didSelect: <#T##Asset#>)
+    }
+    
+    func imagePicker(delegate: ImagePickerDelegate, willDisplayActionCell cell: UICollectionViewCell, at index: Int) {
+        self.delegate?.imagePicker(controller: self, willDisplayActionItem: cell, at: index)
     }
     
 }

@@ -16,6 +16,9 @@ protocol ImagePickerDelegateDelegate : class {
     
     /// Called when user selects one of asset items
     func imagePicker(delegate: ImagePickerDelegate, didSelectAssetItemAt index: Int)
+    
+    /// Called when action item is about to be displayed
+    func imagePicker(delegate: ImagePickerDelegate, willDisplayActionCell cell: UICollectionViewCell, at index: Int)
 }
 
 final class ImagePickerDelegate : NSObject, UICollectionViewDelegateFlowLayout {
@@ -34,8 +37,6 @@ final class ImagePickerDelegate : NSObject, UICollectionViewDelegateFlowLayout {
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let rows = (collectionView.indexPathsForSelectedItems ?? []).map { $0.row }
-        print("selected \(rows)")
         if indexPath.section == 2 {
             delegate?.imagePicker(delegate: self, didSelectAssetItemAt: indexPath.row)
         }
@@ -50,11 +51,15 @@ final class ImagePickerDelegate : NSObject, UICollectionViewDelegateFlowLayout {
     }
     
     func collectionView(_ collectionView: UICollectionView, didHighlightItemAt indexPath: IndexPath) {
-        print("highlighted \(indexPath)")
         if indexPath.section == 0 {
             delegate?.imagePicker(delegate: self, didSelectActionItemAt: indexPath.row)
         }
-        
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        if indexPath.section == 0 {
+            delegate?.imagePicker(delegate: self, willDisplayActionCell: cell, at: indexPath.row)
+        }
     }
     
 }
