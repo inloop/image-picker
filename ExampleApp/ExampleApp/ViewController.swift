@@ -36,7 +36,7 @@ class ViewController: UITableViewController {
         configuration.numberOfAssetItemsInRow = 3
         
         let vc = ImagePickerViewController()
-        vc.configuration = configuration
+        vc.layoutConfiguration = configuration
         vc.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Dismiss", style: .done, target: self, action: #selector(dismissPresentedImagePicker(sender:)))
         let nc = UINavigationController(rootViewController: vc)
         present(nc, animated: animated, completion: nil)
