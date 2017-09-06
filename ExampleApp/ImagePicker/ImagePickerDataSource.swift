@@ -14,6 +14,7 @@ import Foundation
 final class ImagePickerDataSource : NSObject, UICollectionViewDataSource {
     
     var layoutModel = LayoutModel.empty
+    var cellRegistrator: CellRegistrator?
     
     override init() {
         super.init()
@@ -28,14 +29,34 @@ final class ImagePickerDataSource : NSObject, UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cellId", for: indexPath)
         
-        cell.backgroundColor = UIColor.blue
+        guard let cellsRegistrator = cellRegistrator else {
+            fatalError("cells registrator must be set at this moment")
+        }
         
-        //temp solution for selected state
-        let selected = UIView()
-        selected.backgroundColor = UIColor.green
-        cell.selectedBackgroundView = selected
-        return cell
+        switch indexPath.section {
+        case 0:
+            guard let id = cellsRegistrator.cellIdentifier(forActionItemAt: indexPath.row) else {
+                fatalError("there is an action item at index \(indexPath.row) but no cell is registered")
+            }
+            return collectionView.dequeueReusableCell(withReuseIdentifier: id, for: indexPath)
+        
+        case 1:
+            let id = cellsRegistrator.cellIdentifierForCameraItem
+            let cell =  collectionView.dequeueReusableCell(withReuseIdentifier: id, for: indexPath)
+            cell.backgroundColor = UIColor.blue
+            return cell
+            
+        case 2:
+            //TODO: we are assuming images only for now
+            let type = AssetType.image
+            guard let id = cellsRegistrator.cellIdentifier(forAsset: type) else {
+                fatalError("there is an asset item at index \(indexPath.row) but no cell is registered")
+            }
+            return collectionView.dequeueReusableCell(withReuseIdentifier: id, for: indexPath)
+        
+        default: fatalError("only 3 sections are supporte")
+        }
+        
     }
 }

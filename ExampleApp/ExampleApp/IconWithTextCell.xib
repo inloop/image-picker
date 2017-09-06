@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="12121" systemVersion="16G29" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="ki2-gi-o6k">
+            <rect key="frame" x="0.0" y="0.0" width="130" height="128"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                <rect key="frame" x="0.0" y="0.0" width="130" height="128"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="TqH-DD-Z09">
+                        <rect key="frame" x="31" y="33" width="68" height="62"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="68" id="NKT-1h-Ed5"/>
+                            <constraint firstAttribute="height" constant="62" id="rM0-AQ-zQQ"/>
+                        </constraints>
+                    </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Title label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5vY-pq-zu7">
+                        <rect key="frame" x="28" y="98" width="74" height="21"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                        <nil key="textColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                </subviews>
+            </view>
+            <color key="backgroundColor" red="0.94509803920000002" green="0.72941176470000002" blue="0.062745098040000002" alpha="1" colorSpace="calibratedRGB"/>
+            <constraints>
+                <constraint firstItem="5vY-pq-zu7" firstAttribute="centerX" secondItem="ki2-gi-o6k" secondAttribute="centerX" id="26S-TA-yr8"/>
+                <constraint firstItem="TqH-DD-Z09" firstAttribute="centerY" secondItem="ki2-gi-o6k" secondAttribute="centerY" id="9jY-ft-w0H"/>
+                <constraint firstItem="5vY-pq-zu7" firstAttribute="top" secondItem="TqH-DD-Z09" secondAttribute="bottom" constant="3" id="AU6-us-zMx"/>
+                <constraint firstItem="TqH-DD-Z09" firstAttribute="centerX" secondItem="ki2-gi-o6k" secondAttribute="centerX" id="Zhc-XI-6Sl"/>
+            </constraints>
+            <size key="customSize" width="130" height="128"/>
+            <point key="canvasLocation" x="-148" y="-13"/>
+        </collectionViewCell>
+    </objects>
+</document>

@@ -15,12 +15,13 @@ public typealias Asset = Int
 //this is temp asset type
 public enum AssetType: CustomStringConvertible {
     
-    case video, image
+    case image
+    //case video
     
     public var description: String {
         switch self {
-        case .video: return "video"
         case .image: return "image"
+        //case .video: return "video"
         }
     }
 }
@@ -45,15 +46,6 @@ extension ImagePickerViewControllerDelegate {
     func imagePicker(controller: ImagePickerViewController, didTake image: UIImage) {}
 }
 
-///
-/// Just holds all data needed when registering collection view cells
-///
-//private final class CellsRegistrator {
-//    
-//    var dictionaryOfNibs: []
-//    
-//}
-
 open class ImagePickerViewController : UIViewController {
    
     deinit {
@@ -63,48 +55,9 @@ open class ImagePickerViewController : UIViewController {
     // MARK: Public API
     
     public var layoutConfiguration = LayoutConfiguration.default
-    
-    public func register(nib: UINib, forActionItemAt index: Int) {
-        if actionItemNibsData == nil {
-            actionItemNibsData = [:]
-        }
-        let cellIdentifier = actionItemIdentifierPrefix + String(index)
-        actionItemNibsData?[index] = (nib, cellIdentifier)
-    }
-    
-    public func register(nib: UINib, forAssetItemOf type: AssetType) {
-        if assetItemNibsData == nil {
-            assetItemNibsData = [:]
-        }
-        let cellIdentifier = assetItemIdentifierPrefix + String(describing: type)
-        assetItemNibsData?[type] = (nib, cellIdentifier)
-    }
-    
-    public func register(class: UICollectionViewCell.Type, forActionItemAt index: Int) {
-        if actionItemClassesData == nil {
-            actionItemClassesData = [:]
-        }
-        let cellIdentifier = actionItemIdentifierPrefix + String(index)
-        actionItemClassesData?[index] = (`class`, cellIdentifier)
-    }
-    
-    public func register(class: UICollectionViewCell.Type, forAssetItemOf type: AssetType) {
-        if assetItemClassesData == nil {
-            assetItemClassesData = [:]
-        }
-        let cellIdentifier = assetItemIdentifierPrefix + String(describing: type)
-        assetItemClassesData?[type] = (`class`, cellIdentifier)
-    }
+    public var cellRegistrator = CellRegistrator()
     
     // MARK: Private Methods
-    
-    private var actionItemIdentifierPrefix = "eu.inloop.action-item.cell-id"
-    private var actionItemNibsData: [Int: (UINib, String)]?
-    private var actionItemClassesData: [Int: (UICollectionViewCell.Type, String)]?
-    
-    private var assetItemIdentifierPrefix = "eu.inloop.asset-item.cell-id"
-    private var assetItemNibsData: [AssetType: (UINib, String)]?
-    private var assetItemClassesData: [AssetType: (UICollectionViewCell.Type, String)]?
     
     private var collectionViewDataSource = ImagePickerDataSource()
     private var collectionViewDelegate = ImagePickerDelegate()
@@ -121,6 +74,7 @@ open class ImagePickerViewController : UIViewController {
         collectionViewLayout.minimumLineSpacing = configuration.interitemSpacing
         
         self.collectionViewDataSource.layoutModel = model
+        self.collectionViewDataSource.cellRegistrator = self.cellRegistrator
         self.collectionViewDelegate.layout = layout
         
         let view = UICollectionView(frame: .zero, collectionViewLayout: collectionViewLayout)
@@ -132,8 +86,7 @@ open class ImagePickerViewController : UIViewController {
         view.allowsMultipleSelection = true
         
         //register all nibs
-        view.register(nibsData: self.actionItemNibsData?.map { $1 })
-        view.register(nibsData: self.assetItemNibsData?.map { $1 })
+        view.apply(registrator: self.cellRegistrator)
         
         return view
     }()
@@ -150,26 +103,6 @@ open class ImagePickerViewController : UIViewController {
             self.collectionView.collectionViewLayout.invalidateLayout()
         }) { (context) in }
         super.viewWillTransition(to: size, with: coordinator)
-    }
-    
-}
-
-extension UICollectionView {
-    
-    /// Helper func that takes nib,cellid pair and registers them on a collection view
-    fileprivate func register(nibsData: [(UINib, String)]?) {
-        guard let nibsData = nibsData else { return }
-        for (nib, cellIdentifier) in nibsData {
-            register(nib, forCellWithReuseIdentifier: cellIdentifier)
-        }
-    }
-    
-    /// Helper func that takes nib,cellid pair and registers them on a collection view
-    fileprivate func register(classData: [(UICollectionViewCell.Type, String)]?) {
-        guard let classData = classData else { return }
-        for (cellType, cellIdentifier) in classData {
-            register(cellType, forCellWithReuseIdentifier: cellIdentifier)
-        }
     }
     
 }

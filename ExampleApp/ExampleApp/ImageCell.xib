@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="12121" systemVersion="16G29" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="Gxi-EQ-8gg">
+            <rect key="frame" x="0.0" y="0.0" width="105" height="105"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                <rect key="frame" x="0.0" y="0.0" width="105" height="105"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="3Yb-Ok-Cvg">
+                        <rect key="frame" x="0.0" y="0.0" width="105" height="105"/>
+                    </imageView>
+                </subviews>
+            </view>
+            <color key="backgroundColor" red="0.0" green="0.47450980390000003" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+            <constraints>
+                <constraint firstAttribute="bottom" secondItem="3Yb-Ok-Cvg" secondAttribute="bottom" id="AnG-eb-gC1"/>
+                <constraint firstItem="3Yb-Ok-Cvg" firstAttribute="top" secondItem="Gxi-EQ-8gg" secondAttribute="top" id="BuB-zi-xDh"/>
+                <constraint firstAttribute="trailing" secondItem="3Yb-Ok-Cvg" secondAttribute="trailing" id="Qhd-05-9cX"/>
+                <constraint firstItem="3Yb-Ok-Cvg" firstAttribute="leading" secondItem="Gxi-EQ-8gg" secondAttribute="leading" id="kJJ-xg-Ryo"/>
+            </constraints>
+            <size key="customSize" width="105" height="105"/>
+            <point key="canvasLocation" x="-170.5" y="-69.5"/>
+        </collectionViewCell>
+    </objects>
+</document>

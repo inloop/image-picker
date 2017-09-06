@@ -9,6 +9,8 @@
 import UIKit
 import ImagePicker
 
+
+
 ///
 /// This is an example view controller that shows how Image Picker can be used
 ///
@@ -35,8 +37,16 @@ class ViewController: UITableViewController {
         configuration.showsCameraActionItem = false
         configuration.numberOfAssetItemsInRow = 3
         
+        let registrator = CellRegistrator()
+        let actionNib = UINib(nibName: "IconWithTextCell", bundle: nil)
+        registrator.register(nib: actionNib, forActionItemAt: 0)
+        registrator.register(nib: actionNib, forActionItemAt: 1)
+        let assetNib = UINib(nibName: "ImageCell", bundle: nil)
+        registrator.register(nib: assetNib, forAssetItemOf: .image)
+        
         let vc = ImagePickerViewController()
         vc.layoutConfiguration = configuration
+        vc.cellRegistrator = registrator
         vc.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Dismiss", style: .done, target: self, action: #selector(dismissPresentedImagePicker(sender:)))
         let nc = UINavigationController(rootViewController: vc)
         present(nc, animated: animated, completion: nil)
@@ -45,7 +55,15 @@ class ViewController: UITableViewController {
     func presentPickerAsInputView() {
         print("presenting as input view")
         
+        let registrator = CellRegistrator()
+        let actionNib = UINib(nibName: "IconWithTextCell", bundle: nil)
+        registrator.register(nib: actionNib, forActionItemAt: 0)
+        registrator.register(nib: actionNib, forActionItemAt: 1)
+        let assetNib = UINib(nibName: "ImageCell", bundle: nil)
+        registrator.register(nib: assetNib, forAssetItemOf: .image)
+        
         let vc = ImagePickerViewController()
+        vc.cellRegistrator = registrator
         
         //if you want to present view as input view, you have to set flexible height
         //to adopt natural keyboard height or just set an layout constraint height 

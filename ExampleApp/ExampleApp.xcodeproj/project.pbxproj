@@ -21,6 +21,9 @@
 		420C24361F5ED4AB008935D4 /* ImagePickerLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 420C24351F5ED4AA008935D4 /* ImagePickerLayout.swift */; };
 		420C243F1F5EEA19008935D4 /* LayoutModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 420C243E1F5EEA19008935D4 /* LayoutModel.swift */; };
 		420C24411F5EEA3C008935D4 /* LayoutConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 420C24401F5EEA3C008935D4 /* LayoutConfiguration.swift */; };
+		421442631F6014B3006BA45A /* CellRegistrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 421442621F6014B3006BA45A /* CellRegistrator.swift */; };
+		421442691F6029D6006BA45A /* IconWithTextCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 421442681F6029D6006BA45A /* IconWithTextCell.xib */; };
+		4214426B1F602C68006BA45A /* ImageCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4214426A1F602C68006BA45A /* ImageCell.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -64,6 +67,9 @@
 		420C24351F5ED4AA008935D4 /* ImagePickerLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImagePickerLayout.swift; sourceTree = "<group>"; };
 		420C243E1F5EEA19008935D4 /* LayoutModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LayoutModel.swift; sourceTree = "<group>"; };
 		420C24401F5EEA3C008935D4 /* LayoutConfiguration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LayoutConfiguration.swift; sourceTree = "<group>"; };
+		421442621F6014B3006BA45A /* CellRegistrator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CellRegistrator.swift; sourceTree = "<group>"; };
+		421442681F6029D6006BA45A /* IconWithTextCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = IconWithTextCell.xib; sourceTree = "<group>"; };
+		4214426A1F602C68006BA45A /* ImageCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ImageCell.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -109,6 +115,8 @@
 				420C23FF1F5D82C6008935D4 /* AppDelegate.swift */,
 				420C24011F5D82C6008935D4 /* ViewController.swift */,
 				420C24031F5D82C6008935D4 /* Main.storyboard */,
+				4214426A1F602C68006BA45A /* ImageCell.xib */,
+				421442681F6029D6006BA45A /* IconWithTextCell.xib */,
 				420C24061F5D82C6008935D4 /* Assets.xcassets */,
 				420C24081F5D82C6008935D4 /* LaunchScreen.storyboard */,
 				420C240B1F5D82C6008935D4 /* Info.plist */,
@@ -126,6 +134,7 @@
 				420C24351F5ED4AA008935D4 /* ImagePickerLayout.swift */,
 				420C243E1F5EEA19008935D4 /* LayoutModel.swift */,
 				420C24401F5EEA3C008935D4 /* LayoutConfiguration.swift */,
+				421442621F6014B3006BA45A /* CellRegistrator.swift */,
 				420C24191F5D82F9008935D4 /* Info.plist */,
 			);
 			path = ImagePicker;
@@ -232,6 +241,8 @@
 				420C240A1F5D82C6008935D4 /* LaunchScreen.storyboard in Resources */,
 				420C24071F5D82C6008935D4 /* Assets.xcassets in Resources */,
 				420C24051F5D82C6008935D4 /* Main.storyboard in Resources */,
+				4214426B1F602C68006BA45A /* ImageCell.xib in Resources */,
+				421442691F6029D6006BA45A /* IconWithTextCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -258,6 +269,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				421442631F6014B3006BA45A /* CellRegistrator.swift in Sources */,
 				420C24361F5ED4AB008935D4 /* ImagePickerLayout.swift in Sources */,
 				420C24341F5DA022008935D4 /* ImagePickerDelegate.swift in Sources */,
 				420C24281F5D925A008935D4 /* ImagePickerDataSource.swift in Sources */,
@@ -486,6 +498,7 @@
 				420C24101F5D82C6008935D4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		420C241F1F5D82F9008935D4 /* Build configuration list for PBXNativeTarget "ImagePicker" */ = {
 			isa = XCConfigurationList;
@@ -494,6 +507,7 @@
 				420C24211F5D82F9008935D4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
