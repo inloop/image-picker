@@ -29,7 +29,7 @@ class ViewController: UITableViewController {
         //presentPickerModally(animated: false)
     }
 
-    func presentPickerModally(animated: Bool) {
+    func presentPickerModally() {
         print("presenting modally")
         
         var configuration = LayoutConfiguration.default
@@ -49,7 +49,7 @@ class ViewController: UITableViewController {
         vc.cellRegistrator = registrator
         vc.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Dismiss", style: .done, target: self, action: #selector(dismissPresentedImagePicker(sender:)))
         let nc = UINavigationController(rootViewController: vc)
-        present(nc, animated: animated, completion: nil)
+        present(nc, animated: true, completion: nil)
     }
     
     func presentPickerAsInputView() {
@@ -90,32 +90,34 @@ class ViewController: UITableViewController {
     
 }
 
+let data = [
+    [
+        ("Presented modally", #selector(ViewController.presentPickerModally)),],
+    [
+        ("As input view", #selector(ViewController.presentPickerAsInputView))]
+]
+let selectors = [#selector(ViewController.presentPickerAsInputView)]
+
 extension ViewController {
     
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+        return data.count
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 2
+        return data[section].count
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cellId", for: indexPath)
-        switch indexPath.row {
-        case 0: cell.textLabel?.text = "Presented view controller"
-        case 1: cell.textLabel?.text = "As input view"
-        default: fatalError("not implemented")
-        }
+        cell.textLabel?.text = data[indexPath.section][indexPath.row].0
+        
         return cell
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        switch indexPath.row {
-        case 0: presentPickerModally(animated: true)
-        case 1: presentPickerAsInputView()
-        default: fatalError("not implemented")
-        }
+        tableView.deselectRow(at: indexPath, animated: true)
+        perform(data[indexPath.section][indexPath.row].1)
     }
     
 }
