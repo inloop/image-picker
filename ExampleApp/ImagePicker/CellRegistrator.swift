@@ -33,7 +33,19 @@ public final class CellRegistrator {
     let cellIdentifierForCameraItem = "eu.inloop.camera-item.cell-id"
     
     func cellIdentifier(forActionItemAt index: Int) -> String? {
-        return actionItemNibsData?[index]?.1 ?? actionItemClassesData?[index]?.1
+        
+        //first lets check if there is a registered cell at specified index
+        if let index = actionItemNibsData?[index]?.1 ?? actionItemClassesData?[index]?.1 {
+            return index
+        }
+        
+        //if not found globaly registered return nil
+        guard index < Int.max else {
+            return nil
+        }
+        
+        //lets see if there is a globally registered cell for all indexes
+        return cellIdentifier(forActionItemAt: Int.max)
     }
     
     func cellIdentifier(forAsset type: AssetType) -> String? {
@@ -46,6 +58,19 @@ public final class CellRegistrator {
     
     }
     
+    ///
+    /// Registers a nib for all action items. Use this method if all action items
+    /// have the same nib.
+    ///
+    public func registerForActionItem(_ nib: UINib) {
+        //Int.max is reserved for registering for all indexes
+        register(nib: nib, forActionItemAt: Int.max)
+    }
+    
+    ///
+    /// Registers a nib for an action item at particular index. Use this method if
+    /// you wish to use different cells.
+    ///
     public func register(nib: UINib, forActionItemAt index: Int) {
         if actionItemNibsData == nil {
             actionItemNibsData = [:]
