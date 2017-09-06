@@ -25,6 +25,7 @@
 		421442691F6029D6006BA45A /* IconWithTextCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 421442681F6029D6006BA45A /* IconWithTextCell.xib */; };
 		4214426B1F602C68006BA45A /* ImageCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4214426A1F602C68006BA45A /* ImageCell.xib */; };
 		4214426D1F603612006BA45A /* GreenCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4214426C1F603612006BA45A /* GreenCell.swift */; };
+		4214426F1F604498006BA45A /* ImagePickerSelectionPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4214426E1F604498006BA45A /* ImagePickerSelectionPolicy.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -72,6 +73,7 @@
 		421442681F6029D6006BA45A /* IconWithTextCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = IconWithTextCell.xib; sourceTree = "<group>"; };
 		4214426A1F602C68006BA45A /* ImageCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ImageCell.xib; sourceTree = "<group>"; };
 		4214426C1F603612006BA45A /* GreenCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GreenCell.swift; sourceTree = "<group>"; };
+		4214426E1F604498006BA45A /* ImagePickerSelectionPolicy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImagePickerSelectionPolicy.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -138,6 +140,7 @@
 				420C243E1F5EEA19008935D4 /* LayoutModel.swift */,
 				420C24401F5EEA3C008935D4 /* LayoutConfiguration.swift */,
 				421442621F6014B3006BA45A /* CellRegistrator.swift */,
+				4214426E1F604498006BA45A /* ImagePickerSelectionPolicy.swift */,
 				420C24191F5D82F9008935D4 /* Info.plist */,
 			);
 			path = ImagePicker;
@@ -277,6 +280,7 @@
 				420C24361F5ED4AB008935D4 /* ImagePickerLayout.swift in Sources */,
 				420C24341F5DA022008935D4 /* ImagePickerDelegate.swift in Sources */,
 				420C24281F5D925A008935D4 /* ImagePickerDataSource.swift in Sources */,
+				4214426F1F604498006BA45A /* ImagePickerSelectionPolicy.swift in Sources */,
 				420C243F1F5EEA19008935D4 /* LayoutModel.swift in Sources */,
 				420C24411F5EEA3C008935D4 /* LayoutConfiguration.swift in Sources */,
 				420C24261F5D8393008935D4 /* ImagePickerViewController.swift in Sources */,

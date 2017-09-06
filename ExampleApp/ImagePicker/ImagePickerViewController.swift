@@ -41,9 +41,9 @@ public protocol ImagePickerViewControllerDelegate : class {
 
 //this will make sure all delegate methods are optional
 extension ImagePickerViewControllerDelegate {
-    func imagePicker(controller: ImagePickerViewController, didSelectActionItemAt index: Int) {}
-    func imagePicker(controller: ImagePickerViewController, didSelect asset: Asset) {}
-    func imagePicker(controller: ImagePickerViewController, didTake image: UIImage) {}
+    public func imagePicker(controller: ImagePickerViewController, didSelectActionItemAt index: Int) {}
+    public func imagePicker(controller: ImagePickerViewController, didSelect asset: Asset) {}
+    public func imagePicker(controller: ImagePickerViewController, didTake image: UIImage) {}
 }
 
 open class ImagePickerViewController : UIViewController {
@@ -54,8 +54,18 @@ open class ImagePickerViewController : UIViewController {
     
     // MARK: Public API
     
+    /// configure layout of all items
     public var layoutConfiguration = LayoutConfiguration.default
+    
+    /// use this to register a cell classes or nibs for each item types
     public var cellRegistrator = CellRegistrator()
+    
+    /// get informed about user interaction and changes
+    public weak var delegate: ImagePickerViewControllerDelegate? {
+        didSet {
+            collectionViewDelegate.viewControllerDelegate = delegate
+        }
+    }
     
     // MARK: Private Methods
     

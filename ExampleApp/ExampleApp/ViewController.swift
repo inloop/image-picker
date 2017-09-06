@@ -58,14 +58,16 @@ class ViewController: UITableViewController {
         let registrator = CellRegistrator()
         let actionNib = UINib(nibName: "IconWithTextCell", bundle: nil)
         let assetNib = UINib(nibName: "ImageCell", bundle: nil)
-        //registrator.registerForActionItem(actionNib)
         //registrator.register(nib: assetNib, forActionItemAt: 0)
         //registrator.register(nib: assetNib, forActionItemAt: 1)
-        registrator.register(nib: assetNib, forAssetItemOf: .image)
         //registrator.register(cellClass: GreenCell.self, forActionItemAt: 1)
+        
+        registrator.registerNibForActionItems(actionNib)
+        registrator.register(nib: assetNib, forAssetItemOf: .image)
         
         let vc = ImagePickerViewController()
         vc.cellRegistrator = registrator
+        vc.delegate = self
         
         //if you want to present view as input view, you have to set flexible height
         //to adopt natural keyboard height or just set an layout constraint height 
@@ -88,6 +90,22 @@ class ViewController: UITableViewController {
     
     override var inputView: UIView? {
         return currentInputView
+    }
+    
+}
+
+extension ViewController : ImagePickerViewControllerDelegate {
+    
+    public func imagePicker(controller: ImagePickerViewController, didSelectActionItemAt index: Int) {
+        print("did select action \(index)")
+    }
+    
+    public func imagePicker(controller: ImagePickerViewController, didSelect asset: Asset) {
+        print("did select asset \(asset)")
+    }
+    
+    public func imagePicker(controller: ImagePickerViewController, didTake image: UIImage) {
+        print("did take image \(image.size)")
     }
     
 }
