@@ -7,6 +7,28 @@
 //
 
 import Foundation
+import Photos
+
+//TODO: move somewhere else
+public protocol ImagePickerImageCell {
+    var imageView: UIImageView! { get set }
+}
+
+
+final class ImagePickerModel {
+
+    var fetchResult: PHFetchResult<PHAsset>?
+    var assetCollection: PHAssetCollection?
+    
+    let imageManager = PHCachingImageManager()
+    var thumbnailSize: CGSize?
+    
+    //will be use for caching
+    //var previousPreheatRect = CGRect.zero
+    
+    
+    
+}
 
 ///
 /// Datasource for a collection view that is used by Image Picker VC.
@@ -15,6 +37,9 @@ final class ImagePickerDataSource : NSObject, UICollectionViewDataSource {
     
     var layoutModel = LayoutModel.empty
     var cellRegistrator: CellRegistrator?
+    
+    var assetsModel: ImagePickerModel?
+    
     
     override init() {
         super.init()
@@ -53,10 +78,30 @@ final class ImagePickerDataSource : NSObject, UICollectionViewDataSource {
             guard let id = cellsRegistrator.cellIdentifier(forAsset: type) else {
                 fatalError("there is an asset item at index \(indexPath.row) but no cell is registered")
             }
-            return collectionView.dequeueReusableCell(withReuseIdentifier: id, for: indexPath)
+            
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: id, for: indexPath) as? ImagePickerImageCell else {
+                fatalError("asset item cell must conform to \(ImagePickerImageCell.self) protocol")
+            }
+            
+            let asset = assetsModel!.fetchResult!.object(at: indexPath.item)
+            let thumbnailSize = CGSize(width: 100, height: 100)
+            
+            // Request an image for the asset from the PHCachingImageManager.
+            //cell.representedAssetIdentifier = asset.localIdentifier
+            assetsModel!.imageManager.requestImage(for: asset, targetSize: thumbnailSize, contentMode: .aspectFill, options: nil, resultHandler: { image, _ in
+                // The cell may have been recycled by the time this handler gets called;
+                // set the cell's thumbnail image only if it's still showing the same asset.
+//                if cell.representedAssetIdentifier == asset.localIdentifier && image != nil {
+//                    cell.thumbnailImage = image
+//                }
+                cell.imageView.image = image
+            })
+            
+            return cell as! UICollectionViewCell
         
         default: fatalError("only 3 sections are supporte")
         }
-        
     }
+    
+
 }

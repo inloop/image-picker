@@ -10,6 +10,7 @@ import Foundation
 import UIKit
 import Photos
 
+
 //this is temp Type for photo assets
 public typealias Asset = Int
 
@@ -128,18 +129,22 @@ open class ImagePickerViewController : UIViewController {
         //temporray
         PHPhotoLibrary.requestAuthorization { (status) in
             DispatchQueue.main.async {
-                if self.fetchResult == nil {
+                if self.collectionViewDataSource.assetsModel == nil {
+                    let assetsModel = ImagePickerModel()
                     
                     let allPhotosOptions = PHFetchOptions()
                     allPhotosOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
-                    self.fetchResult = PHAsset.fetchAssets(with: allPhotosOptions)
-                    print("fetched: \(self.fetchResult!.count) photos")
+                    assetsModel.fetchResult = PHAsset.fetchAssets(with: allPhotosOptions)
+                    print("fetched: \(assetsModel.fetchResult!.count) photos")
                     
                     let configuration = self.layoutConfiguration
-                    let model = LayoutModel(configuration: configuration, assets: self.fetchResult!.count)
+                    let model = LayoutModel(configuration: configuration, assets: assetsModel.fetchResult!.count)
+                    self.collectionViewDataSource.assetsModel = assetsModel
                     self.collectionViewDataSource.layoutModel = model
                     self.collectionView.reloadData()
+
                 }
+                
             }
         }
     }
@@ -151,15 +156,6 @@ open class ImagePickerViewController : UIViewController {
         }) { (context) in }
         super.viewWillTransition(to: size, with: coordinator)
     }
-    
-    // MARK: PhotoKit Methods
-    
-    fileprivate var fetchResult: PHFetchResult<PHAsset>!
-    fileprivate var assetCollection: PHAssetCollection!
-    
-    fileprivate let imageManager = PHCachingImageManager()
-    fileprivate var thumbnailSize: CGSize!
-    fileprivate var previousPreheatRect = CGRect.zero
     
 }
 
