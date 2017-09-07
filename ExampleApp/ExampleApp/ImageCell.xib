@@ -18,28 +18,33 @@
                 <rect key="frame" x="0.0" y="0.0" width="105" height="105"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <view opaque="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="YfK-4X-cT5" userLabel="Selected View">
-                        <rect key="frame" x="0.0" y="0.0" width="105" height="105"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <color key="backgroundColor" red="0.50196078430000002" green="0.50196078430000002" blue="0.50196078430000002" alpha="0.5" colorSpace="calibratedRGB"/>
-                    </view>
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="3Yb-Ok-Cvg">
+                        <rect key="frame" x="0.0" y="0.0" width="105" height="105"/>
+                    </imageView>
+                    <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic-check" translatesAutoresizingMaskIntoConstraints="NO" id="6r3-Qp-mRn">
                         <rect key="frame" x="0.0" y="0.0" width="105" height="105"/>
                     </imageView>
                 </subviews>
             </view>
             <color key="backgroundColor" red="0.0" green="0.47450980390000003" blue="1" alpha="1" colorSpace="calibratedRGB"/>
             <constraints>
+                <constraint firstAttribute="bottom" secondItem="6r3-Qp-mRn" secondAttribute="bottom" id="8Vh-Zy-LRD"/>
                 <constraint firstAttribute="bottom" secondItem="3Yb-Ok-Cvg" secondAttribute="bottom" id="AnG-eb-gC1"/>
                 <constraint firstItem="3Yb-Ok-Cvg" firstAttribute="top" secondItem="Gxi-EQ-8gg" secondAttribute="top" id="BuB-zi-xDh"/>
+                <constraint firstItem="6r3-Qp-mRn" firstAttribute="top" secondItem="Gxi-EQ-8gg" secondAttribute="top" id="JiJ-CW-f8P"/>
+                <constraint firstItem="6r3-Qp-mRn" firstAttribute="leading" secondItem="Gxi-EQ-8gg" secondAttribute="leading" id="Q3V-Ko-WNZ"/>
                 <constraint firstAttribute="trailing" secondItem="3Yb-Ok-Cvg" secondAttribute="trailing" id="Qhd-05-9cX"/>
                 <constraint firstItem="3Yb-Ok-Cvg" firstAttribute="leading" secondItem="Gxi-EQ-8gg" secondAttribute="leading" id="kJJ-xg-Ryo"/>
+                <constraint firstAttribute="trailing" secondItem="6r3-Qp-mRn" secondAttribute="trailing" id="pqI-ps-MgX"/>
             </constraints>
             <size key="customSize" width="105" height="105"/>
             <connections>
-                <outlet property="selectedBackgroundView" destination="YfK-4X-cT5" id="iis-Zl-H1K"/>
+                <outlet property="selectedBackgroundView" destination="6r3-Qp-mRn" id="Tjz-xF-XGm"/>
             </connections>
             <point key="canvasLocation" x="-445.5" y="-47.5"/>
         </collectionViewCell>
     </objects>
+    <resources>
+        <image name="ic-check" width="24" height="24"/>
+    </resources>
 </document>

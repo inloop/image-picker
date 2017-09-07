@@ -47,6 +47,8 @@ class ViewController: UITableViewController {
         let vc = ImagePickerViewController()
         vc.layoutConfiguration = configuration
         vc.cellRegistrator = registrator
+        vc.delegate = self
+        
         vc.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Dismiss", style: .done, target: self, action: #selector(dismissPresentedImagePicker(sender:)))
         let nc = UINavigationController(rootViewController: vc)
         present(nc, animated: true, completion: nil)
