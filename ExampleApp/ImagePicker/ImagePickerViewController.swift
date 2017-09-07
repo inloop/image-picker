@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import Photos
 
 //this is temp Type for photo assets
 public typealias Asset = Int
@@ -33,8 +34,10 @@ public protocol ImagePickerViewControllerDelegate : class {
     ///
     func imagePicker(controller: ImagePickerViewController, didSelectActionItemAt index: Int)
     
-    func imagePicker(controller: ImagePickerViewController, didSelect asset: Asset)
+    func imagePicker(controller: ImagePickerViewController, didFinishPicking asset: Asset)
     
+    //perhaps we can use method above and remove this one, client does not care if user took a picture or
+    //picked it from a library
     func imagePicker(controller: ImagePickerViewController, didTake image: UIImage)
     
     ///
@@ -70,6 +73,14 @@ open class ImagePickerViewController : UIViewController {
     /// get informed about user interaction and changes
     public weak var delegate: ImagePickerViewControllerDelegate?
     
+    /// holds all currently selected images
+    //TODO: implement when images source is ready
+//    public var selectedImages: [Asset] {
+//        get {
+//            return collectionView.indexPathsForSelectedItems.map { $0.item }
+//        }
+//    }
+    
     // MARK: Private Methods
     
     private var collectionViewDataSource = ImagePickerDataSource()
@@ -78,7 +89,7 @@ open class ImagePickerViewController : UIViewController {
     fileprivate lazy var collectionView: UICollectionView = {
         
         let configuration = self.layoutConfiguration
-        let model = LayoutModel(configuration: configuration, assets: 50)
+        //let model = LayoutModel(configuration: configuration, assets: 0)
         let layout = ImagePickerLayout(configuration: configuration)
         
         let collectionViewLayout = UICollectionViewFlowLayout()
@@ -86,7 +97,7 @@ open class ImagePickerViewController : UIViewController {
         collectionViewLayout.minimumInteritemSpacing = configuration.interitemSpacing
         collectionViewLayout.minimumLineSpacing = configuration.interitemSpacing
         
-        self.collectionViewDataSource.layoutModel = model
+        //self.collectionViewDataSource.layoutModel = model
         self.collectionViewDataSource.cellRegistrator = self.cellRegistrator
         self.collectionViewDelegate.layout = layout
         self.collectionViewDelegate.delegate = self
@@ -111,6 +122,28 @@ open class ImagePickerViewController : UIViewController {
         self.view = collectionView
     }
     
+    open override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        //temporray
+        PHPhotoLibrary.requestAuthorization { (status) in
+            DispatchQueue.main.async {
+                if self.fetchResult == nil {
+                    
+                    let allPhotosOptions = PHFetchOptions()
+                    allPhotosOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
+                    self.fetchResult = PHAsset.fetchAssets(with: allPhotosOptions)
+                    print("fetched: \(self.fetchResult!.count) photos")
+                    
+                    let configuration = self.layoutConfiguration
+                    let model = LayoutModel(configuration: configuration, assets: self.fetchResult!.count)
+                    self.collectionViewDataSource.layoutModel = model
+                    self.collectionView.reloadData()
+                }
+            }
+        }
+    }
+    
     //this will make sure that collection view layout is reloaded when interface rotates/changes
     open override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         coordinator.animate(alongsideTransition: { (context) in
@@ -118,6 +151,15 @@ open class ImagePickerViewController : UIViewController {
         }) { (context) in }
         super.viewWillTransition(to: size, with: coordinator)
     }
+    
+    // MARK: PhotoKit Methods
+    
+    fileprivate var fetchResult: PHFetchResult<PHAsset>!
+    fileprivate var assetCollection: PHAssetCollection!
+    
+    fileprivate let imageManager = PHCachingImageManager()
+    fileprivate var thumbnailSize: CGSize!
+    fileprivate var previousPreheatRect = CGRect.zero
     
 }
 

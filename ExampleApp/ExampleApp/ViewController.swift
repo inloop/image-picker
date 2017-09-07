@@ -106,7 +106,7 @@ extension ViewController : ImagePickerViewControllerDelegate {
         print("did select action \(index)")
     }
     
-    public func imagePicker(controller: ImagePickerViewController, didSelect asset: Asset) {
+    public func imagePicker(controller: ImagePickerViewController, didFinishPicking asset: Asset) {
         print("did select asset \(asset)")
     }
     
