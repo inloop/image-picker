@@ -10,8 +10,13 @@ import Foundation
 import Photos
 
 //TODO: move somewhere else
-public protocol ImagePickerImageCell {
+public protocol ImagePickerImageCell : class {
+    
+    /// This image view will be used when setting an asset's image
     var imageView: UIImageView! { get set }
+    
+    /// This is a helper identifier that is used when properly displaying cells asynchronously
+    var representedAssetIdentifier: String? { get set }
 }
 
 
@@ -35,11 +40,12 @@ final class ImagePickerModel {
 ///
 final class ImagePickerDataSource : NSObject, UICollectionViewDataSource {
     
+    //TODO: perhaps we dont want default empty layout model, it could cause bugs if not set up properly in VC
     var layoutModel = LayoutModel.empty
+    
     var cellRegistrator: CellRegistrator?
     
     var assetsModel: ImagePickerModel?
-    
     
     override init() {
         super.init()
@@ -87,14 +93,14 @@ final class ImagePickerDataSource : NSObject, UICollectionViewDataSource {
             let thumbnailSize = CGSize(width: 100, height: 100)
             
             // Request an image for the asset from the PHCachingImageManager.
-            //cell.representedAssetIdentifier = asset.localIdentifier
+            cell.representedAssetIdentifier = asset.localIdentifier
             assetsModel!.imageManager.requestImage(for: asset, targetSize: thumbnailSize, contentMode: .aspectFill, options: nil, resultHandler: { image, _ in
                 // The cell may have been recycled by the time this handler gets called;
                 // set the cell's thumbnail image only if it's still showing the same asset.
-//                if cell.representedAssetIdentifier == asset.localIdentifier && image != nil {
-//                    cell.thumbnailImage = image
-//                }
-                cell.imageView.image = image
+                if cell.representedAssetIdentifier == asset.localIdentifier && image != nil {
+                    cell.imageView.image = image
+                }
+                
             })
             
             return cell as! UICollectionViewCell
