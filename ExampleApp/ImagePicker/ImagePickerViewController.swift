@@ -10,7 +10,6 @@ import Foundation
 import UIKit
 import Photos
 
-
 //this is temp Type for photo assets
 public typealias Asset = Int
 
@@ -35,7 +34,7 @@ public protocol ImagePickerViewControllerDelegate : class {
     ///
     func imagePicker(controller: ImagePickerViewController, didSelectActionItemAt index: Int)
     
-    func imagePicker(controller: ImagePickerViewController, didFinishPicking asset: Asset)
+    func imagePicker(controller: ImagePickerViewController, didFinishPicking asset: PHAsset)
     
     //perhaps we can use method above and remove this one, client does not care if user took a picture or
     //picked it from a library
@@ -75,17 +74,20 @@ open class ImagePickerViewController : UIViewController {
     public weak var delegate: ImagePickerViewControllerDelegate?
     
     /// holds all currently selected images
-    //TODO: implement when images source is ready
-//    public var selectedImages: [Asset] {
-//        get {
-//            return collectionView.indexPathsForSelectedItems.map { $0.item }
-//        }
-//    }
+    public var selectedAssets: [PHAsset] {
+        get {
+            let selectedIndexPaths = collectionView.indexPathsForSelectedItems ?? []
+            let selectedAssets = selectedIndexPaths.flatMap { indexPath in
+                return collectionViewDataSource.assetsModel?.fetchResult?.object(at: indexPath.row)
+            }
+            return selectedAssets
+        }
+    }
     
     // MARK: Private Methods
     
-    private var collectionViewDataSource = ImagePickerDataSource()
-    private var collectionViewDelegate = ImagePickerDelegate()
+    fileprivate var collectionViewDataSource = ImagePickerDataSource()
+    fileprivate var collectionViewDelegate = ImagePickerDelegate()
     
     fileprivate lazy var collectionView: UICollectionView = {
         
@@ -131,6 +133,7 @@ open class ImagePickerViewController : UIViewController {
         
         let allPhotosOptions = PHFetchOptions()
         allPhotosOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
+        
         assetsModel.fetchResult = PHAsset.fetchAssets(with: allPhotosOptions)
         print("fetched: \(assetsModel.fetchResult!.count) photos")
         
@@ -184,8 +187,10 @@ extension ImagePickerViewController : ImagePickerDelegateDelegate {
     }
         
     func imagePicker(delegate: ImagePickerDelegate, didSelectAssetItemAt index: Int) {
-        //TODO: to be implemented when we have assets
-        //self.delegate?.imagePicker(controller: self, didSelect: <#T##Asset#>)
+        guard let asset = collectionViewDataSource.assetsModel?.fetchResult?.object(at: index) else {
+            return
+        }
+        self.delegate?.imagePicker(controller: self, didFinishPicking: asset)
     }
     
     func imagePicker(delegate: ImagePickerDelegate, willDisplayActionCell cell: UICollectionViewCell, at index: Int) {

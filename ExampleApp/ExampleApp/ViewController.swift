@@ -8,7 +8,7 @@
 
 import UIKit
 import ImagePicker
-
+import Photos
 
 
 ///
@@ -135,8 +135,8 @@ extension ViewController : ImagePickerViewControllerDelegate {
         print("did select action \(index)")
     }
     
-    public func imagePicker(controller: ImagePickerViewController, didFinishPicking asset: Asset) {
-        print("did select asset \(asset)")
+    public func imagePicker(controller: ImagePickerViewController, didFinishPicking asset: PHAsset) {
+        print("selected assets: \(controller.selectedAssets.count)")
     }
     
     public func imagePicker(controller: ImagePickerViewController, didTake image: UIImage) {
