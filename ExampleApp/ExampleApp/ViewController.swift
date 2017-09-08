@@ -54,6 +54,35 @@ class ViewController: UITableViewController {
         present(nc, animated: true, completion: nil)
     }
     
+    func presentPickerAsInputViewPhotosAs1Col() {
+        print("presenting as input view")
+        
+        let registrator = CellRegistrator()
+        let actionNib = UINib(nibName: "IconWithTextCell", bundle: nil)
+        let assetNib = UINib(nibName: "ImageCell", bundle: nil)
+        
+        registrator.registerNibForActionItems(actionNib)
+        registrator.register(nib: assetNib, forAssetItemOf: .image)
+        
+        var configuration = LayoutConfiguration.default
+        configuration.numberOfAssetItemsInRow = 1
+        
+        let vc = ImagePickerViewController()
+        vc.cellRegistrator = registrator
+        vc.layoutConfiguration = configuration
+        vc.delegate = self
+        
+        //if you want to present view as input view, you have to set flexible height
+        //to adopt natural keyboard height or just set an layout constraint height
+        //for specific height.
+        vc.view.autoresizingMask = .flexibleHeight
+        currentInputView = vc.view
+        
+        allowsFirstResponser = true
+        
+        becomeFirstResponder()
+    }
+    
     func presentPickerAsInputView() {
         print("presenting as input view")
         
@@ -137,7 +166,8 @@ let data = [
     [
         ("Presented modally", #selector(ViewController.presentPickerModally)),],
     [
-        ("As input view", #selector(ViewController.presentPickerAsInputView))]
+        ("As input view - default", #selector(ViewController.presentPickerAsInputView)),
+        ("As input view - 1 photo cols", #selector(ViewController.presentPickerAsInputViewPhotosAs1Col))]
 ]
 let selectors = [#selector(ViewController.presentPickerAsInputView)]
 

@@ -90,7 +90,7 @@ open class ImagePickerViewController : UIViewController {
     fileprivate lazy var collectionView: UICollectionView = {
         
         let configuration = self.layoutConfiguration
-        //let model = LayoutModel(configuration: configuration, assets: 0)
+        let model = LayoutModel(configuration: configuration, assets: 0)
         let layout = ImagePickerLayout(configuration: configuration)
         
         let collectionViewLayout = UICollectionViewFlowLayout()
@@ -98,7 +98,7 @@ open class ImagePickerViewController : UIViewController {
         collectionViewLayout.minimumInteritemSpacing = configuration.interitemSpacing
         collectionViewLayout.minimumLineSpacing = configuration.interitemSpacing
         
-        //self.collectionViewDataSource.layoutModel = model
+        self.collectionViewDataSource.layoutModel = model
         self.collectionViewDataSource.cellRegistrator = self.cellRegistrator
         self.collectionViewDelegate.layout = layout
         self.collectionViewDelegate.delegate = self
