@@ -19,6 +19,12 @@ protocol ImagePickerDelegateDelegate : class {
     
     /// Called when action item is about to be displayed
     func imagePicker(delegate: ImagePickerDelegate, willDisplayActionCell cell: UICollectionViewCell, at index: Int)
+    
+    /// Called when camera item is about to be displayed
+    func imagePicker(delegate: ImagePickerDelegate, willDisplayCameraCell cell: UICollectionViewCell)
+    
+    /// Called when camera item ended displaying
+    func imagePicker(delegate: ImagePickerDelegate, didEndDisplayingCameraCell cell: UICollectionViewCell)
 }
 
 final class ImagePickerDelegate : NSObject, UICollectionViewDelegateFlowLayout {
@@ -57,8 +63,19 @@ final class ImagePickerDelegate : NSObject, UICollectionViewDelegateFlowLayout {
     }
     
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        if indexPath.section == 0 {
-            delegate?.imagePicker(delegate: self, willDisplayActionCell: cell, at: indexPath.row)
+        switch indexPath.section {
+        case 0: delegate?.imagePicker(delegate: self, willDisplayActionCell: cell, at: indexPath.row)
+        case 1: delegate?.imagePicker(delegate: self, willDisplayCameraCell: cell)
+        case 2: break
+        default: fatalError("index path not supported")
+        }
+    }
+ 
+    func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        switch indexPath.section {
+        case 1: delegate?.imagePicker(delegate: self, didEndDisplayingCameraCell: cell)
+        case 0,2: break
+        default: fatalError("index path not supported")
         }
     }
     

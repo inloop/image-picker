@@ -35,6 +35,8 @@
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>App use access to Photos when picking images</string>
+	<string>App uses access to Photos when picking images</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Camera is used by Image picker when taking new photos</string>
 </dict>
 </plist>

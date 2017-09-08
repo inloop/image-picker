@@ -119,6 +119,22 @@ open class ImagePickerViewController : UIViewController {
         self.collectionViewDataSource.assetsModel?.thumbnailSize = thumbnailSize
     }
     
+    fileprivate lazy var cameraController: UIImagePickerController = {
+        let controller = UIImagePickerController()
+        controller.delegate =  self
+        controller.sourceType = .camera
+        controller.showsCameraControls = false
+        controller.allowsEditing = false
+        controller.cameraFlashMode = .off
+  
+//        let view = CameraOverlayView()
+//        view.addTarget(self, action: #selector(takePicture), for: .touchUpInside)
+//        view.flipCameraButton.addTarget(self, action: #selector(flipCamera), for: .touchUpInside)
+//        controller.cameraOverlayView = view
+        
+        return controller
+    }()
+    
     // MARK: View Lifecycle
     
     open override func loadView() {
@@ -195,6 +211,31 @@ extension ImagePickerViewController : ImagePickerDelegateDelegate {
     
     func imagePicker(delegate: ImagePickerDelegate, willDisplayActionCell cell: UICollectionViewCell, at index: Int) {
         self.delegate?.imagePicker(controller: self, willDisplayActionItem: cell, at: index)
+    }
+    
+    //TODO: this is test code, should be done properly by AVCaptureSession
+    static var displayed = false
+    func imagePicker(delegate: ImagePickerDelegate, willDisplayCameraCell cell: UICollectionViewCell) {
+        let displayed = ImagePickerViewController.displayed
+        if displayed == false {
+            let view = cameraController.view!
+            view.frame = cell.contentView.bounds
+            cell.contentView.addSubview(view)
+        }
+    }
+    
+    func imagePicker(delegate: ImagePickerDelegate, didEndDisplayingCameraCell cell: UICollectionViewCell) {
+        
+    }
+    
+}
+
+extension ImagePickerViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    
+    public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+        if let image = info[UIImagePickerControllerOriginalImage] as? UIImage {
+            //delegate?.controller?(self, didTakeImage: image)
+        }
     }
     
 }
