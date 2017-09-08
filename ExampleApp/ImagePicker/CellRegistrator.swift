@@ -102,6 +102,9 @@ public final class CellRegistrator {
         actionItemClassesData?[index] = (cellClass, cellIdentifier)
     }
     
+    ///
+    /// Please note that cellClass must conform to `ImagePickerImageCell` protocol.
+    ///
     public func register(cellClass: UICollectionViewCell.Type, forAssetItemOf type: AssetType) {
         if assetItemClassesData == nil {
             assetItemClassesData = [:]
