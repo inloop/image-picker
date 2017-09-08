@@ -68,13 +68,15 @@ final class ImagePickerDataSource : NSObject, UICollectionViewDataSource {
         switch indexPath.section {
         case 0:
             guard let id = cellsRegistrator.cellIdentifier(forActionItemAt: indexPath.row) else {
-                fatalError("there is an action item at index \(indexPath.row) but no cell is registered")
+                fatalError("there is an action item at index \(indexPath.row) but no cell is registered.")
             }
             return collectionView.dequeueReusableCell(withReuseIdentifier: id, for: indexPath)
         
         case 1:
             let id = cellsRegistrator.cellIdentifierForCameraItem
-            let cell =  collectionView.dequeueReusableCell(withReuseIdentifier: id, for: indexPath)
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: id, for: indexPath) as? CameraCollectionViewCell else {
+                fatalError("there is a camera item but no cell class `CameraCollectionViewCell` is registered.")
+            }
             cell.backgroundColor = UIColor.blue
             return cell
             

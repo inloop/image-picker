@@ -24,6 +24,10 @@ public final class CellRegistrator {
     fileprivate var actionItemNibsData: [Int: (UINib, String)]?
     fileprivate var actionItemClassesData: [Int: (UICollectionViewCell.Type, String)]?
     
+    //camera item has only 1 cell so no need for identifiers
+    fileprivate var cameraItemNib: UINib?
+    fileprivate var cameraItemClass: UICollectionViewCell.Type?
+    
     fileprivate let assetItemIdentifierPrefix = "eu.inloop.asset-item.cell-id"
     fileprivate var assetItemNibsData: [AssetType: (UINib, String)]?
     fileprivate var assetItemClassesData: [AssetType: (UICollectionViewCell.Type, String)]?
@@ -56,6 +60,14 @@ public final class CellRegistrator {
     
     public init() {
     
+    }
+    
+    public func registerCellClassForCameraItem(_ cellClass: CameraCollectionViewCell.Type) {
+        cameraItemClass = cellClass
+    }
+    
+    public func registerNIbForCameraItem(_ nib: UINib) {
+        cameraItemNib = nib
     }
     
     ///
@@ -115,17 +127,36 @@ public final class CellRegistrator {
     
 }
 
+open class CameraCollectionViewCell : UICollectionViewCell {
+    
+    
+    
+}
+
 extension UICollectionView {
     
+    ///
+    /// Used by datasource when registering all cells to the collection view
+    ///
     func apply(registrator: CellRegistrator) {
         register(nibsData: registrator.actionItemNibsData?.map { $1 })
         register(nibsData: registrator.assetItemNibsData?.map { $1 })
         register(classData: registrator.actionItemClassesData?.map { $1 })
         register(classData: registrator.assetItemClassesData?.map { $1 })
-        register(UICollectionViewCell.self, forCellWithReuseIdentifier: registrator.cellIdentifierForCameraItem)
+        
+        //if user does not set any class or nib we have to register default cell `CameraCollectionViewCell`
+        if registrator.cameraItemNib == nil && registrator.cameraItemClass == nil {
+            register(CameraCollectionViewCell.self, forCellWithReuseIdentifier: registrator.cellIdentifierForCameraItem)
+        }
+        else {
+            register(registrator.cameraItemClass, forCellWithReuseIdentifier: registrator.cellIdentifierForCameraItem)
+            register(registrator.cameraItemNib, forCellWithReuseIdentifier: registrator.cellIdentifierForCameraItem)
+        }
     }
     
+    ///
     /// Helper func that takes nib,cellid pair and registers them on a collection view
+    ///
     fileprivate func register(nibsData: [(UINib, String)]?) {
         guard let nibsData = nibsData else { return }
         for (nib, cellIdentifier) in nibsData {
@@ -133,7 +164,9 @@ extension UICollectionView {
         }
     }
     
+    ///
     /// Helper func that takes nib,cellid pair and registers them on a collection view
+    ///
     fileprivate func register(classData: [(UICollectionViewCell.Type, String)]?) {
         guard let classData = classData else { return }
         for (cellType, cellIdentifier) in classData {

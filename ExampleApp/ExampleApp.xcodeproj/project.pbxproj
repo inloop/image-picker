@@ -27,7 +27,9 @@
 		4214426D1F603612006BA45A /* GreenCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4214426C1F603612006BA45A /* GreenCell.swift */; };
 		4214426F1F604498006BA45A /* ImagePickerSelectionPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4214426E1F604498006BA45A /* ImagePickerSelectionPolicy.swift */; };
 		421442711F604993006BA45A /* IconWithTextCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 421442701F604993006BA45A /* IconWithTextCell.swift */; };
+		4217080C1F62C30B000DA508 /* CameraView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4217080B1F62C30B000DA508 /* CameraView.xib */; };
 		42428A8E1F618E4200D4EB3B /* ImageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42428A8D1F618E4100D4EB3B /* ImageCell.swift */; };
+		4275FFC71F62C2830077A2CD /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4275FFC61F62C2830077A2CD /* CameraView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -77,7 +79,9 @@
 		4214426C1F603612006BA45A /* GreenCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GreenCell.swift; sourceTree = "<group>"; };
 		4214426E1F604498006BA45A /* ImagePickerSelectionPolicy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImagePickerSelectionPolicy.swift; sourceTree = "<group>"; };
 		421442701F604993006BA45A /* IconWithTextCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IconWithTextCell.swift; sourceTree = "<group>"; };
+		4217080B1F62C30B000DA508 /* CameraView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CameraView.xib; sourceTree = "<group>"; };
 		42428A8D1F618E4100D4EB3B /* ImageCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageCell.swift; sourceTree = "<group>"; };
+		4275FFC61F62C2830077A2CD /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -122,12 +126,8 @@
 			children = (
 				420C23FF1F5D82C6008935D4 /* AppDelegate.swift */,
 				420C24011F5D82C6008935D4 /* ViewController.swift */,
-				4214426C1F603612006BA45A /* GreenCell.swift */,
+				4275FFC31F62C2290077A2CD /* Views */,
 				420C24031F5D82C6008935D4 /* Main.storyboard */,
-				4214426A1F602C68006BA45A /* ImageCell.xib */,
-				42428A8D1F618E4100D4EB3B /* ImageCell.swift */,
-				421442681F6029D6006BA45A /* IconWithTextCell.xib */,
-				421442701F604993006BA45A /* IconWithTextCell.swift */,
 				420C24061F5D82C6008935D4 /* Assets.xcassets */,
 				420C24081F5D82C6008935D4 /* LaunchScreen.storyboard */,
 				420C240B1F5D82C6008935D4 /* Info.plist */,
@@ -150,6 +150,20 @@
 				420C24191F5D82F9008935D4 /* Info.plist */,
 			);
 			path = ImagePicker;
+			sourceTree = "<group>";
+		};
+		4275FFC31F62C2290077A2CD /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				4214426A1F602C68006BA45A /* ImageCell.xib */,
+				42428A8D1F618E4100D4EB3B /* ImageCell.swift */,
+				421442681F6029D6006BA45A /* IconWithTextCell.xib */,
+				421442701F604993006BA45A /* IconWithTextCell.swift */,
+				4214426C1F603612006BA45A /* GreenCell.swift */,
+				4217080B1F62C30B000DA508 /* CameraView.xib */,
+				4275FFC61F62C2830077A2CD /* CameraView.swift */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -253,6 +267,7 @@
 				420C240A1F5D82C6008935D4 /* LaunchScreen.storyboard in Resources */,
 				420C24071F5D82C6008935D4 /* Assets.xcassets in Resources */,
 				420C24051F5D82C6008935D4 /* Main.storyboard in Resources */,
+				4217080C1F62C30B000DA508 /* CameraView.xib in Resources */,
 				4214426B1F602C68006BA45A /* ImageCell.xib in Resources */,
 				421442691F6029D6006BA45A /* IconWithTextCell.xib in Resources */,
 			);
@@ -275,6 +290,7 @@
 				420C24021F5D82C6008935D4 /* ViewController.swift in Sources */,
 				4214426D1F603612006BA45A /* GreenCell.swift in Sources */,
 				420C24001F5D82C6008935D4 /* AppDelegate.swift in Sources */,
+				4275FFC71F62C2830077A2CD /* CameraView.swift in Sources */,
 				421442711F604993006BA45A /* IconWithTextCell.swift in Sources */,
 				42428A8E1F618E4200D4EB3B /* ImageCell.swift in Sources */,
 			);

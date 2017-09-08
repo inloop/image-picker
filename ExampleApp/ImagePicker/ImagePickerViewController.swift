@@ -96,7 +96,6 @@ open class ImagePickerViewController : UIViewController {
         view.contentInset = UIEdgeInsets.zero
         view.dataSource = self.collectionViewDataSource
         view.delegate = self.collectionViewDelegate
-        view.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cellId")
         view.allowsMultipleSelection = true
         
         //register all nibs
@@ -149,6 +148,7 @@ open class ImagePickerViewController : UIViewController {
         
         let allPhotosOptions = PHFetchOptions()
         allPhotosOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
+        allPhotosOptions.fetchLimit = 10_000
         
         assetsModel.fetchResult = PHAsset.fetchAssets(with: allPhotosOptions)
         print("fetched: \(assetsModel.fetchResult!.count) photos")
@@ -214,7 +214,7 @@ extension ImagePickerViewController : ImagePickerDelegateDelegate {
     }
     
     //TODO: this is test code, should be done properly by AVCaptureSession
-    static var displayed = false
+    @nonobjc static var displayed = false
     func imagePicker(delegate: ImagePickerDelegate, willDisplayCameraCell cell: UICollectionViewCell) {
         let displayed = ImagePickerViewController.displayed
         if displayed == false {
@@ -222,10 +222,11 @@ extension ImagePickerViewController : ImagePickerDelegateDelegate {
             view.frame = cell.contentView.bounds
             cell.contentView.addSubview(view)
         }
+        //TODO: should start capture session
     }
     
     func imagePicker(delegate: ImagePickerDelegate, didEndDisplayingCameraCell cell: UICollectionViewCell) {
-        
+        //TODO: should shop capture session
     }
     
 }
