@@ -22,31 +22,30 @@ final class ImagePickerLayout {
         self.configuration = configuration
     }
     
+    /// Returns size for item considering number of rows and scroll direction, if preferredWidthOrHeight is nil, square size is returned
+    func sizeForItem(numberOfItemsInRow: Int, preferredWidthOrHeight: CGFloat?, collectionView: UICollectionView, scrollDirection: UICollectionViewScrollDirection) -> CGSize {
+        
+        switch scrollDirection {
+        case .horizontal:
+            var itemHeight = collectionView.frame.height
+            itemHeight -= (collectionView.contentInset.top + collectionView.contentInset.bottom)
+            itemHeight -= (CGFloat(numberOfItemsInRow) - 1) * configuration.interitemSpacing
+            itemHeight /= CGFloat(numberOfItemsInRow)
+            return CGSize(width: preferredWidthOrHeight ?? itemHeight, height: itemHeight)
+            
+        case .vertical:
+            var itemWidth = collectionView.frame.width
+            itemWidth -= (collectionView.contentInset.left + collectionView.contentInset.right)
+            itemWidth -= (CGFloat(numberOfItemsInRow) - 1) * configuration.interitemSpacing
+            itemWidth /= CGFloat(numberOfItemsInRow)
+            return CGSize(width: itemWidth, height: preferredWidthOrHeight ?? itemWidth)
+        }
+    }
+    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         
         guard let layout = collectionViewLayout as? UICollectionViewFlowLayout else {
             fatalError("currently only UICollectionViewFlowLayout is supported")
-        }
-        
-        /// Returns size for item considering number of rows and scroll direction, if preferredWidth is nil, square size is returned
-        func sizeForItem(numberOfItemsInRow: Int, preferredWidth: CGFloat?) -> CGSize {
-            
-            switch layout.scrollDirection {
-            case .horizontal:
-                var itemHeight = collectionView.frame.height
-                itemHeight -= (collectionView.contentInset.top + collectionView.contentInset.bottom)
-                itemHeight -= (CGFloat(numberOfItemsInRow) - 1) * configuration.interitemSpacing
-                itemHeight /= CGFloat(numberOfItemsInRow)
-                return CGSize(width: preferredWidth ?? itemHeight, height: itemHeight)
-                
-            case .vertical:
-                var itemWidth = collectionView.frame.width
-                itemWidth -= (collectionView.contentInset.left + collectionView.contentInset.right)
-                itemWidth -= (CGFloat(numberOfItemsInRow) - 1) * configuration.interitemSpacing
-                itemWidth /= CGFloat(numberOfItemsInRow)
-                return CGSize(width: itemWidth, height: preferredWidth ?? itemWidth)
-            }
-            
         }
         
         let layoutModel = LayoutModel(configuration: configuration, assets: 0)
@@ -55,17 +54,17 @@ final class ImagePickerLayout {
         case 0:
             //this will make sure that action item is either square if there are 2 items,
             //or a recatangle if there is only 1 item
-            let width = sizeForItem(numberOfItemsInRow: 2, preferredWidth: nil).width
-            return sizeForItem(numberOfItemsInRow: layoutModel.numberOfItems(in: 0), preferredWidth: width)
+            let width = sizeForItem(numberOfItemsInRow: 2, preferredWidthOrHeight: nil, collectionView: collectionView, scrollDirection: layout.scrollDirection).width
+            return sizeForItem(numberOfItemsInRow: layoutModel.numberOfItems(in: 0), preferredWidthOrHeight: width, collectionView: collectionView, scrollDirection: layout.scrollDirection)
             
         case 1:
             //lets keep this ratio so camera item is a nice rectangle
             let ratio: CGFloat = 0.734
             let width: CGFloat = collectionView.frame.height * ratio
-            return sizeForItem(numberOfItemsInRow: layoutModel.numberOfItems(in: 1), preferredWidth: width)
+            return sizeForItem(numberOfItemsInRow: layoutModel.numberOfItems(in: 1), preferredWidthOrHeight: width, collectionView: collectionView, scrollDirection: layout.scrollDirection)
             
         case 2:
-            return sizeForItem(numberOfItemsInRow: configuration.numberOfAssetItemsInRow, preferredWidth: nil)
+            return sizeForItem(numberOfItemsInRow: configuration.numberOfAssetItemsInRow, preferredWidthOrHeight: nil, collectionView: collectionView, scrollDirection: layout.scrollDirection)
             
         default:
             fatalError("unexpected sections count")
