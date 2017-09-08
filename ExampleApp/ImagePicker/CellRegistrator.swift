@@ -133,18 +133,24 @@ extension UICollectionView {
     /// Used by datasource when registering all cells to the collection view
     ///
     func apply(registrator: CellRegistrator) {
+        
         register(nibsData: registrator.actionItemNibsData?.map { $1 })
         register(nibsData: registrator.assetItemNibsData?.map { $1 })
         register(classData: registrator.actionItemClassesData?.map { $1 })
         register(classData: registrator.assetItemClassesData?.map { $1 })
         
+        //register camera item
+        switch (registrator.cameraItemNib, registrator.cameraItemClass) {
+        
         //if user does not set any class or nib we have to register default cell `CameraCollectionViewCell`
-        if registrator.cameraItemNib == nil && registrator.cameraItemClass == nil {
+        case (nil, nil):
             register(CameraCollectionViewCell.self, forCellWithReuseIdentifier: registrator.cellIdentifierForCameraItem)
-        }
-        else {
-            register(registrator.cameraItemClass, forCellWithReuseIdentifier: registrator.cellIdentifierForCameraItem)
-            register(registrator.cameraItemNib, forCellWithReuseIdentifier: registrator.cellIdentifierForCameraItem)
+        
+        case (let nib, nil):
+            register(nib, forCellWithReuseIdentifier: registrator.cellIdentifierForCameraItem)
+        
+        case (_, let cellClass):
+            register(cellClass, forCellWithReuseIdentifier: registrator.cellIdentifierForCameraItem)
         }
     }
     

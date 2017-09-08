@@ -34,7 +34,7 @@ class ViewController: UITableViewController {
         
         var configuration = LayoutConfiguration.default
         configuration.scrollDirection = .vertical
-        configuration.showsCameraActionItem = false
+        configuration.showsCameraActionItem = true
         configuration.numberOfAssetItemsInRow = 3
         
         let registrator = CellRegistrator()
@@ -64,8 +64,8 @@ class ViewController: UITableViewController {
         
         registrator.registerNibForActionItems(actionNib)
         registrator.register(nib: assetNib, forAssetItemOf: .image)
-        registrator.registerNibForCameraItem(cameraNib)
-        //registrator.registerCellClassForCameraItem(CameraCell.self)
+        //registrator.registerNibForCameraItem(cameraNib)
+        registrator.registerCellClassForCameraItem(CameraCell.self)
         
         var configuration = LayoutConfiguration.default
         configuration.numberOfAssetItemsInRow = 1

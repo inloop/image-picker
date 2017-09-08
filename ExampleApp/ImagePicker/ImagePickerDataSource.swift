@@ -77,7 +77,6 @@ final class ImagePickerDataSource : NSObject, UICollectionViewDataSource {
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: id, for: indexPath) as? CameraCollectionViewCell else {
                 fatalError("there is a camera item but no cell class `CameraCollectionViewCell` is registered.")
             }
-            cell.backgroundColor = UIColor.blue
             return cell
             
         case 2:
