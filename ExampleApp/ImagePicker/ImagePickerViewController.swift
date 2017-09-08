@@ -124,13 +124,7 @@ open class ImagePickerViewController : UIViewController {
         controller.sourceType = .camera
         controller.showsCameraControls = false
         controller.allowsEditing = false
-        controller.cameraFlashMode = .off
-  
-//        let view = CameraOverlayView()
-//        view.addTarget(self, action: #selector(takePicture), for: .touchUpInside)
-//        view.flipCameraButton.addTarget(self, action: #selector(flipCamera), for: .touchUpInside)
-//        controller.cameraOverlayView = view
-        
+        controller.cameraFlashMode = .off        
         return controller
     }()
     
@@ -213,19 +207,13 @@ extension ImagePickerViewController : ImagePickerDelegateDelegate {
         self.delegate?.imagePicker(controller: self, willDisplayActionItem: cell, at: index)
     }
     
-    //TODO: this is test code, should be done properly by AVCaptureSession
-    @nonobjc static var displayed = false
-    func imagePicker(delegate: ImagePickerDelegate, willDisplayCameraCell cell: UICollectionViewCell) {
-        let displayed = ImagePickerViewController.displayed
-        if displayed == false {
-            let view = cameraController.view!
-            view.frame = cell.contentView.bounds
-            cell.contentView.addSubview(view)
-        }
+    func imagePicker(delegate: ImagePickerDelegate, willDisplayCameraCell cell: CameraCollectionViewCell) {
+        cell.cameraView = cameraController.view!
+        cell.cameraController = cameraController
         //TODO: should start capture session
     }
     
-    func imagePicker(delegate: ImagePickerDelegate, didEndDisplayingCameraCell cell: UICollectionViewCell) {
+    func imagePicker(delegate: ImagePickerDelegate, didEndDisplayingCameraCell cell: CameraCollectionViewCell) {
         //TODO: should shop capture session
     }
     

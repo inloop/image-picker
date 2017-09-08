@@ -8,11 +8,19 @@
 
 import Foundation
 import UIKit
+import ImagePicker
 
-class CameraOverlayView : UIView {
+class CameraCell : CameraCollectionViewCell {
     
     @IBOutlet weak var snapButton: UIButton!
     @IBOutlet weak var flipButton: UIButton!
     
+    @IBAction func snapButtonTapped(_ sender: UIButton) {
+        takePicture()
+    }
+    
+    @IBAction func flipButtonTapped(_ sender: UIButton) {
+        flipCamera()
+    }
     
 }

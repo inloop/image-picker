@@ -66,7 +66,7 @@ public final class CellRegistrator {
         cameraItemClass = cellClass
     }
     
-    public func registerNIbForCameraItem(_ nib: UINib) {
+    public func registerNibForCameraItem(_ nib: UINib) {
         cameraItemNib = nib
     }
     
@@ -124,12 +124,6 @@ public final class CellRegistrator {
         let cellIdentifier = assetItemIdentifierPrefix + String(describing: type)
         assetItemClassesData?[type] = (cellClass, cellIdentifier)
     }
-    
-}
-
-open class CameraCollectionViewCell : UICollectionViewCell {
-    
-    
     
 }
 

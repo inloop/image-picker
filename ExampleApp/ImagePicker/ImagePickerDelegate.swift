@@ -21,12 +21,16 @@ protocol ImagePickerDelegateDelegate : class {
     func imagePicker(delegate: ImagePickerDelegate, willDisplayActionCell cell: UICollectionViewCell, at index: Int)
     
     /// Called when camera item is about to be displayed
-    func imagePicker(delegate: ImagePickerDelegate, willDisplayCameraCell cell: UICollectionViewCell)
+    func imagePicker(delegate: ImagePickerDelegate, willDisplayCameraCell cell: CameraCollectionViewCell)
     
     /// Called when camera item ended displaying
-    func imagePicker(delegate: ImagePickerDelegate, didEndDisplayingCameraCell cell: UICollectionViewCell)
+    func imagePicker(delegate: ImagePickerDelegate, didEndDisplayingCameraCell cell: CameraCollectionViewCell)
 }
 
+//TODO:
+//- remove all !
+//- remove explicit knowledge of what sectionas are at awhat indexes, this should be hardcoded only 
+//  at one place and that is LayoutModel, delegate shold not have this duplicit logic
 final class ImagePickerDelegate : NSObject, UICollectionViewDelegateFlowLayout {
     
     var layout: ImagePickerLayout?
@@ -65,7 +69,7 @@ final class ImagePickerDelegate : NSObject, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         switch indexPath.section {
         case 0: delegate?.imagePicker(delegate: self, willDisplayActionCell: cell, at: indexPath.row)
-        case 1: delegate?.imagePicker(delegate: self, willDisplayCameraCell: cell)
+        case 1: delegate?.imagePicker(delegate: self, willDisplayCameraCell: cell as! CameraCollectionViewCell)
         case 2: break
         default: fatalError("index path not supported")
         }
@@ -73,7 +77,7 @@ final class ImagePickerDelegate : NSObject, UICollectionViewDelegateFlowLayout {
  
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         switch indexPath.section {
-        case 1: delegate?.imagePicker(delegate: self, didEndDisplayingCameraCell: cell)
+        case 1: delegate?.imagePicker(delegate: self, didEndDisplayingCameraCell: cell as! CameraCollectionViewCell)
         case 0,2: break
         default: fatalError("index path not supported")
         }

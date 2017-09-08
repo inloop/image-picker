@@ -60,9 +60,12 @@ class ViewController: UITableViewController {
         let registrator = CellRegistrator()
         let actionNib = UINib(nibName: "IconWithTextCell", bundle: nil)
         let assetNib = UINib(nibName: "ImageCell", bundle: nil)
+        let cameraNib = UINib(nibName: "CameraCell", bundle: nil)
         
         registrator.registerNibForActionItems(actionNib)
         registrator.register(nib: assetNib, forAssetItemOf: .image)
+        registrator.registerNibForCameraItem(cameraNib)
+        //registrator.registerCellClassForCameraItem(CameraCell.self)
         
         var configuration = LayoutConfiguration.default
         configuration.numberOfAssetItemsInRow = 1
