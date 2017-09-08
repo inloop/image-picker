@@ -117,6 +117,20 @@ open class ImagePickerViewController : UIViewController {
         return view
     }()
     
+    private func updateItemSize() {
+        
+        guard let layout = self.collectionViewDelegate.layout else {
+            return
+        }
+        
+        let itemsInRow = layoutConfiguration.numberOfAssetItemsInRow
+        let scrollDirection = layoutConfiguration.scrollDirection
+        let cellSize = layout.sizeForItem(numberOfItemsInRow: itemsInRow, preferredWidthOrHeight: nil, collectionView: collectionView, scrollDirection: scrollDirection)
+        let scale = UIScreen.main.scale
+        let thumbnailSize = CGSize(width: cellSize.width * scale, height: cellSize.height * scale)
+        self.collectionViewDataSource.assetsModel?.thumbnailSize = thumbnailSize
+    }
+    
     // MARK: View Lifecycle
     
     open override func loadView() {
@@ -126,11 +140,11 @@ open class ImagePickerViewController : UIViewController {
     open override func viewDidLoad() {
         super.viewDidLoad()
         
-        //temporray
+        //temporaray
         PHPhotoLibrary.requestAuthorization { (status) in
             DispatchQueue.main.async {
                 if self.collectionViewDataSource.assetsModel == nil {
-                    let assetsModel = ImagePickerModel()
+                    let assetsModel = ImagePickerAssetModel()
                     
                     let allPhotosOptions = PHFetchOptions()
                     allPhotosOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
@@ -149,7 +163,18 @@ open class ImagePickerViewController : UIViewController {
         }
     }
     
+    open override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        updateItemSize()
+    }
+    
+    open override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        updateItemSize()
+    }
+    
     //this will make sure that collection view layout is reloaded when interface rotates/changes
+    //TODO: we need to reload thumbnail sizes and purge all image asset caches
     open override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         coordinator.animate(alongsideTransition: { (context) in
             self.collectionView.collectionViewLayout.invalidateLayout()

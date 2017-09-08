@@ -19,8 +19,10 @@ public protocol ImagePickerImageCell : class {
     var representedAssetIdentifier: String? { get set }
 }
 
-
-final class ImagePickerModel {
+///
+/// Model that is used when accessing an caching PHAsset objects
+///
+final class ImagePickerAssetModel {
 
     var fetchResult: PHFetchResult<PHAsset>?
     var assetCollection: PHAssetCollection?
@@ -30,8 +32,6 @@ final class ImagePickerModel {
     
     //will be use for caching
     //var previousPreheatRect = CGRect.zero
-    
-    
     
 }
 
@@ -45,7 +45,7 @@ final class ImagePickerDataSource : NSObject, UICollectionViewDataSource {
     
     var cellRegistrator: CellRegistrator?
     
-    var assetsModel: ImagePickerModel?
+    var assetsModel: ImagePickerAssetModel?
     
     override init() {
         super.init()
