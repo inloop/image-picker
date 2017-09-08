@@ -14,6 +14,8 @@ class ImageCell : UICollectionViewCell, ImagePickerImageCell {
     
     @IBOutlet weak var imageView: UIImageView!
     
+    var representedAssetIdentifier: String?
+    
     @IBOutlet weak var selectedImageView: UIImageView!
     
     override var isSelected: Bool {
@@ -23,6 +25,7 @@ class ImageCell : UICollectionViewCell, ImagePickerImageCell {
     }
     
     override func prepareForReuse() {
+        super.prepareForReuse()
         imageView.image = nil
     }
     
