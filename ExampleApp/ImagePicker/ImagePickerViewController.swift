@@ -89,21 +89,7 @@ open class ImagePickerViewController : UIViewController {
     
     fileprivate lazy var collectionView: UICollectionView = {
         
-        let configuration = self.layoutConfiguration
-        let model = LayoutModel(configuration: configuration, assets: 0)
-        let layout = ImagePickerLayout(configuration: configuration)
-        
-        let collectionViewLayout = UICollectionViewFlowLayout()
-        collectionViewLayout.scrollDirection = configuration.scrollDirection
-        collectionViewLayout.minimumInteritemSpacing = configuration.interitemSpacing
-        collectionViewLayout.minimumLineSpacing = configuration.interitemSpacing
-        
-        self.collectionViewDataSource.layoutModel = model
-        self.collectionViewDataSource.cellRegistrator = self.cellRegistrator
-        self.collectionViewDelegate.layout = layout
-        self.collectionViewDelegate.delegate = self
-        
-        let view = UICollectionView(frame: .zero, collectionViewLayout: collectionViewLayout)
+        let view = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
         view.backgroundColor = UIColor.red
         view.contentInset = UIEdgeInsets.zero
         view.dataSource = self.collectionViewDataSource
@@ -140,25 +126,32 @@ open class ImagePickerViewController : UIViewController {
     open override func viewDidLoad() {
         super.viewDidLoad()
         
-        //temporaray
+        let configuration = self.layoutConfiguration
+        let assetsModel = ImagePickerAssetModel()
+        
+        let allPhotosOptions = PHFetchOptions()
+        allPhotosOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
+        assetsModel.fetchResult = PHAsset.fetchAssets(with: allPhotosOptions)
+        print("fetched: \(assetsModel.fetchResult!.count) photos")
+        
+        let model = LayoutModel(configuration: configuration, assets: assetsModel.fetchResult!.count)
+        
+        let collectionViewLayout = collectionView.collectionViewLayout as! UICollectionViewFlowLayout
+        collectionViewLayout.scrollDirection = configuration.scrollDirection
+        collectionViewLayout.minimumInteritemSpacing = configuration.interitemSpacing
+        collectionViewLayout.minimumLineSpacing = configuration.interitemSpacing
+        
+        self.collectionViewDataSource.layoutModel = model
+        self.collectionViewDataSource.cellRegistrator = self.cellRegistrator
+        self.collectionViewDelegate.layout = ImagePickerLayout(configuration: configuration)
+        self.collectionViewDelegate.delegate = self
+        
+        self.collectionViewDataSource.assetsModel = assetsModel
+        self.collectionViewDataSource.layoutModel = model
+        
+        //TODO: implement this
         PHPhotoLibrary.requestAuthorization { (status) in
             DispatchQueue.main.async {
-                if self.collectionViewDataSource.assetsModel == nil {
-                    let assetsModel = ImagePickerAssetModel()
-                    
-                    let allPhotosOptions = PHFetchOptions()
-                    allPhotosOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
-                    assetsModel.fetchResult = PHAsset.fetchAssets(with: allPhotosOptions)
-                    print("fetched: \(assetsModel.fetchResult!.count) photos")
-                    
-                    let configuration = self.layoutConfiguration
-                    let model = LayoutModel(configuration: configuration, assets: assetsModel.fetchResult!.count)
-                    self.collectionViewDataSource.assetsModel = assetsModel
-                    self.collectionViewDataSource.layoutModel = model
-                    self.collectionView.reloadData()
-
-                }
-                
             }
         }
     }

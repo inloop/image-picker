@@ -89,8 +89,9 @@ final class ImagePickerDataSource : NSObject, UICollectionViewDataSource {
                 fatalError("asset item cell must conform to \(ImagePickerImageCell.self) protocol")
             }
             
+            //kittens graveyard :(
             let asset = assetsModel!.fetchResult!.object(at: indexPath.item)
-            let thumbnailSize = CGSize(width: 100, height: 100)
+            let thumbnailSize = assetsModel!.thumbnailSize!
             
             // Request an image for the asset from the PHCachingImageManager.
             cell.representedAssetIdentifier = asset.localIdentifier
@@ -100,7 +101,6 @@ final class ImagePickerDataSource : NSObject, UICollectionViewDataSource {
                 if cell.representedAssetIdentifier == asset.localIdentifier && image != nil {
                     cell.imageView.image = image
                 }
-                
             })
             
             return cell as! UICollectionViewCell
