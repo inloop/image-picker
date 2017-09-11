@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import Photos
 
 ///
 /// Use this class to register various cell nibs or classes for each item type.
@@ -29,8 +30,12 @@ public final class CellRegistrator {
     fileprivate var cameraItemClass: UICollectionViewCell.Type?
     
     fileprivate let assetItemIdentifierPrefix = "eu.inloop.asset-item.cell-id"
-    fileprivate var assetItemNibsData: [AssetType: (UINib, String)]?
-    fileprivate var assetItemClassesData: [AssetType: (UICollectionViewCell.Type, String)]?
+    fileprivate var assetItemNibsData: [PHAssetMediaType: (UINib, String)]?
+    fileprivate var assetItemClassesData: [PHAssetMediaType: (UICollectionViewCell.Type, String)]?
+    
+    //we use these if there is no asset media type specified
+    fileprivate var assetItemNib: UINib?
+    fileprivate var assetItemClass: UICollectionViewCell.Type?
     
     // MARK: Internal Methods
     
@@ -52,7 +57,11 @@ public final class CellRegistrator {
         return cellIdentifier(forActionItemAt: Int.max)
     }
     
-    func cellIdentifier(forAsset type: AssetType) -> String? {
+    var cellIdentifierForAssetItems: String {
+        return assetItemIdentifierPrefix
+    }
+    
+    func cellIdentifier(forAsset type: PHAssetMediaType) -> String? {
         return assetItemNibsData?[type]?.1 ?? assetItemClassesData?[type]?.1
     }
     
@@ -98,14 +107,6 @@ public final class CellRegistrator {
         actionItemNibsData?[index] = (nib, cellIdentifier)
     }
     
-    public func register(nib: UINib, forAssetItemOf type: AssetType) {
-        if assetItemNibsData == nil {
-            assetItemNibsData = [:]
-        }
-        let cellIdentifier = assetItemIdentifierPrefix + String(describing: type)
-        assetItemNibsData?[type] = (nib, cellIdentifier)
-    }
-    
     public func register(cellClass: UICollectionViewCell.Type, forActionItemAt index: Int) {
         if actionItemClassesData == nil {
             actionItemClassesData = [:]
@@ -114,10 +115,18 @@ public final class CellRegistrator {
         actionItemClassesData?[index] = (cellClass, cellIdentifier)
     }
     
+    public func register(nib: UINib, forAssetItemOf type: PHAssetMediaType) {
+        if assetItemNibsData == nil {
+            assetItemNibsData = [:]
+        }
+        let cellIdentifier = assetItemIdentifierPrefix + String(describing: type)
+        assetItemNibsData?[type] = (nib, cellIdentifier)
+    }
+    
     ///
     /// Please note that cellClass must conform to `ImagePickerAssetCell` protocol.
     ///
-    public func register(cellClass: UICollectionViewCell.Type, forAssetItemOf type: AssetType) {
+    public func register(cellClass: UICollectionViewCell.Type, forAssetItemOf type: PHAssetMediaType) {
         if assetItemClassesData == nil {
             assetItemClassesData = [:]
         }
@@ -125,6 +134,13 @@ public final class CellRegistrator {
         assetItemClassesData?[type] = (cellClass, cellIdentifier)
     }
     
+    public func registerCellClassForAssetItems<T: UICollectionViewCell>(_ cellClass: T.Type) where T: ImagePickerAssetCell {
+        assetItemClass = cellClass
+    }
+    
+    public func registerNibForAssetItems(_ nib: UINib) {
+        assetItemNib = nib
+    }
 }
 
 extension UICollectionView {
@@ -134,16 +150,16 @@ extension UICollectionView {
     ///
     func apply(registrator: CellRegistrator) {
         
+        
+        //register action items considering type
         register(nibsData: registrator.actionItemNibsData?.map { $1 })
-        register(nibsData: registrator.assetItemNibsData?.map { $1 })
         register(classData: registrator.actionItemClassesData?.map { $1 })
-        register(classData: registrator.assetItemClassesData?.map { $1 })
         
         //register camera item
         switch (registrator.cameraItemNib, registrator.cameraItemClass) {
         
-        //if user does not set any class or nib we have to register default cell `CameraCollectionViewCell`
         case (nil, nil):
+            //if user does not set any class or nib we have to register default cell `CameraCollectionViewCell`
             register(CameraCollectionViewCell.self, forCellWithReuseIdentifier: registrator.cellIdentifierForCameraItem)
         
         case (let nib, nil):
@@ -151,6 +167,23 @@ extension UICollectionView {
         
         case (_, let cellClass):
             register(cellClass, forCellWithReuseIdentifier: registrator.cellIdentifierForCameraItem)
+        }
+        
+        //register asset items considering type
+        register(nibsData: registrator.assetItemNibsData?.map { $1 })
+        register(classData: registrator.assetItemClassesData?.map { $1 })
+        
+        //register asset items regardless of specified type
+        switch (registrator.assetItemNib, registrator.assetItemClass) {
+        
+        case (nil, nil):
+            fatalError("there is not registered cell class nor nib for asset items, please user appropriate register methods on `CellRegistrator`")
+        
+        case (let nib, nil):
+            register(nib, forCellWithReuseIdentifier: registrator.cellIdentifierForAssetItems)
+        
+        case (_, let cellClass):
+            register(cellClass, forCellWithReuseIdentifier: registrator.cellIdentifierForAssetItems)
         }
     }
     

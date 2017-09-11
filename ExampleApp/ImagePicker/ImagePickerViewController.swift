@@ -10,20 +10,6 @@ import Foundation
 import UIKit
 import Photos
 
-//this is temp asset type
-public enum AssetType: CustomStringConvertible {
-    
-    case image
-    //case video
-    
-    public var description: String {
-        switch self {
-        case .image: return "image"
-        //case .video: return "video"
-        }
-    }
-}
-
 public protocol ImagePickerViewControllerDelegate : class {
     
     ///
@@ -34,7 +20,7 @@ public protocol ImagePickerViewControllerDelegate : class {
     func imagePicker(controller: ImagePickerViewController, didFinishPicking asset: PHAsset)
     
     //perhaps we can use method above and remove this one, client does not care if user took a picture or
-    //picked it from a library
+    //picked it from a library, to do that we perhaps have to save taken image to photo library
     func imagePicker(controller: ImagePickerViewController, didTake image: UIImage)
     
     ///
@@ -43,6 +29,7 @@ public protocol ImagePickerViewControllerDelegate : class {
     ///
     func imagePicker(controller: ImagePickerViewController, willDisplayActionItem cell: UICollectionViewCell, at index: Int)
     
+    func imagePicker(controller: ImagePickerViewController, willDisplayAssetItem cell: ImagePickerAssetCell, mediaType: PHAssetMediaType, mediaSubtype: PHAssetMediaSubtype)
 }
 
 //this will make sure all delegate methods are optional
@@ -51,6 +38,7 @@ extension ImagePickerViewControllerDelegate {
     public func imagePicker(controller: ImagePickerViewController, didFinishPicking asset: PHAsset) {}
     public func imagePicker(controller: ImagePickerViewController, didTake image: UIImage) {}
     public func imagePicker(controller: ImagePickerViewController, willDisplayActionItem cell: UICollectionViewCell, at index: Int) {}
+    public func imagePicker(controller: ImagePickerViewController, willDisplayAssetItem cell: ImagePickerAssetCell, mediaType: PHAssetMediaType, mediaSubtype: PHAssetMediaSubtype) {}
 }
 
 open class ImagePickerViewController : UIViewController {

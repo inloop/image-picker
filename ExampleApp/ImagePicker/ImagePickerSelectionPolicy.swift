@@ -17,6 +17,9 @@ import Foundation
 ///
 struct ImagePickerSelectionPolicy {
     
+    //TODO: this logic here is hardcoded (secon indexes), there should be a layout model instance
+    //and ti should be used to dermine what section is what index
+    
     func shouldSelectItem(atSection section: Int) -> Bool {
         switch section {
         case 0, 1:

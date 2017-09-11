@@ -9,11 +9,7 @@
 import Foundation
 import UIKit
 
-//protocol CameraCollectionViewCell : class {
-//    func
-//}
-
-//TODO: not sure if cameraController should be in this cell, we need nicer patter for this
+//TODO: not sure if cameraController should be in this cell, we need nicer pattern for this
 open class CameraCollectionViewCell : UICollectionViewCell {
 
     weak var cameraController: UIImagePickerController?

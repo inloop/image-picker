@@ -28,7 +28,7 @@ protocol ImagePickerDelegateDelegate : class {
 }
 
 //TODO:
-//- remove all !
+//- [ok] remove all !
 //- remove explicit knowledge of what sectionas are at awhat indexes, this should be hardcoded only 
 //  at one place and that is LayoutModel, delegate shold not have this duplicit logic
 final class ImagePickerDelegate : NSObject, UICollectionViewDelegateFlowLayout {

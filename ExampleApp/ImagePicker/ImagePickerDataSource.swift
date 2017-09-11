@@ -9,16 +9,6 @@
 import Foundation
 import Photos
 
-//TODO: move somewhere else
-public protocol ImagePickerAssetCell : class {
-    
-    /// This image view will be used when setting an asset's image
-    var imageView: UIImageView! { get set }
-    
-    /// This is a helper identifier that is used when properly displaying cells asynchronously
-    var representedAssetIdentifier: String? { get set }
-}
-
 ///
 /// Model that is used when accessing an caching PHAsset objects
 ///
@@ -103,23 +93,25 @@ final class ImagePickerDataSource : NSObject, UICollectionViewDataSource {
             return cell
             
         case 2:
-            //TODO: we are assuming images only for now
-            let type = AssetType.image
-            guard let id = cellsRegistrator.cellIdentifier(forAsset: type) else {
-                fatalError("there is an asset item at index \(indexPath.row) but no cell is registered")
+            
+            guard let assetsModel = assetsModel else {
+                fatalError("no assets model is set but collection view expects asset cells")
+            }
+            let asset = assetsModel.fetchResult.object(at: indexPath.item)
+            
+            guard let cellId = cellsRegistrator.cellIdentifier(forAsset: asset.mediaType) else {
+                fatalError("there is an asset item at index \(indexPath.row) but no cell is registered for asset media type \(asset.mediaType)")
             }
             
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: id, for: indexPath) as? ImagePickerAssetCell else {
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as? ImagePickerAssetCell else {
                 fatalError("asset item cell must conform to \(ImagePickerAssetCell.self) protocol")
             }
             
-            //kittens graveyard :(
-            let asset = assetsModel!.fetchResult!.object(at: indexPath.item)
-            let thumbnailSize = assetsModel!.thumbnailSize!
+            let thumbnailSize = assetsModel.thumbnailSize ?? .zero
             
             // Request an image for the asset from the PHCachingImageManager.
             cell.representedAssetIdentifier = asset.localIdentifier
-            assetsModel!.imageManager.requestImage(for: asset, targetSize: thumbnailSize, contentMode: .aspectFill, options: nil, resultHandler: { image, _ in
+            assetsModel.imageManager.requestImage(for: asset, targetSize: thumbnailSize, contentMode: .aspectFill, options: nil, resultHandler: { image, _ in
                 // The cell may have been recycled by the time this handler gets called;
                 // set the cell's thumbnail image only if it's still showing the same asset.
                 if cell.representedAssetIdentifier == asset.localIdentifier && image != nil {

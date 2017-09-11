@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		420BCC371F66AEC5006E8806 /* ImagePickerAssetCellProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 420BCC361F66AEC5006E8806 /* ImagePickerAssetCellProtocol.swift */; };
 		420C24001F5D82C6008935D4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 420C23FF1F5D82C6008935D4 /* AppDelegate.swift */; };
 		420C24021F5D82C6008935D4 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 420C24011F5D82C6008935D4 /* ViewController.swift */; };
 		420C24051F5D82C6008935D4 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 420C24031F5D82C6008935D4 /* Main.storyboard */; };
@@ -58,6 +59,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		420BCC361F66AEC5006E8806 /* ImagePickerAssetCellProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePickerAssetCellProtocol.swift; sourceTree = "<group>"; };
 		420C23FC1F5D82C6008935D4 /* ExampleApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ExampleApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		420C23FF1F5D82C6008935D4 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		420C24011F5D82C6008935D4 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -150,6 +152,7 @@
 				421442621F6014B3006BA45A /* CellRegistrator.swift */,
 				4217080D1F62D06D000DA508 /* CameraCollectionViewCell.swift */,
 				4214426E1F604498006BA45A /* ImagePickerSelectionPolicy.swift */,
+				420BCC361F66AEC5006E8806 /* ImagePickerAssetCellProtocol.swift */,
 				420C24191F5D82F9008935D4 /* Info.plist */,
 			);
 			path = ImagePicker;
@@ -309,6 +312,7 @@
 				420C24281F5D925A008935D4 /* ImagePickerDataSource.swift in Sources */,
 				4214426F1F604498006BA45A /* ImagePickerSelectionPolicy.swift in Sources */,
 				420C243F1F5EEA19008935D4 /* LayoutModel.swift in Sources */,
+				420BCC371F66AEC5006E8806 /* ImagePickerAssetCellProtocol.swift in Sources */,
 				4217080E1F62D06D000DA508 /* CameraCollectionViewCell.swift in Sources */,
 				420C24411F5EEA3C008935D4 /* LayoutConfiguration.swift in Sources */,
 				420C24261F5D8393008935D4 /* ImagePickerViewController.swift in Sources */,
