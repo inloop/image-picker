@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="12121" systemVersion="16G29" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13178.6" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13156.2"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -21,9 +21,10 @@
                     <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="3Yb-Ok-Cvg">
                         <rect key="frame" x="0.0" y="0.0" width="105" height="105"/>
                     </imageView>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="ixZ-5v-n9t" userLabel="media subtype">
-                        <rect key="frame" x="0.0" y="0.0" width="24" height="24"/>
-                        <color key="backgroundColor" red="0.94509803920000002" green="0.72941176470000002" blue="0.062745098040000002" alpha="1" colorSpace="calibratedRGB"/>
+                    <imageView opaque="NO" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="ixZ-5v-n9t" userLabel="media subtype">
+                        <rect key="frame" x="4" y="4" width="24" height="24"/>
+                        <color key="backgroundColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="24" id="2dh-QT-3v3"/>
                             <constraint firstAttribute="height" constant="24" id="j9S-MP-xep"/>
@@ -45,12 +46,12 @@
                 <constraint firstItem="6r3-Qp-mRn" firstAttribute="top" secondItem="Gxi-EQ-8gg" secondAttribute="top" id="JiJ-CW-f8P"/>
                 <constraint firstItem="6r3-Qp-mRn" firstAttribute="leading" secondItem="Gxi-EQ-8gg" secondAttribute="leading" id="Q3V-Ko-WNZ"/>
                 <constraint firstAttribute="trailing" secondItem="3Yb-Ok-Cvg" secondAttribute="trailing" id="Qhd-05-9cX"/>
-                <constraint firstItem="ixZ-5v-n9t" firstAttribute="leading" secondItem="Gxi-EQ-8gg" secondAttribute="leading" id="V8R-Mr-hzB"/>
+                <constraint firstItem="ixZ-5v-n9t" firstAttribute="leading" secondItem="Gxi-EQ-8gg" secondAttribute="leading" constant="4" id="V8R-Mr-hzB"/>
                 <constraint firstItem="3Yb-Ok-Cvg" firstAttribute="leading" secondItem="Gxi-EQ-8gg" secondAttribute="leading" id="kJJ-xg-Ryo"/>
                 <constraint firstAttribute="bottom" secondItem="6r3-Qp-mRn" secondAttribute="bottom" id="pbm-Oy-ECk"/>
                 <constraint firstItem="6r3-Qp-mRn" firstAttribute="top" secondItem="Gxi-EQ-8gg" secondAttribute="top" id="pls-uR-kKK"/>
                 <constraint firstAttribute="trailing" secondItem="6r3-Qp-mRn" secondAttribute="trailing" id="pqI-ps-MgX"/>
-                <constraint firstItem="ixZ-5v-n9t" firstAttribute="top" secondItem="Gxi-EQ-8gg" secondAttribute="top" id="q3s-c8-dnV"/>
+                <constraint firstItem="ixZ-5v-n9t" firstAttribute="top" secondItem="Gxi-EQ-8gg" secondAttribute="top" constant="4" id="q3s-c8-dnV"/>
                 <constraint firstItem="6r3-Qp-mRn" firstAttribute="leading" secondItem="Gxi-EQ-8gg" secondAttribute="leading" id="x0y-EA-RXA"/>
             </constraints>
             <size key="customSize" width="105" height="105"/>

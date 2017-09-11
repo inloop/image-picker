@@ -188,21 +188,29 @@ extension ViewController : ImagePickerViewControllerDelegate {
         }
     }
     
+    static let durationFormatter: DateComponentsFormatter = {
+        let formatter = DateComponentsFormatter()
+        formatter.unitsStyle = .positional
+        formatter.allowedUnits = [.minute, .second]
+        formatter.zeroFormattingBehavior = .pad
+        return formatter
+    }()
+    
     func imagePicker(controller: ImagePickerViewController, willDisplayAssetItem cell: ImagePickerAssetCell, asset: PHAsset) {
         switch cell {
         
         case let videoCell as VideoCell:
-            videoCell.label.text = String(describing: asset.duration)
+            videoCell.label.text = ViewController.durationFormatter.string(from: asset.duration)
         
         case let imageCell as ImageCell:
             if asset.mediaSubtypes.contains(.photoLive) {
-                imageCell.subtypeImageView.backgroundColor = UIColor.yellow
+                imageCell.subtypeImageView.image = #imageLiteral(resourceName: "icon-live")
             }
             else if asset.mediaSubtypes.contains(.photoPanorama) {
-                imageCell.subtypeImageView.backgroundColor = UIColor.green
+                imageCell.subtypeImageView.image = #imageLiteral(resourceName: "icon-pano")
             }
             else if asset.mediaSubtypes.contains(.photoDepthEffect) {
-                imageCell.subtypeImageView.backgroundColor = UIColor.red
+                imageCell.subtypeImageView.image = #imageLiteral(resourceName: "icon-depth")
             }
         default:
             break

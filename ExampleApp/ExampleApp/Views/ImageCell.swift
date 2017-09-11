@@ -25,10 +25,15 @@ class ImageCell : UICollectionViewCell, ImagePickerAssetCell {
         }
     }
     
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        subtypeImageView.backgroundColor = UIColor.clear
+    }
+    
     override func prepareForReuse() {
         super.prepareForReuse()
         imageView.image = nil
-        subtypeImageView.backgroundColor = UIColor.clear
+        subtypeImageView.image = nil
     }
     
 }
