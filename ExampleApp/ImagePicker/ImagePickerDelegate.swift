@@ -25,6 +25,9 @@ protocol ImagePickerDelegateDelegate : class {
     
     /// Called when camera item ended displaying
     func imagePicker(delegate: ImagePickerDelegate, didEndDisplayingCameraCell cell: CameraCollectionViewCell)
+    
+    func imagePicker(delegate: ImagePickerDelegate, willDisplayAssetCell cell: ImagePickerAssetCell, at index: Int)
+    //func imagePicker(delegate: ImagePickerDelegate, didEndDisplayingAssetCell cell: ImagePickerAssetCell)
 }
 
 //TODO:
@@ -70,7 +73,7 @@ final class ImagePickerDelegate : NSObject, UICollectionViewDelegateFlowLayout {
         switch indexPath.section {
         case 0: delegate?.imagePicker(delegate: self, willDisplayActionCell: cell, at: indexPath.row)
         case 1: delegate?.imagePicker(delegate: self, willDisplayCameraCell: cell as! CameraCollectionViewCell)
-        case 2: break
+        case 2: delegate?.imagePicker(delegate: self, willDisplayAssetCell: cell as! ImagePickerAssetCell, at: indexPath.row)
         default: fatalError("index path not supported")
         }
     }

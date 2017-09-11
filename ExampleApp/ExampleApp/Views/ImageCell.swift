@@ -16,6 +16,7 @@ class ImageCell : UICollectionViewCell, ImagePickerAssetCell {
     
     var representedAssetIdentifier: String?
     
+    @IBOutlet weak var subtypeImageView: UIImageView!
     @IBOutlet weak var selectedImageView: UIImageView!
     
     override var isSelected: Bool {
@@ -27,6 +28,7 @@ class ImageCell : UICollectionViewCell, ImagePickerAssetCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         imageView.image = nil
+        subtypeImageView.backgroundColor = UIColor.clear
     }
     
 }

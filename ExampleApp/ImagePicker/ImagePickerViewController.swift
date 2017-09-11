@@ -29,7 +29,7 @@ public protocol ImagePickerViewControllerDelegate : class {
     ///
     func imagePicker(controller: ImagePickerViewController, willDisplayActionItem cell: UICollectionViewCell, at index: Int)
     
-    func imagePicker(controller: ImagePickerViewController, willDisplayAssetItem cell: ImagePickerAssetCell, mediaType: PHAssetMediaType, mediaSubtype: PHAssetMediaSubtype)
+    func imagePicker(controller: ImagePickerViewController, willDisplayAssetItem cell: ImagePickerAssetCell, asset: PHAsset)
 }
 
 //this will make sure all delegate methods are optional
@@ -38,7 +38,7 @@ extension ImagePickerViewControllerDelegate {
     public func imagePicker(controller: ImagePickerViewController, didFinishPicking asset: PHAsset) {}
     public func imagePicker(controller: ImagePickerViewController, didTake image: UIImage) {}
     public func imagePicker(controller: ImagePickerViewController, willDisplayActionItem cell: UICollectionViewCell, at index: Int) {}
-    public func imagePicker(controller: ImagePickerViewController, willDisplayAssetItem cell: ImagePickerAssetCell, mediaType: PHAssetMediaType, mediaSubtype: PHAssetMediaSubtype) {}
+    public func imagePicker(controller: ImagePickerViewController, willDisplayAssetItem cell: ImagePickerAssetCell, asset: PHAsset) {}
 }
 
 open class ImagePickerViewController : UIViewController {
@@ -194,6 +194,13 @@ extension ImagePickerViewController : ImagePickerDelegateDelegate {
     
     func imagePicker(delegate: ImagePickerDelegate, willDisplayActionCell cell: UICollectionViewCell, at index: Int) {
         self.delegate?.imagePicker(controller: self, willDisplayActionItem: cell, at: index)
+    }
+    
+    func imagePicker(delegate: ImagePickerDelegate, willDisplayAssetCell cell: ImagePickerAssetCell, at index: Int) {
+        guard let asset = collectionViewDataSource.assetsModel?.fetchResult?.object(at: index) else {
+            return
+        }
+        self.delegate?.imagePicker(controller: self, willDisplayAssetItem: cell, asset: asset)
     }
     
     func imagePicker(delegate: ImagePickerDelegate, willDisplayCameraCell cell: CameraCollectionViewCell) {

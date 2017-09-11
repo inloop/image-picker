@@ -188,6 +188,27 @@ extension ViewController : ImagePickerViewControllerDelegate {
         }
     }
     
+    func imagePicker(controller: ImagePickerViewController, willDisplayAssetItem cell: ImagePickerAssetCell, asset: PHAsset) {
+        switch cell {
+        
+        case let videoCell as VideoCell:
+            videoCell.label.text = String(describing: asset.duration)
+        
+        case let imageCell as ImageCell:
+            if asset.mediaSubtypes.contains(.photoLive) {
+                imageCell.subtypeImageView.backgroundColor = UIColor.yellow
+            }
+            else if asset.mediaSubtypes.contains(.photoPanorama) {
+                imageCell.subtypeImageView.backgroundColor = UIColor.green
+            }
+            else if asset.mediaSubtypes.contains(.photoDepthEffect) {
+                imageCell.subtypeImageView.backgroundColor = UIColor.red
+            }
+        default:
+            break
+        }
+    }
+    
 }
 
 let data = [
