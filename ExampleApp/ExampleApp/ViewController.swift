@@ -24,9 +24,6 @@ class ViewController: UITableViewController {
         
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cellId")
         tableView.keyboardDismissMode = .onDrag
-        
-        //for quick debugging
-        //presentPickerModally(animated: false)
     }
 
     func presentPickerModally() {

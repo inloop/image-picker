@@ -175,6 +175,8 @@ open class ImagePickerViewController : UIViewController {
     
     open override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
+        //TODO: this is called each time content offset is changed via scrolling,
+        //I am not sure if it's proper behavior, need to find out
         updateItemSize()
     }
     
@@ -222,7 +224,7 @@ extension ImagePickerViewController: UIImagePickerControllerDelegate, UINavigati
     
     public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         if let image = info[UIImagePickerControllerOriginalImage] as? UIImage {
-            //delegate?.controller?(self, didTakeImage: image)
+            delegate?.imagePicker(controller: self, didTake: image)
         }
     }
     
