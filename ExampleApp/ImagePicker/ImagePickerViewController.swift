@@ -10,9 +10,6 @@ import Foundation
 import UIKit
 import Photos
 
-//this is temp Type for photo assets
-public typealias Asset = Int
-
 //this is temp asset type
 public enum AssetType: CustomStringConvertible {
     
@@ -51,7 +48,7 @@ public protocol ImagePickerViewControllerDelegate : class {
 //this will make sure all delegate methods are optional
 extension ImagePickerViewControllerDelegate {
     public func imagePicker(controller: ImagePickerViewController, didSelectActionItemAt index: Int) {}
-    public func imagePicker(controller: ImagePickerViewController, didSelect asset: Asset) {}
+    public func imagePicker(controller: ImagePickerViewController, didFinishPicking asset: PHAsset) {}
     public func imagePicker(controller: ImagePickerViewController, didTake image: UIImage) {}
     public func imagePicker(controller: ImagePickerViewController, willDisplayActionItem cell: UICollectionViewCell, at index: Int) {}
 }
@@ -134,6 +131,8 @@ open class ImagePickerViewController : UIViewController {
         self.view = collectionView
     }
     
+    
+    
     open override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -162,7 +161,7 @@ open class ImagePickerViewController : UIViewController {
         self.collectionViewDataSource.assetsModel = assetsModel
         self.collectionViewDataSource.layoutModel = model
         
-        //TODO: implement this
+        //TODO: implement this properly
         PHPhotoLibrary.requestAuthorization { (status) in
             DispatchQueue.main.async {
             }

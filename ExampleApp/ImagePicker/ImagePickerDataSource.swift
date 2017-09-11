@@ -10,7 +10,7 @@ import Foundation
 import Photos
 
 //TODO: move somewhere else
-public protocol ImagePickerImageCell : class {
+public protocol ImagePickerAssetCell : class {
     
     /// This image view will be used when setting an asset's image
     var imageView: UIImageView! { get set }
@@ -86,8 +86,8 @@ final class ImagePickerDataSource : NSObject, UICollectionViewDataSource {
                 fatalError("there is an asset item at index \(indexPath.row) but no cell is registered")
             }
             
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: id, for: indexPath) as? ImagePickerImageCell else {
-                fatalError("asset item cell must conform to \(ImagePickerImageCell.self) protocol")
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: id, for: indexPath) as? ImagePickerAssetCell else {
+                fatalError("asset item cell must conform to \(ImagePickerAssetCell.self) protocol")
             }
             
             //kittens graveyard :(

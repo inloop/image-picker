@@ -115,7 +115,7 @@ public final class CellRegistrator {
     }
     
     ///
-    /// Please note that cellClass must conform to `ImagePickerImageCell` protocol.
+    /// Please note that cellClass must conform to `ImagePickerAssetCell` protocol.
     ///
     public func register(cellClass: UICollectionViewCell.Type, forAssetItemOf type: AssetType) {
         if assetItemClassesData == nil {
