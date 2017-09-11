@@ -81,6 +81,13 @@ open class ImagePickerViewController : UIViewController {
         }
     }
     
+    ///
+    /// Fetch result of assets that will be used for picking.
+    ///
+    /// If you leave this nil, assets from recently added smart album will be used.
+    ///
+    public var assetsFetchResult: PHFetchResult<PHAsset>?
+    
     // MARK: Private Methods
     
     fileprivate var collectionViewDataSource = ImagePickerDataSource()
@@ -115,6 +122,7 @@ open class ImagePickerViewController : UIViewController {
         self.collectionViewDataSource.assetsModel?.thumbnailSize = thumbnailSize
     }
     
+    //TODO: this is used temporary, we will need to use proper AVCaptureSession
     fileprivate lazy var cameraController: UIImagePickerController = {
         let controller = UIImagePickerController()
         controller.delegate =  self
@@ -131,22 +139,16 @@ open class ImagePickerViewController : UIViewController {
         self.view = collectionView
     }
     
-    
-    
     open override func viewDidLoad() {
         super.viewDidLoad()
         
         let configuration = self.layoutConfiguration
         let assetsModel = ImagePickerAssetModel()
         
-        let allPhotosOptions = PHFetchOptions()
-        allPhotosOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
-        allPhotosOptions.fetchLimit = 10_000
+        assetsModel.fetchResult = assetsFetchResult
+        print("fetched: \(assetsModel.fetchResult.count) photos")
         
-        assetsModel.fetchResult = PHAsset.fetchAssets(with: allPhotosOptions)
-        print("fetched: \(assetsModel.fetchResult!.count) photos")
-        
-        let model = LayoutModel(configuration: configuration, assets: assetsModel.fetchResult!.count)
+        let model = LayoutModel(configuration: configuration, assets: assetsModel.fetchResult.count)
         
         let collectionViewLayout = collectionView.collectionViewLayout as! UICollectionViewFlowLayout
         collectionViewLayout.scrollDirection = configuration.scrollDirection
@@ -154,12 +156,10 @@ open class ImagePickerViewController : UIViewController {
         collectionViewLayout.minimumLineSpacing = configuration.interitemSpacing
         
         self.collectionViewDataSource.layoutModel = model
+        self.collectionViewDataSource.assetsModel = assetsModel
         self.collectionViewDataSource.cellRegistrator = self.cellRegistrator
         self.collectionViewDelegate.layout = ImagePickerLayout(configuration: configuration)
         self.collectionViewDelegate.delegate = self
-        
-        self.collectionViewDataSource.assetsModel = assetsModel
-        self.collectionViewDataSource.layoutModel = model
         
         //TODO: implement this properly
         PHPhotoLibrary.requestAuthorization { (status) in

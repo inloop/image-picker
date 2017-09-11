@@ -60,12 +60,9 @@ class ViewController: UITableViewController {
         let registrator = CellRegistrator()
         let actionNib = UINib(nibName: "IconWithTextCell", bundle: nil)
         let assetNib = UINib(nibName: "ImageCell", bundle: nil)
-        let cameraNib = UINib(nibName: "CameraCell", bundle: nil)
         
         registrator.registerNibForActionItems(actionNib)
         registrator.register(nib: assetNib, forAssetItemOf: .image)
-        //registrator.registerNibForCameraItem(cameraNib)
-        registrator.registerCellClassForCameraItem(CameraCell.self)
         
         var configuration = LayoutConfiguration.default
         configuration.numberOfAssetItemsInRow = 1
@@ -109,6 +106,31 @@ class ViewController: UITableViewController {
         
         //if you want to present view as input view, you have to set flexible height
         //to adopt natural keyboard height or just set an layout constraint height 
+        //for specific height.
+        vc.view.autoresizingMask = .flexibleHeight
+        currentInputView = vc.view
+        
+        allowsFirstResponser = true
+        
+        becomeFirstResponder()
+    }
+    
+    func presentPickerAsInputViewCustomCameraCell() {
+        
+        let registrator = CellRegistrator()
+        let actionNib = UINib(nibName: "IconWithTextCell", bundle: nil)
+        let assetNib = UINib(nibName: "ImageCell", bundle: nil)
+        let cameraNib = UINib(nibName: "CameraCell", bundle: nil)
+        registrator.registerNibForActionItems(actionNib)
+        registrator.registerNibForCameraItem(cameraNib)
+        registrator.register(nib: assetNib, forAssetItemOf: .image)
+        
+        let vc = ImagePickerViewController()
+        vc.cellRegistrator = registrator
+        vc.delegate = self
+        
+        //if you want to present view as input view, you have to set flexible height
+        //to adopt natural keyboard height or just set an layout constraint height
         //for specific height.
         vc.view.autoresizingMask = .flexibleHeight
         currentInputView = vc.view
@@ -170,7 +192,8 @@ let data = [
         ("Presented modally", #selector(ViewController.presentPickerModally)),],
     [
         ("As input view - default", #selector(ViewController.presentPickerAsInputView)),
-        ("As input view - 1 photo cols", #selector(ViewController.presentPickerAsInputViewPhotosAs1Col))]
+        ("As input view - 1 photo cols", #selector(ViewController.presentPickerAsInputViewPhotosAs1Col)),
+        ("As input view - custom camera cell", #selector(ViewController.presentPickerAsInputViewCustomCameraCell))]
 ]
 let selectors = [#selector(ViewController.presentPickerAsInputView)]
 
