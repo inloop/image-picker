@@ -98,10 +98,11 @@ final class ImagePickerDataSource : NSObject, UICollectionViewDataSource {
                 fatalError("no assets model is set but collection view expects asset cells")
             }
             let asset = assetsModel.fetchResult.object(at: indexPath.item)
+            let cellId = cellsRegistrator.cellIdentifier(forAsset: asset.mediaType) ?? cellsRegistrator.cellIdentifierForAssetItems
             
-            guard let cellId = cellsRegistrator.cellIdentifier(forAsset: asset.mediaType) else {
-                fatalError("there is an asset item at index \(indexPath.row) but no cell is registered for asset media type \(asset.mediaType)")
-            }
+//            guard let cellId = cellsRegistrator.cellIdentifier(forAsset: asset.mediaType) else {
+//                fatalError("there is an asset item at index \(indexPath.row) but no cell is registered for asset media type \(asset.mediaType)")
+//            }
             
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as? ImagePickerAssetCell else {
                 fatalError("asset item cell must conform to \(ImagePickerAssetCell.self) protocol")

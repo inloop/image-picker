@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		420BCC371F66AEC5006E8806 /* ImagePickerAssetCellProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 420BCC361F66AEC5006E8806 /* ImagePickerAssetCellProtocol.swift */; };
+		420BCC3C1F66C53A006E8806 /* VideoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 420BCC3A1F66C53A006E8806 /* VideoCell.swift */; };
 		420C24001F5D82C6008935D4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 420C23FF1F5D82C6008935D4 /* AppDelegate.swift */; };
 		420C24021F5D82C6008935D4 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 420C24011F5D82C6008935D4 /* ViewController.swift */; };
 		420C24051F5D82C6008935D4 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 420C24031F5D82C6008935D4 /* Main.storyboard */; };
@@ -32,6 +33,7 @@
 		4217080E1F62D06D000DA508 /* CameraCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4217080D1F62D06D000DA508 /* CameraCollectionViewCell.swift */; };
 		42428A8E1F618E4200D4EB3B /* ImageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42428A8D1F618E4100D4EB3B /* ImageCell.swift */; };
 		4275FFC71F62C2830077A2CD /* CameraCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4275FFC61F62C2830077A2CD /* CameraCell.swift */; };
+		42A037E01F66C9E700534350 /* VideoCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 42A037DF1F66C9E700534350 /* VideoCell.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -60,6 +62,7 @@
 
 /* Begin PBXFileReference section */
 		420BCC361F66AEC5006E8806 /* ImagePickerAssetCellProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePickerAssetCellProtocol.swift; sourceTree = "<group>"; };
+		420BCC3A1F66C53A006E8806 /* VideoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCell.swift; sourceTree = "<group>"; };
 		420C23FC1F5D82C6008935D4 /* ExampleApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ExampleApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		420C23FF1F5D82C6008935D4 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		420C24011F5D82C6008935D4 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -86,6 +89,7 @@
 		4217080D1F62D06D000DA508 /* CameraCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraCollectionViewCell.swift; sourceTree = "<group>"; };
 		42428A8D1F618E4100D4EB3B /* ImageCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageCell.swift; sourceTree = "<group>"; };
 		4275FFC61F62C2830077A2CD /* CameraCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraCell.swift; sourceTree = "<group>"; };
+		42A037DF1F66C9E700534350 /* VideoCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = VideoCell.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -163,6 +167,8 @@
 			children = (
 				4214426A1F602C68006BA45A /* ImageCell.xib */,
 				42428A8D1F618E4100D4EB3B /* ImageCell.swift */,
+				42A037DF1F66C9E700534350 /* VideoCell.xib */,
+				420BCC3A1F66C53A006E8806 /* VideoCell.swift */,
 				421442681F6029D6006BA45A /* IconWithTextCell.xib */,
 				421442701F604993006BA45A /* IconWithTextCell.swift */,
 				4214426C1F603612006BA45A /* GreenCell.swift */,
@@ -272,6 +278,7 @@
 			files = (
 				420C240A1F5D82C6008935D4 /* LaunchScreen.storyboard in Resources */,
 				420C24071F5D82C6008935D4 /* Assets.xcassets in Resources */,
+				42A037E01F66C9E700534350 /* VideoCell.xib in Resources */,
 				420C24051F5D82C6008935D4 /* Main.storyboard in Resources */,
 				4217080C1F62C30B000DA508 /* CameraCell.xib in Resources */,
 				4214426B1F602C68006BA45A /* ImageCell.xib in Resources */,
@@ -294,6 +301,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				420C24021F5D82C6008935D4 /* ViewController.swift in Sources */,
+				420BCC3C1F66C53A006E8806 /* VideoCell.swift in Sources */,
 				4214426D1F603612006BA45A /* GreenCell.swift in Sources */,
 				420C24001F5D82C6008935D4 /* AppDelegate.swift in Sources */,
 				4275FFC71F62C2830077A2CD /* CameraCell.swift in Sources */,

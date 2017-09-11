@@ -38,10 +38,13 @@ class ViewController: UITableViewController {
         let actionNib = UINib(nibName: "IconWithTextCell", bundle: nil)
         registrator.register(nib: actionNib, forActionItemAt: 0)
         registrator.register(nib: actionNib, forActionItemAt: 1)
-//        let assetNib = UINib(nibName: "ImageCell", bundle: nil)
-//        registrator.register(nib: assetNib, forAssetItemOf: .image)
         
-        registrator.registerCellClassForAssetItems(ImageCell.self)
+        let imageNib = UINib(nibName: "ImageCell", bundle: nil)
+        registrator.registerNibForAssetItems(imageNib)
+        
+        let videoNib = UINib(nibName: "VideoCell", bundle: nil)
+        registrator.register(nib: videoNib, forAssetItemOf: .video)
+//        registrator.registerCellClassForAssetItems(ImageCell.self)
         
         let vc = ImagePickerViewController()
         vc.layoutConfiguration = configuration

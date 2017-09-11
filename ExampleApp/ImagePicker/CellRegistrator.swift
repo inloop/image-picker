@@ -119,7 +119,7 @@ public final class CellRegistrator {
         if assetItemNibsData == nil {
             assetItemNibsData = [:]
         }
-        let cellIdentifier = assetItemIdentifierPrefix + String(describing: type)
+        let cellIdentifier = assetItemIdentifierPrefix + String(describing: type.rawValue)
         assetItemNibsData?[type] = (nib, cellIdentifier)
     }
     
@@ -130,7 +130,7 @@ public final class CellRegistrator {
         if assetItemClassesData == nil {
             assetItemClassesData = [:]
         }
-        let cellIdentifier = assetItemIdentifierPrefix + String(describing: type)
+        let cellIdentifier = assetItemIdentifierPrefix + String(describing: type.rawValue)
         assetItemClassesData?[type] = (cellClass, cellIdentifier)
     }
     
@@ -149,8 +149,7 @@ extension UICollectionView {
     /// Used by datasource when registering all cells to the collection view
     ///
     func apply(registrator: CellRegistrator) {
-        
-        
+    
         //register action items considering type
         register(nibsData: registrator.actionItemNibsData?.map { $1 })
         register(classData: registrator.actionItemClassesData?.map { $1 })
