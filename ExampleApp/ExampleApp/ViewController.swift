@@ -60,11 +60,12 @@ class ViewController: UITableViewController {
         print("presenting as input view")
         
         let registrator = CellRegistrator()
-        let actionNib = UINib(nibName: "IconWithTextCell", bundle: nil)
-        let assetNib = UINib(nibName: "ImageCell", bundle: nil)
         
+        let actionNib = UINib(nibName: "IconWithTextCell", bundle: nil)
         registrator.registerNibForActionItems(actionNib)
-        registrator.register(nib: assetNib, forAssetItemOf: .image)
+        
+        let assetNib = UINib(nibName: "ImageCell", bundle: nil)
+        registrator.registerNibForAssetItems(assetNib)
         
         var configuration = LayoutConfiguration.default
         configuration.numberOfAssetItemsInRow = 1
@@ -96,7 +97,7 @@ class ViewController: UITableViewController {
         //registrator.register(cellClass: GreenCell.self, forActionItemAt: 1)
         
         registrator.registerNibForActionItems(actionNib)
-        registrator.register(nib: assetNib, forAssetItemOf: .image)
+        registrator.registerNibForAssetItems(assetNib)
         
         var configuration = LayoutConfiguration.default
         configuration.showsSecondActionItem = true
@@ -125,7 +126,7 @@ class ViewController: UITableViewController {
         let cameraNib = UINib(nibName: "CameraCell", bundle: nil)
         registrator.registerNibForActionItems(actionNib)
         registrator.registerNibForCameraItem(cameraNib)
-        registrator.register(nib: assetNib, forAssetItemOf: .image)
+        registrator.registerNibForAssetItems(assetNib)
         
         let vc = ImagePickerViewController()
         vc.cellRegistrator = registrator
