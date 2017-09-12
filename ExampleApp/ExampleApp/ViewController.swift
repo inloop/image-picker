@@ -254,8 +254,8 @@ extension ViewController : ImagePickerViewControllerDelegate {
 extension ViewController: ImagePickerViewControllerDataSource {
     
     func imagePicker(controller: ImagePickerViewController, viewForAuthorizationStatus status: PHAuthorizationStatus) -> UIView {
-        let infoLabel = UILabel()
-        infoLabel.backgroundColor = UIColor.red
+        let infoLabel = UILabel(frame: .zero)
+        infoLabel.backgroundColor = UIColor.green
         infoLabel.textAlignment = .center
         infoLabel.text = "Access not granted"
         return infoLabel

@@ -127,7 +127,7 @@ open class ImagePickerViewController : UIViewController {
         view.dataSource = self.collectionViewDataSource
         view.delegate = self.collectionViewDelegate
         view.allowsMultipleSelection = true
-        
+
         return view
     }()
     
@@ -172,9 +172,11 @@ open class ImagePickerViewController : UIViewController {
             
             print("access to photo library is denied or restricted")
             if let view = overlayView ?? dataSource?.imagePicker(controller: self, viewForAuthorizationStatus: status), view.superview != collectionView {
-                collectionView.addSubview(view)
-                view.frame = collectionView.frame
-                view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+                self.view.addSubview(view)
+                view.translatesAutoresizingMaskIntoConstraints = false
+                let views = ["overlayView": view, "topGuide": topLayoutGuide, "bottomGuide": bottomLayoutGuide] as [String : Any]
+                self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-0-[overlayView]-0-|", options: NSLayoutFormatOptions.init(rawValue: 0), metrics: nil, views: views))
+                self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[topGuide][overlayView][bottomGuide]|", options: NSLayoutFormatOptions.init(rawValue: 0), metrics: nil, views: views))
                 overlayView = view
             }
             
@@ -191,6 +193,11 @@ open class ImagePickerViewController : UIViewController {
     
     open override func loadView() {
         self.view = collectionView
+//        self.view.addSubview(collectionView)
+//        collectionView.translatesAutoresizingMaskIntoConstraints = false
+//        let views = ["overlayView": collectionView, "topGuide": topLayoutGuide, "bottomGuide": bottomLayoutGuide] as [String : Any]
+//        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[overlayView]|", options: NSLayoutFormatOptions.init(rawValue: 0), metrics: nil, views: views))
+//        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[overlayView]|", options: NSLayoutFormatOptions.init(rawValue: 0), metrics: nil, views: views))
     }
     
     open override func viewDidLoad() {
