@@ -74,7 +74,7 @@ open class ImagePickerViewController : UIViewController {
     ///
     /// If you leave this nil, assets from recently added smart album will be used.
     ///
-    public var assetsFetchResult: PHFetchResult<PHAsset>?
+    public var assetsFetchResultBlock: (() -> PHFetchResult<PHAsset>)?
     
     // MARK: Private Methods
     
@@ -133,7 +133,7 @@ open class ImagePickerViewController : UIViewController {
         let configuration = self.layoutConfiguration
         let assetsModel = ImagePickerAssetModel()
         
-        assetsModel.fetchResult = assetsFetchResult
+        assetsModel.fetchResult = assetsFetchResultBlock?()
         print("fetched: \(assetsModel.fetchResult.count) photos")
         
         let layoutModel = LayoutModel(configuration: configuration, assets: assetsModel.fetchResult.count)
@@ -146,6 +146,7 @@ open class ImagePickerViewController : UIViewController {
         self.collectionViewDataSource.layoutModel = layoutModel
         self.collectionViewDataSource.assetsModel = assetsModel
         self.collectionViewDataSource.cellRegistrator = self.cellRegistrator
+        
         self.collectionViewDelegate.layout = ImagePickerLayout(configuration: configuration)
         self.collectionViewDelegate.delegate = self
         
