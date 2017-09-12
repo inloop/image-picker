@@ -158,22 +158,28 @@ open class ImagePickerViewController : UIViewController {
         
         PHPhotoLibrary.requestAuthorization { [unowned self] (status) in
             DispatchQueue.main.async {
+                switch status {
+                case .authorized:
+                    let configuration = self.layoutConfiguration
+                    let assetsModel = ImagePickerAssetModel()
+                    
+                    assetsModel.fetchResult = self.assetsFetchResultBlock?()
+                    
+                    let layoutModel = LayoutModel(configuration: configuration, assets: assetsModel.fetchResult.count)
+                    
+                    self.collectionViewDataSource.layoutModel = layoutModel
+                    self.collectionViewDataSource.assetsModel = assetsModel
+                    self.collectionViewDataSource.cellRegistrator = self.cellRegistrator
+                    
+                    self.collectionViewDelegate.layout = ImagePickerLayout(configuration: configuration)
+                    self.collectionViewDelegate.delegate = self
+                    
+                    self.collectionView.reloadData()
                 
-                let configuration = self.layoutConfiguration
-                let assetsModel = ImagePickerAssetModel()
+                default:
+                    break
+                }
                 
-                assetsModel.fetchResult = self.assetsFetchResultBlock?()
-                
-                let layoutModel = LayoutModel(configuration: configuration, assets: assetsModel.fetchResult.count)
-                
-                self.collectionViewDataSource.layoutModel = layoutModel
-                self.collectionViewDataSource.assetsModel = assetsModel
-                self.collectionViewDataSource.cellRegistrator = self.cellRegistrator
-                
-                self.collectionViewDelegate.layout = ImagePickerLayout(configuration: configuration)
-                self.collectionViewDelegate.delegate = self
-                
-                self.collectionView.reloadData()
             }
         }
     }
