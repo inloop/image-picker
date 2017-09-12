@@ -161,23 +161,12 @@ open class ImagePickerViewController : UIViewController {
     private func reloadData(basedOnAuthorizationStatus status: PHAuthorizationStatus) {
         switch status {
         case .authorized:
-            
             collectionViewDataSource.assetsModel.fetchResult = assetsFetchResultBlock?()
             collectionViewDataSource.layoutModel = LayoutModel(configuration: layoutConfiguration, assets: collectionViewDataSource.assetsModel.fetchResult.count)
             
-            overlayView?.removeFromSuperview()
-            overlayView = nil
-            
         case .restricted, .denied:
-            
-            print("access to photo library is denied or restricted")
             if let view = overlayView ?? dataSource?.imagePicker(controller: self, viewForAuthorizationStatus: status), view.superview != collectionView {
-                self.view.addSubview(view)
-                view.translatesAutoresizingMaskIntoConstraints = false
-                let views = ["overlayView": view, "topGuide": topLayoutGuide, "bottomGuide": bottomLayoutGuide] as [String : Any]
-                self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-0-[overlayView]-0-|", options: NSLayoutFormatOptions.init(rawValue: 0), metrics: nil, views: views))
-                self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[topGuide][overlayView][bottomGuide]|", options: NSLayoutFormatOptions.init(rawValue: 0), metrics: nil, views: views))
-                overlayView = view
+                collectionView.backgroundView = view
             }
             
         case .notDetermined:
@@ -193,11 +182,6 @@ open class ImagePickerViewController : UIViewController {
     
     open override func loadView() {
         self.view = collectionView
-//        self.view.addSubview(collectionView)
-//        collectionView.translatesAutoresizingMaskIntoConstraints = false
-//        let views = ["overlayView": collectionView, "topGuide": topLayoutGuide, "bottomGuide": bottomLayoutGuide] as [String : Any]
-//        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[overlayView]|", options: NSLayoutFormatOptions.init(rawValue: 0), metrics: nil, views: views))
-//        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[overlayView]|", options: NSLayoutFormatOptions.init(rawValue: 0), metrics: nil, views: views))
     }
     
     open override func viewDidLoad() {

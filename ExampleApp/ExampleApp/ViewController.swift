@@ -257,7 +257,15 @@ extension ViewController: ImagePickerViewControllerDataSource {
         let infoLabel = UILabel(frame: .zero)
         infoLabel.backgroundColor = UIColor.green
         infoLabel.textAlignment = .center
-        infoLabel.text = "Access not granted"
+        infoLabel.numberOfLines = 0
+        switch status {
+        case .restricted:
+            infoLabel.text = "Access is restricted\n\nPlease open Settings app and update privacy settings."
+        case .denied:
+            infoLabel.text = "Access is denied by user\n\nPlease open Settings app and update privacy settings."
+        default:
+            break
+        }
         return infoLabel
     }
     
