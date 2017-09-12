@@ -173,6 +173,14 @@ class ViewController: UITableViewController {
         return allowsFirstResponser
     }
     
+    override func resignFirstResponder() -> Bool {
+        let result = super.resignFirstResponder()
+        if result == true {
+            currentInputView = nil
+        }
+        return result
+    }
+    
     override var inputView: UIView? {
         return currentInputView
     }

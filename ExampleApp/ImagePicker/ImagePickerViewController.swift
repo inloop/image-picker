@@ -235,8 +235,6 @@ extension ImagePickerViewController : ImagePickerDelegateDelegate {
     
     func imagePicker(delegate: ImagePickerDelegate, didEndDisplayingCameraCell cell: CameraCollectionViewCell) {
         //TODO: should shop capture session
-//        cell.cameraView = nil
-        //cell.cameraController = nil
     }
     
 }
