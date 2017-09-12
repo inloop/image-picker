@@ -61,7 +61,7 @@ open class ImagePickerViewController : UIViewController {
     ///
     /// Use this to register a cell classes or nibs for each item types
     ///
-    public var cellRegistrator = CellRegistrator()
+    public var cellRegistrator: CellRegistrator?
     
     ///
     /// Get informed about user interaction and changes
@@ -102,9 +102,6 @@ open class ImagePickerViewController : UIViewController {
         view.dataSource = self.collectionViewDataSource
         view.delegate = self.collectionViewDelegate
         view.allowsMultipleSelection = true
-        
-        //register all nibs
-        view.apply(registrator: self.cellRegistrator)
         
         return view
     }()
@@ -153,6 +150,12 @@ open class ImagePickerViewController : UIViewController {
         case .vertical: collectionView.alwaysBounceVertical = true
         }
         
+        guard let cellRegistrator = self.cellRegistrator else {
+            fatalError("at the time of viewDidLoad a cell registrator must be set")
+        }
+
+        collectionView.apply(registrator: cellRegistrator)
+        
         PHPhotoLibrary.requestAuthorization { [unowned self] (status) in
             DispatchQueue.main.async {
                 
@@ -160,7 +163,6 @@ open class ImagePickerViewController : UIViewController {
                 let assetsModel = ImagePickerAssetModel()
                 
                 assetsModel.fetchResult = self.assetsFetchResultBlock?()
-                print("fetched: \(assetsModel.fetchResult.count) photos")
                 
                 let layoutModel = LayoutModel(configuration: configuration, assets: assetsModel.fetchResult.count)
                 
@@ -224,6 +226,7 @@ extension ImagePickerViewController : ImagePickerDelegateDelegate {
     }
     
     func imagePicker(delegate: ImagePickerDelegate, willDisplayCameraCell cell: CameraCollectionViewCell) {
+        //TODO: accessing camera controller this way is too expensive - it can take up to 3 seconds
         cell.cameraView = cameraController.view!
         cell.cameraController = cameraController
         //TODO: should start capture session

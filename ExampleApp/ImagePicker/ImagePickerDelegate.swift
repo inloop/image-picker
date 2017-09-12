@@ -36,6 +36,10 @@ protocol ImagePickerDelegateDelegate : class {
 //  at one place and that is LayoutModel, delegate shold not have this duplicit logic
 final class ImagePickerDelegate : NSObject, UICollectionViewDelegateFlowLayout {
     
+    deinit {
+        print("deinit: \(self.classForCoder)")
+    }
+    
     var layout: ImagePickerLayout?
     weak var delegate: ImagePickerDelegateDelegate?
     

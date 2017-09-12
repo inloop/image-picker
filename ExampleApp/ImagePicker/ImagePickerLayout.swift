@@ -16,6 +16,10 @@ import Foundation
 ///
 final class ImagePickerLayout {
 
+    deinit {
+        print("deinit: \(String(describing: self))")
+    }
+    
     var configuration: LayoutConfiguration
     
     init(configuration: LayoutConfiguration) {

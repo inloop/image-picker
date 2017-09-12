@@ -19,6 +19,10 @@ import Photos
 ///
 public final class CellRegistrator {
     
+    deinit {
+        print("deinit: \(String(describing: self))")
+    }
+    
     // MARK: Private Methods
     
     fileprivate let actionItemIdentifierPrefix = "eu.inloop.action-item.cell-id"
@@ -68,7 +72,7 @@ public final class CellRegistrator {
     // MARK: Public Methods
     
     public init() {
-    
+        
     }
     
     public func registerCellClassForCameraItem(_ cellClass: CameraCollectionViewCell.Type) {

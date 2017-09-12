@@ -14,6 +14,10 @@ import Photos
 ///
 final class ImagePickerAssetModel {
 
+    deinit {
+        print("deinit: \(String(describing: self))")
+    }
+    
     var fetchResult: PHFetchResult<PHAsset>! {
         set { userDefinedFetchResult = newValue }
         get { return userDefinedFetchResult ?? defaultFetchResult }
@@ -52,6 +56,10 @@ final class ImagePickerAssetModel {
 /// Datasource for a collection view that is used by Image Picker VC.
 ///
 final class ImagePickerDataSource : NSObject, UICollectionViewDataSource {
+    
+    deinit {
+        print("deinit: \(self.classForCoder)")
+    }
     
     //TODO: perhaps we dont want default empty layout model, it could cause bugs if not set up properly in VC
     var layoutModel = LayoutModel.empty
