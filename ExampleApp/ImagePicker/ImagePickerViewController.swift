@@ -29,6 +29,10 @@ public protocol ImagePickerViewControllerDelegate : class {
     ///
     func imagePicker(controller: ImagePickerViewController, willDisplayActionItem cell: UICollectionViewCell, at index: Int)
     
+    ///
+    /// Called right before an asset item collection view cell is displayed. Use this method
+    /// to configure your cell based on asset media type, subtype, etc.
+    ///
     func imagePicker(controller: ImagePickerViewController, willDisplayAssetItem cell: ImagePickerAssetCell, asset: PHAsset)
 }
 
@@ -49,16 +53,24 @@ open class ImagePickerViewController : UIViewController {
     
     // MARK: Public API
     
-    /// configure layout of all items
+    ///
+    /// Use this object to configure layout of action, camera and asset items.
+    ///
     public var layoutConfiguration = LayoutConfiguration.default
     
-    /// use this to register a cell classes or nibs for each item types
+    ///
+    /// Use this to register a cell classes or nibs for each item types
+    ///
     public var cellRegistrator = CellRegistrator()
     
-    /// get informed about user interaction and changes
+    ///
+    /// Get informed about user interaction and changes
+    ///
     public weak var delegate: ImagePickerViewControllerDelegate?
     
-    /// holds all currently selected images
+    ///
+    /// Access all currently selected images
+    ///
     public var selectedAssets: [PHAsset] {
         get {
             let selectedIndexPaths = collectionView.indexPathsForSelectedItems ?? []
@@ -141,9 +153,8 @@ open class ImagePickerViewController : UIViewController {
         case .vertical: collectionView.alwaysBounceVertical = true
         }
         
-        //TODO: implement this properly
-//        PHPhotoLibrary.requestAuthorization { [unowned self] (status) in
-//            DispatchQueue.main.async {
+        PHPhotoLibrary.requestAuthorization { [unowned self] (status) in
+            DispatchQueue.main.async {
                 
                 let configuration = self.layoutConfiguration
                 let assetsModel = ImagePickerAssetModel()
@@ -161,8 +172,8 @@ open class ImagePickerViewController : UIViewController {
                 self.collectionViewDelegate.delegate = self
                 
                 self.collectionView.reloadData()
-//            }
-//        }
+            }
+        }
     }
     
     open override func viewWillAppear(_ animated: Bool) {
