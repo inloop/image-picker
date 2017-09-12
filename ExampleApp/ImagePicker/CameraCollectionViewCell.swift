@@ -9,6 +9,11 @@
 import Foundation
 import UIKit
 
+protocol CameraCollectionViewCellDelegate : class {
+    func takePicture()
+    func flipCamera()
+}
+
 //TODO: not sure if cameraController should be in this cell, we need nicer pattern for this
 open class CameraCollectionViewCell : UICollectionViewCell {
 
@@ -16,17 +21,14 @@ open class CameraCollectionViewCell : UICollectionViewCell {
         print("deinit: \(self.classForCoder)")
     }
     
-    weak var cameraController: UIImagePickerController?
+    weak var delegate: CameraCollectionViewCellDelegate?
     
     public func flipCamera() {
-        guard let controller = cameraController else {
-            return
-        }
-        controller.cameraDevice = (controller.cameraDevice == .rear) ? .front : .rear
+        delegate?.flipCamera()
     }
     
     public func takePicture() {
-        cameraController?.takePicture()
+        delegate?.takePicture()
     }
     
     var cameraView: UIView? {

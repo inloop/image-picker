@@ -12,6 +12,10 @@ import ImagePicker
 
 class ImageCell : UICollectionViewCell, ImagePickerAssetCell {
     
+    deinit {
+        print("deinit: \(self.classForCoder)")
+    }
+    
     @IBOutlet weak var imageView: UIImageView!
     
     var representedAssetIdentifier: String?

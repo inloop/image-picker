@@ -228,12 +228,27 @@ extension ImagePickerViewController : ImagePickerDelegateDelegate {
     func imagePicker(delegate: ImagePickerDelegate, willDisplayCameraCell cell: CameraCollectionViewCell) {
         //TODO: accessing camera controller this way is too expensive - it can take up to 3 seconds
         cell.cameraView = cameraController.view!
-        cell.cameraController = cameraController
+        cell.delegate = self
+        
         //TODO: should start capture session
     }
     
     func imagePicker(delegate: ImagePickerDelegate, didEndDisplayingCameraCell cell: CameraCollectionViewCell) {
         //TODO: should shop capture session
+//        cell.cameraView = nil
+        //cell.cameraController = nil
+    }
+    
+}
+
+extension ImagePickerViewController: CameraCollectionViewCellDelegate {
+    
+    func takePicture() {
+        cameraController.takePicture()
+    }
+    
+    func flipCamera() {
+        cameraController.cameraDevice = (cameraController.cameraDevice == .rear) ? .front : .rear
     }
     
 }
