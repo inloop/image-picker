@@ -31,7 +31,7 @@ class ViewController: UITableViewController {
         
         var configuration = LayoutConfiguration.default
         configuration.scrollDirection = .vertical
-        configuration.showsCameraActionItem = true
+        configuration.showsCameraActionItem = false
         configuration.numberOfAssetItemsInRow = 3
         
         let registrator = CellRegistrator()
@@ -188,14 +188,6 @@ extension ViewController : ImagePickerViewControllerDelegate {
         }
     }
     
-    static let durationFormatter: DateComponentsFormatter = {
-        let formatter = DateComponentsFormatter()
-        formatter.unitsStyle = .positional
-        formatter.allowedUnits = [.minute, .second]
-        formatter.zeroFormattingBehavior = .pad
-        return formatter
-    }()
-    
     func imagePicker(controller: ImagePickerViewController, willDisplayAssetItem cell: ImagePickerAssetCell, asset: PHAsset) {
         switch cell {
         
@@ -216,6 +208,14 @@ extension ViewController : ImagePickerViewControllerDelegate {
             break
         }
     }
+    
+    static let durationFormatter: DateComponentsFormatter = {
+        let formatter = DateComponentsFormatter()
+        formatter.unitsStyle = .positional
+        formatter.allowedUnits = [.minute, .second]
+        formatter.zeroFormattingBehavior = .pad
+        return formatter
+    }()
     
 }
 

@@ -136,14 +136,14 @@ open class ImagePickerViewController : UIViewController {
         assetsModel.fetchResult = assetsFetchResult
         print("fetched: \(assetsModel.fetchResult.count) photos")
         
-        let model = LayoutModel(configuration: configuration, assets: assetsModel.fetchResult.count)
+        let layoutModel = LayoutModel(configuration: configuration, assets: assetsModel.fetchResult.count)
         
         let collectionViewLayout = collectionView.collectionViewLayout as! UICollectionViewFlowLayout
         collectionViewLayout.scrollDirection = configuration.scrollDirection
         collectionViewLayout.minimumInteritemSpacing = configuration.interitemSpacing
         collectionViewLayout.minimumLineSpacing = configuration.interitemSpacing
         
-        self.collectionViewDataSource.layoutModel = model
+        self.collectionViewDataSource.layoutModel = layoutModel
         self.collectionViewDataSource.assetsModel = assetsModel
         self.collectionViewDataSource.cellRegistrator = self.cellRegistrator
         self.collectionViewDelegate.layout = ImagePickerLayout(configuration: configuration)
