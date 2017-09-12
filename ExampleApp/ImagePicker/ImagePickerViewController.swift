@@ -48,6 +48,7 @@ extension ImagePickerViewControllerDelegate {
 open class ImagePickerViewController : UIViewController {
    
     deinit {
+        PHPhotoLibrary.shared().unregisterChangeObserver(self)
         print("deinit: \(self.classForCoder)")
     }
     
@@ -75,7 +76,7 @@ open class ImagePickerViewController : UIViewController {
         get {
             let selectedIndexPaths = collectionView.indexPathsForSelectedItems ?? []
             let selectedAssets = selectedIndexPaths.flatMap { indexPath in
-                return collectionViewDataSource.assetsModel?.fetchResult?.object(at: indexPath.row)
+                return collectionViewDataSource.assetsModel.fetchResult.object(at: indexPath.row)
             }
             return selectedAssets
         }
@@ -91,7 +92,7 @@ open class ImagePickerViewController : UIViewController {
     
     // MARK: Private Methods
     
-    fileprivate var collectionViewDataSource = ImagePickerDataSource()
+    fileprivate var collectionViewDataSource = ImagePickerDataSource(assetsModel: ImagePickerAssetModel())
     fileprivate var collectionViewDelegate = ImagePickerDelegate()
     
     fileprivate lazy var collectionView: UICollectionView = {
@@ -106,6 +107,17 @@ open class ImagePickerViewController : UIViewController {
         return view
     }()
     
+    //TODO: this is used temporary, we will need to use proper AVCaptureSession
+    fileprivate lazy var cameraController: UIImagePickerController = {
+        let controller = UIImagePickerController()
+        controller.delegate =  self
+        controller.sourceType = .camera
+        controller.showsCameraControls = false
+        controller.allowsEditing = false
+        controller.cameraFlashMode = .off
+        return controller
+    }()
+    
     private func updateItemSize() {
         
         guard let layout = self.collectionViewDelegate.layout else {
@@ -117,19 +129,27 @@ open class ImagePickerViewController : UIViewController {
         let cellSize = layout.sizeForItem(numberOfItemsInRow: itemsInRow, preferredWidthOrHeight: nil, collectionView: collectionView, scrollDirection: scrollDirection)
         let scale = UIScreen.main.scale
         let thumbnailSize = CGSize(width: cellSize.width * scale, height: cellSize.height * scale)
-        self.collectionViewDataSource.assetsModel?.thumbnailSize = thumbnailSize
+        self.collectionViewDataSource.assetsModel.thumbnailSize = thumbnailSize
     }
     
-    //TODO: this is used temporary, we will need to use proper AVCaptureSession
-    fileprivate lazy var cameraController: UIImagePickerController = {
-        let controller = UIImagePickerController()
-        controller.delegate =  self
-        controller.sourceType = .camera
-        controller.showsCameraControls = false
-        controller.allowsEditing = false
-        controller.cameraFlashMode = .off        
-        return controller
-    }()
+    private func reloadData(basedOnAuthorizationStatus status: PHAuthorizationStatus) {
+        switch status {
+        case .authorized:
+            self.collectionViewDataSource.assetsModel.fetchResult = self.assetsFetchResultBlock?()
+            collectionViewDataSource.layoutModel = LayoutModel(configuration: layoutConfiguration, assets: collectionViewDataSource.assetsModel.fetchResult.count)
+        
+        case .restricted, .denied:
+            print("access to photo library is denied or restricted")
+            //TODO: add overlay view here informing that access is restricted
+            
+        case .notDetermined:
+            PHPhotoLibrary.requestAuthorization({ (status) in
+                DispatchQueue.main.async {
+                    self.reloadData(basedOnAuthorizationStatus: status)
+                }
+            })
+        }
+    }
     
     // MARK: View Lifecycle
     
@@ -140,48 +160,32 @@ open class ImagePickerViewController : UIViewController {
     open override func viewDidLoad() {
         super.viewDidLoad()
         
+        //configure flow layout
         let collectionViewLayout = self.collectionView.collectionViewLayout as! UICollectionViewFlowLayout
         collectionViewLayout.scrollDirection = layoutConfiguration.scrollDirection
         collectionViewLayout.minimumInteritemSpacing = layoutConfiguration.interitemSpacing
         collectionViewLayout.minimumLineSpacing = layoutConfiguration.interitemSpacing
         
+        //make sure collection view is bouncing nicely
         switch layoutConfiguration.scrollDirection {
         case .horizontal: collectionView.alwaysBounceHorizontal = true
         case .vertical: collectionView.alwaysBounceVertical = true
         }
-        
-        guard let cellRegistrator = self.cellRegistrator else {
-            fatalError("at the time of viewDidLoad a cell registrator must be set")
-        }
 
+        //apply cell registrator to collection view
+        guard let cellRegistrator = self.cellRegistrator else { fatalError("at the time of viewDidLoad a cell registrator must be set") }
         collectionView.apply(registrator: cellRegistrator)
         
-        PHPhotoLibrary.requestAuthorization { [unowned self] (status) in
-            DispatchQueue.main.async {
-                switch status {
-                case .authorized:
-                    let configuration = self.layoutConfiguration
-                    let assetsModel = ImagePickerAssetModel()
-                    
-                    assetsModel.fetchResult = self.assetsFetchResultBlock?()
-                    
-                    let layoutModel = LayoutModel(configuration: configuration, assets: assetsModel.fetchResult.count)
-                    
-                    self.collectionViewDataSource.layoutModel = layoutModel
-                    self.collectionViewDataSource.assetsModel = assetsModel
-                    self.collectionViewDataSource.cellRegistrator = self.cellRegistrator
-                    
-                    self.collectionViewDelegate.layout = ImagePickerLayout(configuration: configuration)
-                    self.collectionViewDelegate.delegate = self
-                    
-                    self.collectionView.reloadData()
-                
-                default:
-                    break
-                }
-                
-            }
-        }
+        //connect all remaining objects as needed
+        self.collectionViewDataSource.cellRegistrator = self.cellRegistrator
+        self.collectionViewDelegate.delegate = self
+        self.collectionViewDelegate.layout = ImagePickerLayout(configuration: layoutConfiguration)
+
+        //rgister for photo library updates - this is needed when changing permissions to photo library
+        PHPhotoLibrary.shared().register(self)
+        
+        //determine auth satus and based on that reload UI
+        reloadData(basedOnAuthorizationStatus: PHPhotoLibrary.authorizationStatus())
     }
     
     open override func viewWillAppear(_ animated: Bool) {
@@ -207,6 +211,59 @@ open class ImagePickerViewController : UIViewController {
     
 }
 
+extension ImagePickerViewController: PHPhotoLibraryChangeObserver {
+    
+    public func photoLibraryDidChange(_ changeInstance: PHChange) {
+        
+        guard let fetchResult = collectionViewDataSource.assetsModel.fetchResult else {
+            return
+        }
+        
+        guard let changes = changeInstance.changeDetails(for: fetchResult) else {
+            return
+        }
+        
+        DispatchQueue.main.sync {
+            
+            //update old fetch result with these updates
+            collectionViewDataSource.assetsModel.fetchResult = changes.fetchResultAfterChanges
+
+            //update layout model because it changed
+            collectionViewDataSource.layoutModel = LayoutModel(configuration: layoutConfiguration, assets: collectionViewDataSource.assetsModel.fetchResult.count)
+            
+            if changes.hasIncrementalChanges {
+                
+                //TODO: this must be access from layout model, not hardcoded
+                let assetItemsSection: Int = 2
+                
+                // If we have incremental diffs, animate them in the collection view
+                self.collectionView.performBatchUpdates({
+                    
+                    // For indexes to make sense, updates must be in this order:
+                    // delete, insert, reload, move
+                    if let removed = changes.removedIndexes, removed.isEmpty == false {
+                        collectionView.deleteItems(at: removed.map({ IndexPath(item: $0, section: assetItemsSection) }))
+                    }
+                    if let inserted = changes.insertedIndexes, inserted.isEmpty == false {
+                        collectionView.insertItems(at: inserted.map({ IndexPath(item: $0, section: assetItemsSection) }))
+                    }
+                    if let changed = changes.changedIndexes, changed.isEmpty == false {
+                        collectionView.reloadItems(at: changed.map({ IndexPath(item: $0, section: assetItemsSection) }))
+                    }
+                    changes.enumerateMoves { fromIndex, toIndex in
+                        self.collectionView.moveItem(at: IndexPath(item: fromIndex, section: assetItemsSection), to: IndexPath(item: toIndex, section: assetItemsSection))
+                    }
+                })
+            }
+            else {
+                // Reload the collection view if incremental diffs are not available.
+                collectionView.reloadData()
+            }
+            //resetCachedAssets()
+        }
+    }
+}
+
 extension ImagePickerViewController : ImagePickerDelegateDelegate {
     
     func imagePicker(delegate: ImagePickerDelegate, didSelectActionItemAt index: Int) {
@@ -214,7 +271,7 @@ extension ImagePickerViewController : ImagePickerDelegateDelegate {
     }
         
     func imagePicker(delegate: ImagePickerDelegate, didSelectAssetItemAt index: Int) {
-        guard let asset = collectionViewDataSource.assetsModel?.fetchResult?.object(at: index) else {
+        guard let asset = collectionViewDataSource.assetsModel.fetchResult?.object(at: index) else {
             return
         }
         self.delegate?.imagePicker(controller: self, didFinishPicking: asset)
@@ -225,7 +282,7 @@ extension ImagePickerViewController : ImagePickerDelegateDelegate {
     }
     
     func imagePicker(delegate: ImagePickerDelegate, willDisplayAssetCell cell: ImagePickerAssetCell, at index: Int) {
-        guard let asset = collectionViewDataSource.assetsModel?.fetchResult?.object(at: index) else {
+        guard let asset = collectionViewDataSource.assetsModel.fetchResult?.object(at: index) else {
             return
         }
         self.delegate?.imagePicker(controller: self, willDisplayAssetItem: cell, asset: asset)

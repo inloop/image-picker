@@ -23,9 +23,7 @@ final class ImagePickerAssetModel {
         get { return userDefinedFetchResult ?? defaultFetchResult }
     }
     
-    var assetCollection: PHAssetCollection?
-    
-    let imageManager = PHCachingImageManager()
+    lazy var imageManager = PHCachingImageManager()
     var thumbnailSize: CGSize?
     
     /// Tryies to access smart album recently added and uses just fetchAssets as fallback
@@ -66,9 +64,10 @@ final class ImagePickerDataSource : NSObject, UICollectionViewDataSource {
     
     var cellRegistrator: CellRegistrator?
     
-    var assetsModel: ImagePickerAssetModel?
+    var assetsModel: ImagePickerAssetModel
     
-    override init() {
+    init(assetsModel: ImagePickerAssetModel) {
+        self.assetsModel = assetsModel
         super.init()
     }
     
@@ -102,9 +101,10 @@ final class ImagePickerDataSource : NSObject, UICollectionViewDataSource {
             
         case 2:
             
-            guard let assetsModel = assetsModel else {
-                fatalError("no assets model is set but collection view expects asset cells")
-            }
+//            guard let assetsModel = assetsModel else {
+//                fatalError("no assets model is set but collection view expects asset cells")
+//            }
+            
             let asset = assetsModel.fetchResult.object(at: indexPath.item)
             let cellId = cellsRegistrator.cellIdentifier(forAsset: asset.mediaType) ?? cellsRegistrator.cellIdentifierForAssetItems
             
