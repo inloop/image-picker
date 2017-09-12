@@ -10,47 +10,6 @@ import Foundation
 import Photos
 
 ///
-/// Model that is used when accessing an caching PHAsset objects
-///
-final class ImagePickerAssetModel {
-
-    deinit {
-        print("deinit: \(String(describing: self))")
-    }
-    
-    var fetchResult: PHFetchResult<PHAsset>! {
-        set { userDefinedFetchResult = newValue }
-        get { return userDefinedFetchResult ?? defaultFetchResult }
-    }
-    
-    lazy var imageManager = PHCachingImageManager()
-    var thumbnailSize: CGSize?
-    
-    /// Tryies to access smart album recently added and uses just fetchAssets as fallback
-    private lazy var defaultFetchResult: PHFetchResult<PHAsset> = {
-       
-        let assetsOptions = PHFetchOptions()
-        assetsOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
-        assetsOptions.fetchLimit = 1000
-        
-        let collections = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumRecentlyAdded, options: nil)
-        if let recentlyAdded = collections.firstObject {
-            return PHAsset.fetchAssets(in: recentlyAdded, options: assetsOptions)
-        }
-        else {
-            return PHAsset.fetchAssets(with: assetsOptions)
-        }
-    }()
-    
-    private var userDefinedFetchResult: PHFetchResult<PHAsset>?
-    
-    //will be use for caching
-    //var previousPreheatRect = CGRect.zero
-    
-    //TODO: add special thumbnail pre-caching as user scrolls
-}
-
-///
 /// Datasource for a collection view that is used by Image Picker VC.
 ///
 final class ImagePickerDataSource : NSObject, UICollectionViewDataSource {
@@ -59,11 +18,8 @@ final class ImagePickerDataSource : NSObject, UICollectionViewDataSource {
         print("deinit: \(self.classForCoder)")
     }
     
-    //TODO: perhaps we dont want default empty layout model, it could cause bugs if not set up properly in VC
     var layoutModel = LayoutModel.empty
-    
     var cellRegistrator: CellRegistrator?
-    
     var assetsModel: ImagePickerAssetModel
     
     init(assetsModel: ImagePickerAssetModel) {
@@ -100,10 +56,6 @@ final class ImagePickerDataSource : NSObject, UICollectionViewDataSource {
             return cell
             
         case 2:
-            
-//            guard let assetsModel = assetsModel else {
-//                fatalError("no assets model is set but collection view expects asset cells")
-//            }
             
             let asset = assetsModel.fetchResult.object(at: indexPath.item)
             let cellId = cellsRegistrator.cellIdentifier(forAsset: asset.mediaType) ?? cellsRegistrator.cellIdentifierForAssetItems
