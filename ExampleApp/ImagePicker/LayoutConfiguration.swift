@@ -26,7 +26,7 @@ public struct LayoutConfiguration {
     public var scrollDirection: UICollectionViewScrollDirection = .horizontal
     
     ///
-    /// Defines how many image assets will be in a row
+    /// Defines how many image assets will be in a row. Must be > 0
     ///
     public var numberOfAssetItemsInRow: Int = 2
     

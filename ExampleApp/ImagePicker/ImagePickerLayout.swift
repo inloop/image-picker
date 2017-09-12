@@ -64,6 +64,8 @@ final class ImagePickerLayout {
             return sizeForItem(numberOfItemsInRow: layoutModel.numberOfItems(in: 1), preferredWidthOrHeight: width, collectionView: collectionView, scrollDirection: layout.scrollDirection)
             
         case 2:
+            //make sure there is at least 1 item, othewise invalid layout
+            assert(configuration.numberOfAssetItemsInRow > 0, "invalid layout - numberOfAssetItemsInRow must be > 0, check your layout configuration ")
             return sizeForItem(numberOfItemsInRow: configuration.numberOfAssetItemsInRow, preferredWidthOrHeight: nil, collectionView: collectionView, scrollDirection: layout.scrollDirection)
             
         default:

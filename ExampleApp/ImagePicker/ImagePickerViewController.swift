@@ -72,9 +72,10 @@ open class ImagePickerViewController : UIViewController {
     ///
     /// Fetch result of assets that will be used for picking.
     ///
-    /// If you leave this nil, assets from recently added smart album will be used.
+    /// If you leave this nil or return nil from the block, assets from recently
+    /// added smart album will be used.
     ///
-    public var assetsFetchResultBlock: (() -> PHFetchResult<PHAsset>)?
+    public var assetsFetchResultBlock: (() -> PHFetchResult<PHAsset>?)?
     
     // MARK: Private Methods
     
@@ -130,31 +131,38 @@ open class ImagePickerViewController : UIViewController {
     open override func viewDidLoad() {
         super.viewDidLoad()
         
-        let configuration = self.layoutConfiguration
-        let assetsModel = ImagePickerAssetModel()
+        let collectionViewLayout = self.collectionView.collectionViewLayout as! UICollectionViewFlowLayout
+        collectionViewLayout.scrollDirection = layoutConfiguration.scrollDirection
+        collectionViewLayout.minimumInteritemSpacing = layoutConfiguration.interitemSpacing
+        collectionViewLayout.minimumLineSpacing = layoutConfiguration.interitemSpacing
         
-        assetsModel.fetchResult = assetsFetchResultBlock?()
-        print("fetched: \(assetsModel.fetchResult.count) photos")
-        
-        let layoutModel = LayoutModel(configuration: configuration, assets: assetsModel.fetchResult.count)
-        
-        let collectionViewLayout = collectionView.collectionViewLayout as! UICollectionViewFlowLayout
-        collectionViewLayout.scrollDirection = configuration.scrollDirection
-        collectionViewLayout.minimumInteritemSpacing = configuration.interitemSpacing
-        collectionViewLayout.minimumLineSpacing = configuration.interitemSpacing
-        
-        self.collectionViewDataSource.layoutModel = layoutModel
-        self.collectionViewDataSource.assetsModel = assetsModel
-        self.collectionViewDataSource.cellRegistrator = self.cellRegistrator
-        
-        self.collectionViewDelegate.layout = ImagePickerLayout(configuration: configuration)
-        self.collectionViewDelegate.delegate = self
+        switch layoutConfiguration.scrollDirection {
+        case .horizontal: collectionView.alwaysBounceHorizontal = true
+        case .vertical: collectionView.alwaysBounceVertical = true
+        }
         
         //TODO: implement this properly
-        PHPhotoLibrary.requestAuthorization { (status) in
-            DispatchQueue.main.async {
-            }
-        }
+//        PHPhotoLibrary.requestAuthorization { [unowned self] (status) in
+//            DispatchQueue.main.async {
+                
+                let configuration = self.layoutConfiguration
+                let assetsModel = ImagePickerAssetModel()
+                
+                assetsModel.fetchResult = self.assetsFetchResultBlock?()
+                print("fetched: \(assetsModel.fetchResult.count) photos")
+                
+                let layoutModel = LayoutModel(configuration: configuration, assets: assetsModel.fetchResult.count)
+                
+                self.collectionViewDataSource.layoutModel = layoutModel
+                self.collectionViewDataSource.assetsModel = assetsModel
+                self.collectionViewDataSource.cellRegistrator = self.cellRegistrator
+                
+                self.collectionViewDelegate.layout = ImagePickerLayout(configuration: configuration)
+                self.collectionViewDelegate.delegate = self
+                
+                self.collectionView.reloadData()
+//            }
+//        }
     }
     
     open override func viewWillAppear(_ animated: Bool) {

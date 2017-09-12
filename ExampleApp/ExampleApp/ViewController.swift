@@ -53,6 +53,35 @@ class ViewController: UITableViewController {
         presentPickerModally(vc)
     }
     
+    func presentPickerModallyCustomFetch() {
+        print("presenting modally")
+        
+        var configuration = LayoutConfiguration.default
+        configuration.scrollDirection = .vertical
+        configuration.showsCameraActionItem = false
+        configuration.showsFirstActionItem = false
+        configuration.showsSecondActionItem = false
+        
+        let registrator = CellRegistrator()
+        
+        let imageNib = UINib(nibName: "ImageCell", bundle: nil)
+        registrator.registerNibForAssetItems(imageNib)
+        
+        let vc = ImagePickerViewController()
+        vc.layoutConfiguration = configuration
+        vc.cellRegistrator = registrator
+        vc.assetsFetchResultBlock = {
+            guard let momentsCollection = PHAssetCollection.fetchMoments(with: nil).firstObject else {
+                //you can return nil if you did not find desired fetch result,
+                //default fetch result will be used.
+                return nil
+            }
+            return PHAsset.fetchAssets(in: momentsCollection, options: nil)
+        }
+        
+        presentPickerModally(vc)
+    }
+    
     func presentPickerAsInputViewPhotosAs1Col() {
         print("presenting as input view")
         
@@ -214,11 +243,12 @@ extension ViewController : ImagePickerViewControllerDelegate {
 
 let data = [
     [
-        ("Presented modally", #selector(ViewController.presentPickerModally)),],
+        ("Modally - no camera", #selector(ViewController.presentPickerModally)),
+        ("Modally - only photos", #selector(ViewController.presentPickerModallyCustomFetch))],
     [
-        ("As input view - default", #selector(ViewController.presentPickerAsInputView)),
-        ("As input view - 1 photo cols", #selector(ViewController.presentPickerAsInputViewPhotosAs1Col)),
-        ("As input view - custom camera cell", #selector(ViewController.presentPickerAsInputViewCustomCameraCell))]
+        ("Input view - default", #selector(ViewController.presentPickerAsInputView)),
+        ("Input view - 1 photo cols", #selector(ViewController.presentPickerAsInputViewPhotosAs1Col)),
+        ("Input view - custom camera cell", #selector(ViewController.presentPickerAsInputViewCustomCameraCell))]
 ]
 let selectors = [#selector(ViewController.presentPickerAsInputView)]
 

@@ -39,6 +39,7 @@ struct LayoutModel {
     }
     
     static var empty: LayoutModel {
-        return LayoutModel(configuration: LayoutConfiguration.default, assets: 0)
+        let emptyConfiguration = LayoutConfiguration(showsFirstActionItem: false, showsSecondActionItem: false, showsCameraActionItem: false, scrollDirection: .horizontal, numberOfAssetItemsInRow: 0, interitemSpacing: 0, actionSectionSpacing: 0, cameraSectionSpacing: 0)
+        return LayoutModel(configuration: emptyConfiguration, assets: 0)
     }
 }
