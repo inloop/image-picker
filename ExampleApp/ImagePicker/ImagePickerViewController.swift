@@ -10,6 +10,9 @@ import Foundation
 import UIKit
 import Photos
 
+///
+/// Group of methods informing what image picker is currently doing
+///
 public protocol ImagePickerViewControllerDelegate : class {
     
     ///
@@ -17,6 +20,9 @@ public protocol ImagePickerViewControllerDelegate : class {
     ///
     func imagePicker(controller: ImagePickerViewController, didSelectActionItemAt index: Int)
     
+    ///
+    /// Called when user select an asset
+    ///
     func imagePicker(controller: ImagePickerViewController, didFinishPicking asset: PHAsset)
     
     //perhaps we can use method above and remove this one, client does not care if user took a picture or
@@ -45,6 +51,19 @@ extension ImagePickerViewControllerDelegate {
     public func imagePicker(controller: ImagePickerViewController, willDisplayAssetItem cell: ImagePickerAssetCell, asset: PHAsset) {}
 }
 
+
+///
+/// Image picker may ask for additional resources, implement this protocol to fully support
+/// all features.
+///
+public protocol ImagePickerViewControllerDataSource : class {
+    ///
+    /// Asks for a view that is placed as overlay view with permissions info
+    /// when user did not grant or has restricted access to photo library.
+    ///
+    func imagePicker(controller: ImagePickerViewController,  viewForAuthorizationStatus status: PHAuthorizationStatus) -> UIView
+}
+
 open class ImagePickerViewController : UIViewController {
    
     deinit {
@@ -68,6 +87,11 @@ open class ImagePickerViewController : UIViewController {
     /// Get informed about user interaction and changes
     ///
     public weak var delegate: ImagePickerViewControllerDelegate?
+    
+    ///
+    /// Provide additional data when requested by Image Picker
+    ///
+    public weak var dataSource: ImagePickerViewControllerDataSource?
     
     ///
     /// Access all currently selected images
@@ -132,15 +156,27 @@ open class ImagePickerViewController : UIViewController {
         self.collectionViewDataSource.assetsModel.thumbnailSize = thumbnailSize
     }
     
+    private var overlayView: UIView?
+    
     private func reloadData(basedOnAuthorizationStatus status: PHAuthorizationStatus) {
         switch status {
         case .authorized:
-            self.collectionViewDataSource.assetsModel.fetchResult = self.assetsFetchResultBlock?()
+            
+            collectionViewDataSource.assetsModel.fetchResult = assetsFetchResultBlock?()
             collectionViewDataSource.layoutModel = LayoutModel(configuration: layoutConfiguration, assets: collectionViewDataSource.assetsModel.fetchResult.count)
-        
+            
+            overlayView?.removeFromSuperview()
+            overlayView = nil
+            
         case .restricted, .denied:
+            
             print("access to photo library is denied or restricted")
-            //TODO: add overlay view here informing that access is restricted
+            if let view = overlayView ?? dataSource?.imagePicker(controller: self, viewForAuthorizationStatus: status), view.superview != collectionView {
+                collectionView.addSubview(view)
+                view.frame = collectionView.frame
+                view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+                overlayView = view
+            }
             
         case .notDetermined:
             PHPhotoLibrary.requestAuthorization({ (status) in

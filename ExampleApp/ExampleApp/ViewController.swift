@@ -145,6 +145,7 @@ class ViewController: UITableViewController {
     private func presentPickerAsInputView(_ vc: ImagePickerViewController) {
         
         vc.delegate = self
+        vc.dataSource = self
         
         //if you want to present view as input view, you have to set flexible height
         //to adopt natural keyboard height or just set an layout constraint height
@@ -159,6 +160,7 @@ class ViewController: UITableViewController {
     private func presentPickerModally(_ vc: ImagePickerViewController) {
         
         vc.delegate = self
+        vc.dataSource = self
         
         vc.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Dismiss", style: .done, target: self, action: #selector(dismissPresentedImagePicker(sender:)))
         let nc = UINavigationController(rootViewController: vc)
@@ -246,6 +248,18 @@ extension ViewController : ImagePickerViewControllerDelegate {
         formatter.zeroFormattingBehavior = .pad
         return formatter
     }()
+    
+}
+
+extension ViewController: ImagePickerViewControllerDataSource {
+    
+    func imagePicker(controller: ImagePickerViewController, viewForAuthorizationStatus status: PHAuthorizationStatus) -> UIView {
+        let infoLabel = UILabel()
+        infoLabel.backgroundColor = UIColor.red
+        infoLabel.textAlignment = .center
+        infoLabel.text = "Access not granted"
+        return infoLabel
+    }
     
 }
 
