@@ -49,11 +49,8 @@ class ViewController: UITableViewController {
         let vc = ImagePickerViewController()
         vc.layoutConfiguration = configuration
         vc.cellRegistrator = registrator
-        vc.delegate = self
         
-        vc.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Dismiss", style: .done, target: self, action: #selector(dismissPresentedImagePicker(sender:)))
-        let nc = UINavigationController(rootViewController: vc)
-        present(nc, animated: true, completion: nil)
+        presentPickerModally(vc)
     }
     
     func presentPickerAsInputViewPhotosAs1Col() {
@@ -73,17 +70,8 @@ class ViewController: UITableViewController {
         let vc = ImagePickerViewController()
         vc.cellRegistrator = registrator
         vc.layoutConfiguration = configuration
-        vc.delegate = self
         
-        //if you want to present view as input view, you have to set flexible height
-        //to adopt natural keyboard height or just set an layout constraint height
-        //for specific height.
-        vc.view.autoresizingMask = .flexibleHeight
-        currentInputView = vc.view
-        
-        allowsFirstResponser = true
-        
-        becomeFirstResponder()
+        presentPickerAsInputView(vc)
     }
     
     func presentPickerAsInputView() {
@@ -105,17 +93,8 @@ class ViewController: UITableViewController {
         let vc = ImagePickerViewController()
         vc.cellRegistrator = registrator
         vc.layoutConfiguration = configuration
-        vc.delegate = self
         
-        //if you want to present view as input view, you have to set flexible height
-        //to adopt natural keyboard height or just set an layout constraint height 
-        //for specific height.
-        vc.view.autoresizingMask = .flexibleHeight
-        currentInputView = vc.view
-        
-        allowsFirstResponser = true
-        
-        becomeFirstResponder()
+        presentPickerAsInputView(vc)
     }
     
     func presentPickerAsInputViewCustomCameraCell() {
@@ -130,6 +109,12 @@ class ViewController: UITableViewController {
         
         let vc = ImagePickerViewController()
         vc.cellRegistrator = registrator
+        
+        presentPickerAsInputView(vc)
+    }
+    
+    private func presentPickerAsInputView(_ vc: ImagePickerViewController) {
+        
         vc.delegate = self
         
         //if you want to present view as input view, you have to set flexible height
@@ -139,8 +124,16 @@ class ViewController: UITableViewController {
         currentInputView = vc.view
         
         allowsFirstResponser = true
-        
         becomeFirstResponder()
+    }
+    
+    private func presentPickerModally(_ vc: ImagePickerViewController) {
+        
+        vc.delegate = self
+        
+        vc.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Dismiss", style: .done, target: self, action: #selector(dismissPresentedImagePicker(sender:)))
+        let nc = UINavigationController(rootViewController: vc)
+        present(nc, animated: true, completion: nil)
     }
     
     dynamic func dismissPresentedImagePicker(sender: UIBarButtonItem) {
