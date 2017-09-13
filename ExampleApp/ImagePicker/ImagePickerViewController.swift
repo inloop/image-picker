@@ -271,13 +271,13 @@ extension ImagePickerViewController: PHPhotoLibraryChangeObserver {
                     // For indexes to make sense, updates must be in this order:
                     // delete, insert, reload, move
                     if let removed = changes.removedIndexes, removed.isEmpty == false {
-                        collectionView.deleteItems(at: removed.map({ IndexPath(item: $0, section: assetItemsSection) }))
+                        self.collectionView.deleteItems(at: removed.map({ IndexPath(item: $0, section: assetItemsSection) }))
                     }
                     if let inserted = changes.insertedIndexes, inserted.isEmpty == false {
-                        collectionView.insertItems(at: inserted.map({ IndexPath(item: $0, section: assetItemsSection) }))
+                        self.collectionView.insertItems(at: inserted.map({ IndexPath(item: $0, section: assetItemsSection) }))
                     }
                     if let changed = changes.changedIndexes, changed.isEmpty == false {
-                        collectionView.reloadItems(at: changed.map({ IndexPath(item: $0, section: assetItemsSection) }))
+                        self.collectionView.reloadItems(at: changed.map({ IndexPath(item: $0, section: assetItemsSection) }))
                     }
                     changes.enumerateMoves { fromIndex, toIndex in
                         self.collectionView.moveItem(at: IndexPath(item: fromIndex, section: assetItemsSection), to: IndexPath(item: toIndex, section: assetItemsSection))
