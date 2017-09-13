@@ -14,11 +14,12 @@ protocol CameraCollectionViewCellDelegate : class {
     func flipCamera()
 }
 
-//TODO: not sure if cameraController should be in this cell, we need nicer pattern for this
 open class CameraCollectionViewCell : UICollectionViewCell {
 
     deinit {
-        print("deinit: \(self.classForCoder)")
+        #if DEBUG
+            print("deinit: \(String(describing: self))")
+        #endif
     }
     
     weak var delegate: CameraCollectionViewCellDelegate?

@@ -15,7 +15,9 @@ import Photos
 final class ImagePickerDataSource : NSObject, UICollectionViewDataSource {
     
     deinit {
-        print("deinit: \(self.classForCoder)")
+        #if DEBUG
+            print("deinit: \(String(describing: self))")
+        #endif
     }
     
     var layoutModel = LayoutModel.empty

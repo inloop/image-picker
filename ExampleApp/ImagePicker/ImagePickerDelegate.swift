@@ -37,7 +37,9 @@ protocol ImagePickerDelegateDelegate : class {
 final class ImagePickerDelegate : NSObject, UICollectionViewDelegateFlowLayout {
     
     deinit {
-        print("deinit: \(self.classForCoder)")
+        #if DEBUG
+            print("deinit: \(String(describing: self))")
+        #endif
     }
     
     var layout: ImagePickerLayout?

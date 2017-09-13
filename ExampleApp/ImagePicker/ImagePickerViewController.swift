@@ -68,7 +68,9 @@ open class ImagePickerViewController : UIViewController {
    
     deinit {
         PHPhotoLibrary.shared().unregisterChangeObserver(self)
-        print("deinit: \(self.classForCoder)")
+        #if DEBUG
+            print("deinit: \(String(describing: self))")
+        #endif
     }
     
     // MARK: Public API

@@ -12,10 +12,6 @@ import UIKit
 //example of action cell that can be used by ImagePickerViewController
 class IconWithTextCell : UICollectionViewCell {
     
-    deinit {
-        print("deinit: \(self.classForCoder)")
-    }
-    
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var imageView: UIImageView!
     
