@@ -255,7 +255,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 420C23F71F5D82C6008935D4 /* Build configuration list for PBXProject "ExampleApp" */;
+			buildConfigurationList = 420C23F71F5D82C6008935D4 /* Build configuration list for PBXProject "ImagePicker" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -535,7 +535,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		420C23F71F5D82C6008935D4 /* Build configuration list for PBXProject "ExampleApp" */ = {
+		420C23F71F5D82C6008935D4 /* Build configuration list for PBXProject "ImagePicker" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				420C240C1F5D82C6008935D4 /* Debug */,

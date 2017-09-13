@@ -17,7 +17,7 @@
                BlueprintIdentifier = "420C24151F5D82F9008935D4"
                BuildableName = "ImagePicker.framework"
                BlueprintName = "ImagePicker"
-               ReferencedContainer = "container:ExampleApp.xcodeproj">
+               ReferencedContainer = "container:ImagePicker.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -50,7 +50,7 @@
             BlueprintIdentifier = "420C24151F5D82F9008935D4"
             BuildableName = "ImagePicker.framework"
             BlueprintName = "ImagePicker"
-            ReferencedContainer = "container:ExampleApp.xcodeproj">
+            ReferencedContainer = "container:ImagePicker.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -68,7 +68,7 @@
             BlueprintIdentifier = "420C24151F5D82F9008935D4"
             BuildableName = "ImagePicker.framework"
             BlueprintName = "ImagePicker"
-            ReferencedContainer = "container:ExampleApp.xcodeproj">
+            ReferencedContainer = "container:ImagePicker.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </ProfileAction>
