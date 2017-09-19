@@ -40,6 +40,9 @@ protocol CaptureSessionDelegate : class {
     
     ///called when user did not authorize using audio or video
     func captureSession(_ session: CaptureSession, authorizationStatusFailed status: AVAuthorizationStatus)
+    
+    ///called when session is interrupted due to various reasons, for example when user starts an audio using control center, etc.
+    func captureSession(_ session: CaptureSession, wasInterrupted reason: AVCaptureSessionInterruptionReason)
 }
 
 ///
@@ -329,28 +332,12 @@ final class CaptureSession : NSObject {
         if let userInfoValue = notification.userInfo?[AVCaptureSessionInterruptionReasonKey] as AnyObject?, let reasonIntegerValue = userInfoValue.integerValue, let reason = AVCaptureSessionInterruptionReason(rawValue: reasonIntegerValue) {
             log("capture session: session was interrupted with reason \(reason)")
             
-            var showResumeButton = false
-            
-            if reason == AVCaptureSessionInterruptionReason.audioDeviceInUseByAnotherClient || reason == AVCaptureSessionInterruptionReason.videoDeviceInUseByAnotherClient {
-                showResumeButton = true
+            DispatchQueue.main.async { [unowned self] in
+                self.delegate?.captureSession(self, wasInterrupted: reason)
             }
-            else if reason == AVCaptureSessionInterruptionReason.videoDeviceNotAvailableWithMultipleForegroundApps {
-                // Simply fade-in a label to inform the user that the camera is unavailable.
-                //cameraUnavailableLabel.alpha = 0
-                //cameraUnavailableLabel.isHidden = false
-                //UIView.animate(withDuration: 0.25) { [unowned self] in
-                //    self.cameraUnavailableLabel.alpha = 1
-                //}
-            }
-            
-            if showResumeButton {
-                // Simply fade-in a button to enable the user to try to resume the session running.
-                //resumeButton.alpha = 0
-                //resumeButton.isHidden = false
-                //UIView.animate(withDuration: 0.25) { [unowned self] in
-                //    self.resumeButton.alpha = 1
-                //}
-            }
+        }
+        else {
+            log("capture session: session was interrupted due to unknown reason")
         }
     }
     
