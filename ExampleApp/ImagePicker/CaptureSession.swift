@@ -133,10 +133,8 @@ final class CaptureSession : NSObject {
                 self.addObservers()
                 self.session.startRunning()
                 self.isSessionRunning = self.session.isRunning
-                
-                DispatchQueue.main.async { [unowned self] in
-                    self.delegate?.captureSessionDidResume(self)
-                }
+                // We are not calling the delegate here explicitly, because we are observing
+                // `running` KVO on session itself.
                 
             case .notAuthorized:
                 log("capture session: not authorized")
@@ -165,7 +163,8 @@ final class CaptureSession : NSObject {
                 capturedSelf.session.stopRunning()
                 capturedSelf.isSessionRunning = self.session.isRunning
                 capturedSelf.removeObservers()
-                capturedSelf.delegate?.captureSessionDidSuspend(self)
+                //we are not calling delegate from here because
+                //we are KVOing `isRunning` on session itself so it's called from there
             }
         }
     }
@@ -271,8 +270,13 @@ final class CaptureSession : NSObject {
             guard let isSessionRunning = newValue?.boolValue else { return }
             
             DispatchQueue.main.async { [unowned self] in
-                log("capture session: session is running: \(isSessionRunning)")
-                self.delegate?.captureSessionDidResume(self)
+                log("capture session: is running - \(isSessionRunning)")
+                if isSessionRunning {
+                    self.delegate?.captureSessionDidResume(self)
+                }
+                else {
+                    self.delegate?.captureSessionDidSuspend(self)
+                }
             }
         }
         else {

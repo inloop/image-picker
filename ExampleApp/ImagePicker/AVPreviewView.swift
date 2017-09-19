@@ -35,7 +35,13 @@ class AVPreviewView: UIView {
     
     var session: AVCaptureSession? {
         get { return previewLayer.session }
-        set { previewLayer.session = newValue }
+        set {
+            if previewLayer.session === newValue {
+                return
+            }
+            previewLayer.session = newValue
+            
+        }
     }
     
     var displayMode: VideoDisplayMode = .aspectFill {
