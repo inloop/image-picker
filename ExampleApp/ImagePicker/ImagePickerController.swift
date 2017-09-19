@@ -9,6 +9,7 @@
 import Foundation
 import UIKit
 import Photos
+//import AVFoundation
 
 ///
 /// Group of methods informing what image picker is currently doing
@@ -132,6 +133,8 @@ open class ImagePickerController : UIViewController {
 
         return view
     }()
+    
+    //fileprivate let captureSession = CaptureSession()
     
     //TODO: this is used temporary, we will need to use proper AVCaptureSession
     fileprivate lazy var cameraController: UIImagePickerController = {

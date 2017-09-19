@@ -23,8 +23,6 @@
 		420C24361F5ED4AB008935D4 /* ImagePickerLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 420C24351F5ED4AA008935D4 /* ImagePickerLayout.swift */; };
 		420C243F1F5EEA19008935D4 /* LayoutModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 420C243E1F5EEA19008935D4 /* LayoutModel.swift */; };
 		420C24411F5EEA3C008935D4 /* LayoutConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 420C24401F5EEA3C008935D4 /* LayoutConfiguration.swift */; };
-		420CBBC11F711E83002288C5 /* AVPreviewView.swift in Headers */ = {isa = PBXBuildFile; fileRef = 420CBBC01F711E83002288C5 /* AVPreviewView.swift */; };
-		420CBBC31F712135002288C5 /* CaptureSession.swift in Headers */ = {isa = PBXBuildFile; fileRef = 420CBBC21F712135002288C5 /* CaptureSession.swift */; };
 		421442631F6014B3006BA45A /* CellRegistrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 421442621F6014B3006BA45A /* CellRegistrator.swift */; };
 		421442691F6029D6006BA45A /* IconWithTextCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 421442681F6029D6006BA45A /* IconWithTextCell.xib */; };
 		4214426B1F602C68006BA45A /* ImageCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4214426A1F602C68006BA45A /* ImageCell.xib */; };
@@ -37,6 +35,8 @@
 		4275FFC71F62C2830077A2CD /* CameraCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4275FFC61F62C2830077A2CD /* CameraCell.swift */; };
 		429BFDAA1F68161D00029440 /* ImagePickerAssetModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 429BFDA91F68161D00029440 /* ImagePickerAssetModel.swift */; };
 		42A037E01F66C9E700534350 /* VideoCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 42A037DF1F66C9E700534350 /* VideoCell.xib */; };
+		42EDD4051F7125C700EAD2F5 /* CaptureSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 420CBBC21F712135002288C5 /* CaptureSession.swift */; };
+		42EDD4061F71261600EAD2F5 /* AVPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 420CBBC01F711E83002288C5 /* AVPreviewView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -194,9 +194,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				420CBBC11F711E83002288C5 /* AVPreviewView.swift in Headers */,
 				420C241A1F5D82F9008935D4 /* ImagePicker.h in Headers */,
-				420CBBC31F712135002288C5 /* CaptureSession.swift in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -334,8 +332,10 @@
 				420C243F1F5EEA19008935D4 /* LayoutModel.swift in Sources */,
 				420BCC371F66AEC5006E8806 /* ImagePickerAssetCellProtocol.swift in Sources */,
 				4217080E1F62D06D000DA508 /* CameraCollectionViewCell.swift in Sources */,
+				42EDD4061F71261600EAD2F5 /* AVPreviewView.swift in Sources */,
 				420C24411F5EEA3C008935D4 /* LayoutConfiguration.swift in Sources */,
 				420C24261F5D8393008935D4 /* ImagePickerController.swift in Sources */,
+				42EDD4051F7125C700EAD2F5 /* CaptureSession.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

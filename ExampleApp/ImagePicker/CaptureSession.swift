@@ -139,7 +139,7 @@ final class CaptureSession : NSObject {
                 }
                 
             case .notAuthorized:
-                log.error("not authorized")
+                log("not authorized")
                 
                 //TODO: be carefull, here we explicitly add media type video!
                 DispatchQueue.main.async { [unowned self] in
@@ -148,7 +148,7 @@ final class CaptureSession : NSObject {
                 }
                 
             case .configurationFailed:
-                log.error("configuration failed")
+                log("configuration failed")
                 
                 DispatchQueue.main.async { [unowned self] in
                     self.delegate?.captureSessionDidFailConfiguringSession(self)
@@ -176,7 +176,7 @@ final class CaptureSession : NSObject {
             return
         }
         
-        log.debug("configuring capture session")
+        log("configuring capture session")
         
         session.beginConfiguration()
         session.sessionPreset = AVCaptureSessionPresetHigh
@@ -189,12 +189,7 @@ final class CaptureSession : NSObject {
             if let frontCameraDevice = AVCaptureDevice.defaultDevice(withDeviceType: .builtInWideAngleCamera, mediaType: AVMediaTypeVideo, position: .front) {
                 defaultVideoDevice = frontCameraDevice
             }
-            
-            //TODO: we need to add audio asset as input in order to make video synchronized with audio :(
-//            let assset = AVAsset()
-//            let assetInput = AVAssetReader(asset: assset)
-//            let output = AVAssetReaderTrackOutput(track: <#T##AVAssetTrack#>, outputSettings: <#T##[String : Any]?#>)
-            
+                        
             let videoDeviceInput = try AVCaptureDeviceInput(device: defaultVideoDevice)
             
             if session.canAddInput(videoDeviceInput) {
@@ -212,14 +207,14 @@ final class CaptureSession : NSObject {
                 }
             }
             else {
-                log.error("could not add video device input to the session")
+                log("could not add video device input to the session")
                 setupResult = .configurationFailed
                 session.commitConfiguration()
                 return
             }
         }
         catch {
-            log.error("could not create video device input: \(error)")
+            log("could not create video device input: \(error)")
             setupResult = .configurationFailed
             session.commitConfiguration()
             return
@@ -236,7 +231,7 @@ final class CaptureSession : NSObject {
             }
         }
         else {
-            log.error("could not add video output to the session")
+            log("could not add video output to the session")
             setupResult = .configurationFailed
             session.commitConfiguration()
             return
@@ -276,7 +271,7 @@ final class CaptureSession : NSObject {
             guard let isSessionRunning = newValue?.boolValue else { return }
             
             DispatchQueue.main.async { [unowned self] in
-                log.debug("capture session is running: \(isSessionRunning)")
+                log("capture session is running: \(isSessionRunning)")
                 self.delegate?.captureSessionDidResume(self)
             }
         }
@@ -291,7 +286,7 @@ final class CaptureSession : NSObject {
         }
         
         let error = AVError(_nsError: errorValue)
-        log.error("Capture session runtime error: \(error)")
+        log("Capture session runtime error: \(error)")
         
         /*
          Automatically try to restart the session running if media services were
@@ -328,7 +323,7 @@ final class CaptureSession : NSObject {
          running. Also note that it is not always possible to resume, see `resumeInterruptedSession(_:)`.
          */
         if let userInfoValue = notification.userInfo?[AVCaptureSessionInterruptionReasonKey] as AnyObject?, let reasonIntegerValue = userInfoValue.integerValue, let reason = AVCaptureSessionInterruptionReason(rawValue: reasonIntegerValue) {
-            log.warning("Capture session was interrupted with reason \(reason)")
+            log("Capture session was interrupted with reason \(reason)")
             
             var showResumeButton = false
             
@@ -356,7 +351,7 @@ final class CaptureSession : NSObject {
     }
     
     func sessionInterruptionEnded(notification: NSNotification) {
-        log.debug("Capture session interruption ended")
+        log("Capture session interruption ended")
         /*
          if !resumeButton.isHidden {
          UIView.animate(withDuration: 0.25,
@@ -474,8 +469,8 @@ extension CaptureSession: AVCaptureFileOutputRecordingDelegate {
                         try FileManager.default.removeItem(atPath: path)
                     }
                     catch let error {
-                        log.warning("could not remove recording at url: \(outputFileURL)")
-                        log.error("error: \(error)")
+                        log("could not remove recording at url: \(outputFileURL)")
+                        log("error: \(error)")
                     }
                 }
 
@@ -485,7 +480,7 @@ extension CaptureSession: AVCaptureFileOutputRecordingDelegate {
         
         //var success = true
         if let error = error {
-            log.error("movie recording failed error: \(error)")
+            log("movie recording failed error: \(error)")
             //this can be true even if recording is stopped due to a reason (no disk space)
             //let successfullyFinished = (((error as NSError).userInfo[AVErrorRecordingSuccessfullyFinishedKey] as AnyObject).boolValue)
             cleanup(deleteFile: true)
