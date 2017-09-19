@@ -17,9 +17,7 @@ protocol CameraCollectionViewCellDelegate : class {
 open class CameraCollectionViewCell : UICollectionViewCell {
 
     deinit {
-        #if DEBUG
-            print("deinit: \(String(describing: self))")
-        #endif
+        log("deinit: \(String(describing: self))")
     }
     
     var previewView = AVPreviewView(frame: .zero)
@@ -36,7 +34,7 @@ open class CameraCollectionViewCell : UICollectionViewCell {
     
     open override func layoutSubviews() {
         super.layoutSubviews()
-        previewView.bounds = bounds
+        previewView.frame = bounds
     }
     
     // MARK: Camera API
