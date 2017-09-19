@@ -1,5 +1,5 @@
 //
-//  ImagePickerViewController.swift
+//  ImagePickerController.swift
 //  ExampleApp
 //
 //  Created by Peter Stajger on 04/09/2017.
@@ -13,42 +13,42 @@ import Photos
 ///
 /// Group of methods informing what image picker is currently doing
 ///
-public protocol ImagePickerViewControllerDelegate : class {
+public protocol ImagePickerControllerDelegate : class {
     
     ///
     /// Called when user taps on an action item, index is either 0 or 1 depending which was tapped
     ///
-    func imagePicker(controller: ImagePickerViewController, didSelectActionItemAt index: Int)
+    func imagePicker(controller: ImagePickerController, didSelectActionItemAt index: Int)
     
     ///
     /// Called when user select an asset
     ///
-    func imagePicker(controller: ImagePickerViewController, didFinishPicking asset: PHAsset)
+    func imagePicker(controller: ImagePickerController, didFinishPicking asset: PHAsset)
     
     //perhaps we can use method above and remove this one, client does not care if user took a picture or
     //picked it from a library, to do that we perhaps have to save taken image to photo library
-    func imagePicker(controller: ImagePickerViewController, didTake image: UIImage)
+    func imagePicker(controller: ImagePickerController, didTake image: UIImage)
     
     ///
     /// Called right before an action item collection view cell is displayed. Use this method
     /// to configure your cell.
     ///
-    func imagePicker(controller: ImagePickerViewController, willDisplayActionItem cell: UICollectionViewCell, at index: Int)
+    func imagePicker(controller: ImagePickerController, willDisplayActionItem cell: UICollectionViewCell, at index: Int)
     
     ///
     /// Called right before an asset item collection view cell is displayed. Use this method
     /// to configure your cell based on asset media type, subtype, etc.
     ///
-    func imagePicker(controller: ImagePickerViewController, willDisplayAssetItem cell: ImagePickerAssetCell, asset: PHAsset)
+    func imagePicker(controller: ImagePickerController, willDisplayAssetItem cell: ImagePickerAssetCell, asset: PHAsset)
 }
 
 //this will make sure all delegate methods are optional
-extension ImagePickerViewControllerDelegate {
-    public func imagePicker(controller: ImagePickerViewController, didSelectActionItemAt index: Int) {}
-    public func imagePicker(controller: ImagePickerViewController, didFinishPicking asset: PHAsset) {}
-    public func imagePicker(controller: ImagePickerViewController, didTake image: UIImage) {}
-    public func imagePicker(controller: ImagePickerViewController, willDisplayActionItem cell: UICollectionViewCell, at index: Int) {}
-    public func imagePicker(controller: ImagePickerViewController, willDisplayAssetItem cell: ImagePickerAssetCell, asset: PHAsset) {}
+extension ImagePickerControllerDelegate {
+    public func imagePicker(controller: ImagePickerController, didSelectActionItemAt index: Int) {}
+    public func imagePicker(controller: ImagePickerController, didFinishPicking asset: PHAsset) {}
+    public func imagePicker(controller: ImagePickerController, didTake image: UIImage) {}
+    public func imagePicker(controller: ImagePickerController, willDisplayActionItem cell: UICollectionViewCell, at index: Int) {}
+    public func imagePicker(controller: ImagePickerController, willDisplayAssetItem cell: ImagePickerAssetCell, asset: PHAsset) {}
 }
 
 
@@ -56,15 +56,15 @@ extension ImagePickerViewControllerDelegate {
 /// Image picker may ask for additional resources, implement this protocol to fully support
 /// all features.
 ///
-public protocol ImagePickerViewControllerDataSource : class {
+public protocol ImagePickerControllerDataSource : class {
     ///
     /// Asks for a view that is placed as overlay view with permissions info
     /// when user did not grant or has restricted access to photo library.
     ///
-    func imagePicker(controller: ImagePickerViewController,  viewForAuthorizationStatus status: PHAuthorizationStatus) -> UIView
+    func imagePicker(controller: ImagePickerController,  viewForAuthorizationStatus status: PHAuthorizationStatus) -> UIView
 }
 
-open class ImagePickerViewController : UIViewController {
+open class ImagePickerController : UIViewController {
    
     deinit {
         PHPhotoLibrary.shared().unregisterChangeObserver(self)
@@ -88,12 +88,12 @@ open class ImagePickerViewController : UIViewController {
     ///
     /// Get informed about user interaction and changes
     ///
-    public weak var delegate: ImagePickerViewControllerDelegate?
+    public weak var delegate: ImagePickerControllerDelegate?
     
     ///
     /// Provide additional data when requested by Image Picker
     ///
-    public weak var dataSource: ImagePickerViewControllerDataSource?
+    public weak var dataSource: ImagePickerControllerDataSource?
     
     ///
     /// Access all currently selected images
@@ -240,7 +240,7 @@ open class ImagePickerViewController : UIViewController {
     
 }
 
-extension ImagePickerViewController: PHPhotoLibraryChangeObserver {
+extension ImagePickerController: PHPhotoLibraryChangeObserver {
     
     public func photoLibraryDidChange(_ changeInstance: PHChange) {
         
@@ -293,7 +293,7 @@ extension ImagePickerViewController: PHPhotoLibraryChangeObserver {
     }
 }
 
-extension ImagePickerViewController : ImagePickerDelegateDelegate {
+extension ImagePickerController : ImagePickerDelegateDelegate {
     
     func imagePicker(delegate: ImagePickerDelegate, didSelectActionItemAt index: Int) {
         self.delegate?.imagePicker(controller: self, didSelectActionItemAt: index)
@@ -331,7 +331,7 @@ extension ImagePickerViewController : ImagePickerDelegateDelegate {
     
 }
 
-extension ImagePickerViewController: CameraCollectionViewCellDelegate {
+extension ImagePickerController: CameraCollectionViewCellDelegate {
     
     func takePicture() {
         cameraController.takePicture()
@@ -343,7 +343,7 @@ extension ImagePickerViewController: CameraCollectionViewCellDelegate {
     
 }
 
-extension ImagePickerViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+extension ImagePickerController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         if let image = info[UIImagePickerControllerOriginalImage] as? UIImage {

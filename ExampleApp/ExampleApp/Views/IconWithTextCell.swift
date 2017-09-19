@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-//example of action cell that can be used by ImagePickerViewController
+//example of action cell that can be used by ImagePickerController
 class IconWithTextCell : UICollectionViewCell {
     
     @IBOutlet weak var titleLabel: UILabel!

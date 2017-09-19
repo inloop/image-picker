@@ -46,7 +46,7 @@ class ViewController: UITableViewController {
         registrator.register(nib: videoNib, forAssetItemOf: .video)
 //        registrator.registerCellClassForAssetItems(ImageCell.self)
         
-        let vc = ImagePickerViewController()
+        let vc = ImagePickerController()
         vc.layoutConfiguration = configuration
         vc.cellRegistrator = registrator
         
@@ -67,7 +67,7 @@ class ViewController: UITableViewController {
         let imageNib = UINib(nibName: "ImageCell", bundle: nil)
         registrator.registerNibForAssetItems(imageNib)
         
-        let vc = ImagePickerViewController()
+        let vc = ImagePickerController()
         vc.layoutConfiguration = configuration
         vc.cellRegistrator = registrator
         vc.assetsFetchResultBlock = {
@@ -96,7 +96,7 @@ class ViewController: UITableViewController {
         var configuration = LayoutConfiguration.default
         configuration.numberOfAssetItemsInRow = 1
         
-        let vc = ImagePickerViewController()
+        let vc = ImagePickerController()
         vc.cellRegistrator = registrator
         vc.layoutConfiguration = configuration
         
@@ -119,7 +119,7 @@ class ViewController: UITableViewController {
         var configuration = LayoutConfiguration.default
         configuration.showsSecondActionItem = true
         
-        let vc = ImagePickerViewController()
+        let vc = ImagePickerController()
         vc.cellRegistrator = registrator
         vc.layoutConfiguration = configuration
         
@@ -136,13 +136,13 @@ class ViewController: UITableViewController {
         registrator.registerNibForCameraItem(cameraNib)
         registrator.registerNibForAssetItems(assetNib)
         
-        let vc = ImagePickerViewController()
+        let vc = ImagePickerController()
         vc.cellRegistrator = registrator
         
         presentPickerAsInputView(vc)
     }
     
-    private func presentPickerAsInputView(_ vc: ImagePickerViewController) {
+    private func presentPickerAsInputView(_ vc: ImagePickerController) {
         
         vc.delegate = self
         vc.dataSource = self
@@ -157,7 +157,7 @@ class ViewController: UITableViewController {
         becomeFirstResponder()
     }
     
-    private func presentPickerModally(_ vc: ImagePickerViewController) {
+    private func presentPickerModally(_ vc: ImagePickerController) {
         
         vc.delegate = self
         vc.dataSource = self
@@ -189,21 +189,21 @@ class ViewController: UITableViewController {
     
 }
 
-extension ViewController : ImagePickerViewControllerDelegate {
+extension ViewController : ImagePickerControllerDelegate {
     
-    public func imagePicker(controller: ImagePickerViewController, didSelectActionItemAt index: Int) {
+    public func imagePicker(controller: ImagePickerController, didSelectActionItemAt index: Int) {
         print("did select action \(index)")
     }
     
-    public func imagePicker(controller: ImagePickerViewController, didFinishPicking asset: PHAsset) {
+    public func imagePicker(controller: ImagePickerController, didFinishPicking asset: PHAsset) {
         print("selected assets: \(controller.selectedAssets.count)")
     }
     
-    public func imagePicker(controller: ImagePickerViewController, didTake image: UIImage) {
+    public func imagePicker(controller: ImagePickerController, didTake image: UIImage) {
         print("did take image \(image.size)")
     }
     
-    func imagePicker(controller: ImagePickerViewController, willDisplayActionItem cell: UICollectionViewCell, at index: Int) {
+    func imagePicker(controller: ImagePickerController, willDisplayActionItem cell: UICollectionViewCell, at index: Int) {
         switch cell {
         case let iconWithTextCell as IconWithTextCell:
             switch index {
@@ -220,7 +220,7 @@ extension ViewController : ImagePickerViewControllerDelegate {
         }
     }
     
-    func imagePicker(controller: ImagePickerViewController, willDisplayAssetItem cell: ImagePickerAssetCell, asset: PHAsset) {
+    func imagePicker(controller: ImagePickerController, willDisplayAssetItem cell: ImagePickerAssetCell, asset: PHAsset) {
         switch cell {
         
         case let videoCell as VideoCell:
@@ -251,9 +251,9 @@ extension ViewController : ImagePickerViewControllerDelegate {
     
 }
 
-extension ViewController: ImagePickerViewControllerDataSource {
+extension ViewController: ImagePickerControllerDataSource {
     
-    func imagePicker(controller: ImagePickerViewController, viewForAuthorizationStatus status: PHAuthorizationStatus) -> UIView {
+    func imagePicker(controller: ImagePickerController, viewForAuthorizationStatus status: PHAuthorizationStatus) -> UIView {
         let infoLabel = UILabel(frame: .zero)
         infoLabel.backgroundColor = UIColor.green
         infoLabel.textAlignment = .center
