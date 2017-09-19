@@ -104,11 +104,11 @@ final class CaptureSession : NSObject {
              create an AVCaptureDeviceInput for audio during session setup.
              */
             sessionQueue.suspend()
-            AVCaptureDevice.requestAccess(forMediaType: AVMediaTypeVideo, completionHandler: { [unowned self] granted in
+            AVCaptureDevice.requestAccess(forMediaType: AVMediaTypeVideo, completionHandler: { [capturedSelf = self] granted in
                 if !granted {
-                    self.setupResult = .notAuthorized
+                    capturedSelf.setupResult = .notAuthorized
                 }
-                self.sessionQueue.resume()
+                capturedSelf.sessionQueue.resume()
             })
             
         default:
@@ -126,8 +126,8 @@ final class CaptureSession : NSObject {
          take a long time. We dispatch session setup to the sessionQueue so
          that the main queue isn't blocked, which keeps the UI responsive.
          */
-        sessionQueue.async { [unowned self] in
-            self.configureSession()
+        sessionQueue.async { [capturedSelf = self] in
+            capturedSelf.configureSession()
         }
     }
     
@@ -146,16 +146,16 @@ final class CaptureSession : NSObject {
                 log("capture session: not authorized")
                 
                 //TODO: be carefull, here we explicitly add media type video!
-                DispatchQueue.main.async { [unowned self] in
+                DispatchQueue.main.async { [weak self] in
                     let status = AVCaptureDevice.authorizationStatus(forMediaType: AVMediaTypeVideo)
-                    self.delegate?.captureSession(self, authorizationStatusFailed: status)
+                    self?.delegate?.captureSession(self!, authorizationStatusFailed: status)
                 }
                 
             case .configurationFailed:
                 log("capture session: configuration failed")
                 
-                DispatchQueue.main.async { [unowned self] in
-                    self.delegate?.captureSessionDidFailConfiguringSession(self)
+                DispatchQueue.main.async { [weak self] in
+                    self?.delegate?.captureSessionDidFailConfiguringSession(self!)
                 }
             }
         }
@@ -275,13 +275,13 @@ final class CaptureSession : NSObject {
             let newValue = change?[.newKey] as AnyObject?
             guard let isSessionRunning = newValue?.boolValue else { return }
             
-            DispatchQueue.main.async { [unowned self] in
+            DispatchQueue.main.async { [capturedSelf = self] in
                 log("capture session: is running - \(isSessionRunning)")
                 if isSessionRunning {
-                    self.delegate?.captureSessionDidResume(self)
+                    self.delegate?.captureSessionDidResume(capturedSelf)
                 }
                 else {
-                    self.delegate?.captureSessionDidSuspend(self)
+                    self.delegate?.captureSessionDidSuspend(capturedSelf)
                 }
             }
         }
@@ -304,21 +304,21 @@ final class CaptureSession : NSObject {
          to try to resume the session running.
          */
         if error.code == .mediaServicesWereReset {
-            sessionQueue.async { [unowned self] in
-                if self.isSessionRunning {
-                    self.session.startRunning()
-                    self.isSessionRunning = self.session.isRunning
+            sessionQueue.async { [capturedSelf = self] in
+                if capturedSelf.isSessionRunning {
+                    capturedSelf.session.startRunning()
+                    capturedSelf.isSessionRunning = capturedSelf.session.isRunning
                 }
                 else {
-                    DispatchQueue.main.async { [unowned self] in
-                        self.delegate?.captureSession(self, didFail: error)
+                    DispatchQueue.main.async {
+                        capturedSelf.delegate?.captureSession(capturedSelf, didFail: error)
                     }
                 }
             }
         }
         else {
-            DispatchQueue.main.async { [unowned self] in
-                self.delegate?.captureSession(self, didFail: error)
+            DispatchQueue.main.async { [weak self] in
+                self?.delegate?.captureSession(self!, didFail: error)
             }
         }
     }
@@ -334,8 +334,8 @@ final class CaptureSession : NSObject {
          */
         if let userInfoValue = notification.userInfo?[AVCaptureSessionInterruptionReasonKey] as AnyObject?, let reasonIntegerValue = userInfoValue.integerValue, let reason = AVCaptureSessionInterruptionReason(rawValue: reasonIntegerValue) {
             log("capture session: session was interrupted with reason \(reason)")
-            DispatchQueue.main.async { [unowned self] in
-                self.delegate?.captureSession(self, wasInterrupted: reason)
+            DispatchQueue.main.async { [weak self] in
+                self?.delegate?.captureSession(self!, wasInterrupted: reason)
             }
         }
         else {
@@ -349,8 +349,8 @@ final class CaptureSession : NSObject {
         //this is called automatically when interruption is done and session
         //is automatically resumed. Delegate should know that this happened so
         //the UI can be updated
-        DispatchQueue.main.async { [unowned self] in
-            self.delegate?.captureSessionInterruptionDidEnd(self)
+        DispatchQueue.main.async { [weak self] in
+            self?.delegate?.captureSessionInterruptionDidEnd(self!)
         }
     }
 }
@@ -374,7 +374,11 @@ extension CaptureSession: AVCaptureFileOutputRecordingDelegate {
          */
         let videoPreviewLayerOrientation = previewLayer.connection.videoOrientation
         
-        sessionQueue.async { [unowned self] in
+        sessionQueue.async { [weak self] in
+            
+            guard let strongSelf = self else {
+                return
+            }
             
             //if already recording do nothing
             guard movieFileOutput.isRecording == false else {
@@ -390,11 +394,11 @@ extension CaptureSession: AVCaptureFileOutputRecordingDelegate {
                  To conclude this background execution, endBackgroundTask(_:) is called in
                  `capture(_:, didFinishRecordingToOutputFileAt:, fromConnections:, error:)` after the recorded file has been saved.
                  */
-                self.backgroundRecordingID = UIApplication.shared.beginBackgroundTask(expirationHandler: nil)
+                strongSelf.backgroundRecordingID = UIApplication.shared.beginBackgroundTask(expirationHandler: nil)
             }
             
             // Update the orientation on the movie file output video connection before starting recording.
-            let movieFileOutputConnection = self.videoFileOutput?.connection(withMediaType: AVMediaTypeVideo)
+            let movieFileOutputConnection = strongSelf.videoFileOutput?.connection(withMediaType: AVMediaTypeVideo)
             movieFileOutputConnection?.videoOrientation = videoPreviewLayerOrientation
             
             // Start recording to a temporary file.
@@ -416,20 +420,20 @@ extension CaptureSession: AVCaptureFileOutputRecordingDelegate {
             return
         }
         
-        sessionQueue.async { [unowned self] in
+        sessionQueue.async { [capturedSelf = self] in
             
             guard movieFileOutput.isRecording else {
                 return
             }
             
-            self.recordingIsBeingCancelled = cancel
+            capturedSelf.recordingIsBeingCancelled = cancel
             movieFileOutput.stopRecording()
         }
     }
     
     func capture(_ captureOutput: AVCaptureFileOutput!, didStartRecordingToOutputFileAt fileURL: URL!, fromConnections connections: [Any]!) {
-        DispatchQueue.main.async { [unowned self] in
-            self.videoRecordingDelegate?.captureSessionDidStartVideoRecording(self)
+        DispatchQueue.main.async { [weak self] in
+            self?.videoRecordingDelegate?.captureSessionDidStartVideoRecording(self!)
         }
     }
     

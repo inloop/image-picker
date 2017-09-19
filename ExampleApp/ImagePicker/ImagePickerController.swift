@@ -69,6 +69,7 @@ open class ImagePickerController : UIViewController {
    
     deinit {
         PHPhotoLibrary.shared().unregisterChangeObserver(self)
+        captureSession.suspend()
         log("deinit: \(String(describing: self))")
     }
     
@@ -324,11 +325,9 @@ extension ImagePickerController : ImagePickerDelegateDelegate {
     }
     
     func imagePicker(delegate: ImagePickerDelegate, willDisplayCameraCell cell: CameraCollectionViewCell) {
-        //TODO: accessing camera controller this way is too expensive - it can take up to 3 seconds
-        //TODO: should start capture session
         
         cell.delegate = self
-        
+
         cell.previewView.session = captureSession.session
         captureSession.previewLayer = cell.previewView.previewLayer
                 
@@ -336,7 +335,6 @@ extension ImagePickerController : ImagePickerDelegateDelegate {
     }
     
     func imagePicker(delegate: ImagePickerDelegate, didEndDisplayingCameraCell cell: CameraCollectionViewCell) {
-        //TODO: should shop capture session
         captureSession.suspend()
     }
     
