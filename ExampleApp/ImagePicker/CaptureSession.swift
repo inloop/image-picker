@@ -41,8 +41,11 @@ protocol CaptureSessionDelegate : class {
     ///called when user did not authorize using audio or video
     func captureSession(_ session: CaptureSession, authorizationStatusFailed status: AVAuthorizationStatus)
     
-    ///called when session is interrupted due to various reasons, for example when user starts an audio using control center, etc.
+    ///called when session is interrupted due to various reasons, for example when a phone call or user starts an audio using control center, etc.
     func captureSession(_ session: CaptureSession, wasInterrupted reason: AVCaptureSessionInterruptionReason)
+    
+    ///called when and interruption is ended and the session was automatically resumed.
+    func captureSessionInterruptionDidEnd(_ session: CaptureSession)
 }
 
 ///
@@ -331,7 +334,6 @@ final class CaptureSession : NSObject {
          */
         if let userInfoValue = notification.userInfo?[AVCaptureSessionInterruptionReasonKey] as AnyObject?, let reasonIntegerValue = userInfoValue.integerValue, let reason = AVCaptureSessionInterruptionReason(rawValue: reasonIntegerValue) {
             log("capture session: session was interrupted with reason \(reason)")
-            
             DispatchQueue.main.async { [unowned self] in
                 self.delegate?.captureSession(self, wasInterrupted: reason)
             }
@@ -343,26 +345,13 @@ final class CaptureSession : NSObject {
     
     func sessionInterruptionEnded(notification: NSNotification) {
         log("capture session: interruption ended")
-        /*
-         if !resumeButton.isHidden {
-         UIView.animate(withDuration: 0.25,
-         animations: { [unowned self] in
-         self.resumeButton.alpha = 0
-         }, completion: { [unowned self] finished in
-         self.resumeButton.isHidden = true
-         }
-         )
-         }
-         if !cameraUnavailableLabel.isHidden {
-         UIView.animate(withDuration: 0.25,
-         animations: { [unowned self] in
-         self.cameraUnavailableLabel.alpha = 0
-         }, completion: { [unowned self] finished in
-         self.cameraUnavailableLabel.isHidden = true
-         }
-         )
-         }
-         */
+        
+        //this is called automatically when interruption is done and session
+        //is automatically resumed. Delegate should know that this happened so
+        //the UI can be updated
+        DispatchQueue.main.async { [unowned self] in
+            self.delegate?.captureSessionInterruptionDidEnd(self)
+        }
     }
 }
 

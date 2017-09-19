@@ -364,6 +364,14 @@ extension ImagePickerController : CaptureSessionDelegate {
         log("did fail authorization")
     }
     
+    func captureSession(_ session: CaptureSession, wasInterrupted reason: AVCaptureSessionInterruptionReason) {
+        log("interrupted")
+    }
+    
+    func captureSessionInterruptionDidEnd(_ session: CaptureSession) {
+        log("interruption ended")
+    }
+    
 }
 
 extension ImagePickerController : CaptureSessionVideoRecordingDelegate {
