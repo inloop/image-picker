@@ -1,0 +1,507 @@
+//
+//  CaptureSession.swift
+//  ExampleApp
+//
+//  Created by Peter Stajger on 27/03/17.
+//  Copyright © 2017 Peter Stajger. All rights reserved.
+//
+
+import Foundation
+import AVFoundation
+import UIKit
+
+protocol CaptureSessionVideoRecordingDelegate : class {
+ 
+    ///called when video file recording output is added to the session
+    func captureSessionDidBecomeReadyForVideoRecording(_ session: CaptureSession)
+    
+    ///called when recording started
+    func captureSessionDidStartVideoRecording(_ session: CaptureSession)
+    
+    ///called when cancel recording as a result of calling `cancelVideoRecording` func.
+    func captureSessionDidCancelVideoRecording(_ session: CaptureSession)
+    func captureSessionDid(_ session: CaptureSession, didFinishVideoRecording videoURL: URL)
+    func captureSessionDid(_ session: CaptureSession, didFailVideoRecording error: Error)
+}
+
+protocol CaptureSessionDelegate : class {
+    
+    ///called when session is successfully configured and started running
+    func captureSessionDidResume(_ session: CaptureSession)
+    
+    ///called when session is was manually suspended
+    func captureSessionDidSuspend(_ session: CaptureSession)
+    
+    ///capture session was running but did fail due to any AV error reason.
+    func captureSession(_ session: CaptureSession, didFail error: AVError)
+    
+    ///called when creating and configuring session but something failed (e.g. input or output could not be added, etc
+    func captureSessionDidFailConfiguringSession(_ session: CaptureSession)
+    
+    ///called when user did not authorize using audio or video
+    func captureSession(_ session: CaptureSession, authorizationStatusFailed status: AVAuthorizationStatus)
+}
+
+///
+/// Manages AVCaptureSession
+///
+final class CaptureSession : NSObject {
+    
+    deinit {
+        #if DEBUG
+            print("deinit: \(String(describing: self))")
+        #endif
+    }
+    
+    private enum SessionSetupResult {
+        case success
+        case notAuthorized
+        case configurationFailed
+    }
+    
+    weak var delegate: CaptureSessionDelegate?
+    weak var videoRecordingDelegate: CaptureSessionVideoRecordingDelegate?
+    
+    let session = AVCaptureSession()
+    var isSessionRunning = false
+    weak var previewLayer: AVCaptureVideoPreviewLayer?
+    
+    /// Communicate with the session and other session objects on this queue.
+    fileprivate let sessionQueue = DispatchQueue(label: "session queue", attributes: [], target: nil)
+    private var setupResult: SessionSetupResult = .success
+    
+    fileprivate var videoFileOutput: AVCaptureMovieFileOutput?
+    fileprivate var backgroundRecordingID: UIBackgroundTaskIdentifier? = nil
+    fileprivate var recordingIsBeingCancelled = false
+    var isReadyForVideoRecording: Bool {
+        return videoFileOutput != nil
+    }
+    
+    func prepare() {
+        /*
+         Check video authorization status. Video access is required and audio
+         access is optional. If audio access is denied, audio is not recorded
+         during movie recording.
+         */
+        //TODO: support also media type audio later!
+        let mediaType = AVMediaTypeVideo
+        switch AVCaptureDevice.authorizationStatus(forMediaType: mediaType) {
+        case .authorized:
+            // The user has previously granted access to the camera.
+            break
+            
+        case .notDetermined:
+            /*
+             The user has not yet been presented with the option to grant
+             video access. We suspend the session queue to delay session
+             setup until the access request has completed.
+             
+             Note that audio access will be implicitly requested when we
+             create an AVCaptureDeviceInput for audio during session setup.
+             */
+            sessionQueue.suspend()
+            AVCaptureDevice.requestAccess(forMediaType: AVMediaTypeVideo, completionHandler: { [unowned self] granted in
+                if !granted {
+                    self.setupResult = .notAuthorized
+                }
+                self.sessionQueue.resume()
+            })
+            
+        default:
+            // The user has previously denied access.
+            setupResult = .notAuthorized
+        }
+        
+        /*
+         Setup the capture session.
+         In general it is not safe to mutate an AVCaptureSession or any of its
+         inputs, outputs, or connections from multiple threads at the same time.
+         
+         Why not do all of this on the main queue?
+         Because AVCaptureSession.startRunning() is a blocking call which can
+         take a long time. We dispatch session setup to the sessionQueue so
+         that the main queue isn't blocked, which keeps the UI responsive.
+         */
+        sessionQueue.async { [unowned self] in
+            self.configureSession()
+        }
+    }
+    
+    func resume() {
+        sessionQueue.async {
+            switch self.setupResult {
+            case .success:
+                // Only setup observers and start the session running if setup succeeded.
+                self.addObservers()
+                self.session.startRunning()
+                self.isSessionRunning = self.session.isRunning
+                
+                DispatchQueue.main.async { [unowned self] in
+                    self.delegate?.captureSessionDidResume(self)
+                }
+                
+            case .notAuthorized:
+                log.error("not authorized")
+                
+                //TODO: be carefull, here we explicitly add media type video!
+                DispatchQueue.main.async { [unowned self] in
+                    let status = AVCaptureDevice.authorizationStatus(forMediaType: AVMediaTypeVideo)
+                    self.delegate?.captureSession(self, authorizationStatusFailed: status)
+                }
+                
+            case .configurationFailed:
+                log.error("configuration failed")
+                
+                DispatchQueue.main.async { [unowned self] in
+                    self.delegate?.captureSessionDidFailConfiguringSession(self)
+                }
+            }
+        }
+    }
+    
+    func suspend() {
+        //we need to capture self in order to postpone deallocation while
+        //session is properly stopped and cleaned up
+        sessionQueue.async { [capturedSelf = self] in
+            if capturedSelf.setupResult == .success {
+                capturedSelf.session.stopRunning()
+                capturedSelf.isSessionRunning = self.session.isRunning
+                capturedSelf.removeObservers()
+                capturedSelf.delegate?.captureSessionDidSuspend(self)
+            }
+        }
+    }
+    
+    private func configureSession() {
+        
+        guard setupResult == .success else {
+            return
+        }
+        
+        log.debug("configuring capture session")
+        
+        session.beginConfiguration()
+        session.sessionPreset = AVCaptureSessionPresetHigh
+        
+        // Add video input.
+        do {
+            var defaultVideoDevice: AVCaptureDevice?
+            
+            // In some cases where users break their phones, the back wide angle camera is not available. In this case, we should default to the front wide angle camera.
+            if let frontCameraDevice = AVCaptureDevice.defaultDevice(withDeviceType: .builtInWideAngleCamera, mediaType: AVMediaTypeVideo, position: .front) {
+                defaultVideoDevice = frontCameraDevice
+            }
+            
+            //TODO: we need to add audio asset as input in order to make video synchronized with audio :(
+//            let assset = AVAsset()
+//            let assetInput = AVAssetReader(asset: assset)
+//            let output = AVAssetReaderTrackOutput(track: <#T##AVAssetTrack#>, outputSettings: <#T##[String : Any]?#>)
+            
+            let videoDeviceInput = try AVCaptureDeviceInput(device: defaultVideoDevice)
+            
+            if session.canAddInput(videoDeviceInput) {
+                session.addInput(videoDeviceInput)
+                
+                DispatchQueue.main.async {
+                    /*
+                     Why are we dispatching this to the main queue?
+                     Because AVCaptureVideoPreviewLayer is the backing layer for PreviewView and UIView
+                     can only be manipulated on the main thread.
+                     Note: As an exception to the above rule, it is not necessary to serialize video orientation changes
+                     on the AVCaptureVideoPreviewLayer’s connection with other session manipulation.
+                     */
+                    self.previewLayer?.connection.videoOrientation = .portrait
+                }
+            }
+            else {
+                log.error("could not add video device input to the session")
+                setupResult = .configurationFailed
+                session.commitConfiguration()
+                return
+            }
+        }
+        catch {
+            log.error("could not create video device input: \(error)")
+            setupResult = .configurationFailed
+            session.commitConfiguration()
+            return
+        }
+        
+        // Add video output.
+        let movieFileOutput = AVCaptureMovieFileOutput()
+        if self.session.canAddOutput(movieFileOutput) {
+            self.session.addOutput(movieFileOutput)
+            self.videoFileOutput = movieFileOutput
+            
+            DispatchQueue.main.async { [weak self] in
+                self?.videoRecordingDelegate?.captureSessionDidBecomeReadyForVideoRecording(self!)
+            }
+        }
+        else {
+            log.error("could not add video output to the session")
+            setupResult = .configurationFailed
+            session.commitConfiguration()
+            return
+        }
+        
+        session.commitConfiguration()
+    }
+    
+    // MARK: KVO and Notifications
+    
+    private var sessionRunningObserveContext = 0
+    
+    private func addObservers() {
+        session.addObserver(self, forKeyPath: "running", options: .new, context: &sessionRunningObserveContext)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(sessionRuntimeError), name: Notification.Name("AVCaptureSessionRuntimeErrorNotification"), object: session)
+        
+        /*
+         A session can only run when the app is full screen. It will be interrupted
+         in a multi-app layout, introduced in iOS 9, see also the documentation of
+         AVCaptureSessionInterruptionReason. Add observers to handle these session
+         interruptions and show a preview is paused message. See the documentation
+         of AVCaptureSessionWasInterruptedNotification for other interruption reasons.
+         */
+        NotificationCenter.default.addObserver(self, selector: #selector(sessionWasInterrupted), name: Notification.Name("AVCaptureSessionWasInterruptedNotification"), object: session)
+        NotificationCenter.default.addObserver(self, selector: #selector(sessionInterruptionEnded), name: Notification.Name("AVCaptureSessionInterruptionEndedNotification"), object: session)
+    }
+    
+    private func removeObservers() {
+        NotificationCenter.default.removeObserver(self)
+        session.removeObserver(self, forKeyPath: "running", context: &sessionRunningObserveContext)
+    }
+    
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        if context == &sessionRunningObserveContext {
+            let newValue = change?[.newKey] as AnyObject?
+            guard let isSessionRunning = newValue?.boolValue else { return }
+            
+            DispatchQueue.main.async { [unowned self] in
+                log.debug("capture session is running: \(isSessionRunning)")
+                self.delegate?.captureSessionDidResume(self)
+            }
+        }
+        else {
+            super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
+        }
+    }
+    
+    func sessionRuntimeError(notification: NSNotification) {
+        guard let errorValue = notification.userInfo?[AVCaptureSessionErrorKey] as? NSError else {
+            return
+        }
+        
+        let error = AVError(_nsError: errorValue)
+        log.error("Capture session runtime error: \(error)")
+        
+        /*
+         Automatically try to restart the session running if media services were
+         reset and the last start running succeeded. Otherwise, enable the user
+         to try to resume the session running.
+         */
+        if error.code == .mediaServicesWereReset {
+            sessionQueue.async { [unowned self] in
+                if self.isSessionRunning {
+                    self.session.startRunning()
+                    self.isSessionRunning = self.session.isRunning
+                }
+                else {
+                    DispatchQueue.main.async { [unowned self] in
+                        self.delegate?.captureSession(self, didFail: error)
+                    }
+                }
+            }
+        }
+        else {
+            DispatchQueue.main.async { [unowned self] in
+                self.delegate?.captureSession(self, didFail: error)
+            }
+        }
+    }
+    
+    func sessionWasInterrupted(notification: NSNotification) {
+        /*
+         In some scenarios we want to enable the user to resume the session running.
+         For example, if music playback is initiated via control center while
+         using AVCam, then the user can let AVCam resume
+         the session running, which will stop music playback. Note that stopping
+         music playback in control center will not automatically resume the session
+         running. Also note that it is not always possible to resume, see `resumeInterruptedSession(_:)`.
+         */
+        if let userInfoValue = notification.userInfo?[AVCaptureSessionInterruptionReasonKey] as AnyObject?, let reasonIntegerValue = userInfoValue.integerValue, let reason = AVCaptureSessionInterruptionReason(rawValue: reasonIntegerValue) {
+            log.warning("Capture session was interrupted with reason \(reason)")
+            
+            var showResumeButton = false
+            
+            if reason == AVCaptureSessionInterruptionReason.audioDeviceInUseByAnotherClient || reason == AVCaptureSessionInterruptionReason.videoDeviceInUseByAnotherClient {
+                showResumeButton = true
+            }
+            else if reason == AVCaptureSessionInterruptionReason.videoDeviceNotAvailableWithMultipleForegroundApps {
+                // Simply fade-in a label to inform the user that the camera is unavailable.
+                //cameraUnavailableLabel.alpha = 0
+                //cameraUnavailableLabel.isHidden = false
+                //UIView.animate(withDuration: 0.25) { [unowned self] in
+                //    self.cameraUnavailableLabel.alpha = 1
+                //}
+            }
+            
+            if showResumeButton {
+                // Simply fade-in a button to enable the user to try to resume the session running.
+                //resumeButton.alpha = 0
+                //resumeButton.isHidden = false
+                //UIView.animate(withDuration: 0.25) { [unowned self] in
+                //    self.resumeButton.alpha = 1
+                //}
+            }
+        }
+    }
+    
+    func sessionInterruptionEnded(notification: NSNotification) {
+        log.debug("Capture session interruption ended")
+        /*
+         if !resumeButton.isHidden {
+         UIView.animate(withDuration: 0.25,
+         animations: { [unowned self] in
+         self.resumeButton.alpha = 0
+         }, completion: { [unowned self] finished in
+         self.resumeButton.isHidden = true
+         }
+         )
+         }
+         if !cameraUnavailableLabel.isHidden {
+         UIView.animate(withDuration: 0.25,
+         animations: { [unowned self] in
+         self.cameraUnavailableLabel.alpha = 0
+         }, completion: { [unowned self] finished in
+         self.cameraUnavailableLabel.isHidden = true
+         }
+         )
+         }
+         */
+    }
+}
+
+extension CaptureSession: AVCaptureFileOutputRecordingDelegate {
+    
+    func startVideoRecording() {
+        
+        guard let movieFileOutput = self.videoFileOutput else {
+            return
+        }
+        
+        guard let previewLayer = self.previewLayer else {
+            return
+        }
+        
+        /*
+         Retrieve the video preview layer's video orientation on the main queue
+         before entering the session queue. We do this to ensure UI elements are
+         accessed on the main thread and session configuration is done on the session queue.
+         */
+        let videoPreviewLayerOrientation = previewLayer.connection.videoOrientation
+        
+        sessionQueue.async { [unowned self] in
+            
+            //if already recording do nothing
+            guard movieFileOutput.isRecording == false else {
+                return
+            }
+            
+            if UIDevice.current.isMultitaskingSupported {
+                /*
+                 Setup background task.
+                 This is needed because the `capture(_:, didFinishRecordingToOutputFileAt:, fromConnections:, error:)`
+                 callback is not received until AVCam returns to the foreground unless you request background execution time.
+                 This also ensures that there will be time to write the file to the photo library when AVCam is backgrounded.
+                 To conclude this background execution, endBackgroundTask(_:) is called in
+                 `capture(_:, didFinishRecordingToOutputFileAt:, fromConnections:, error:)` after the recorded file has been saved.
+                 */
+                self.backgroundRecordingID = UIApplication.shared.beginBackgroundTask(expirationHandler: nil)
+            }
+            
+            // Update the orientation on the movie file output video connection before starting recording.
+            let movieFileOutputConnection = self.videoFileOutput?.connection(withMediaType: AVMediaTypeVideo)
+            movieFileOutputConnection?.videoOrientation = videoPreviewLayerOrientation
+            
+            // Start recording to a temporary file.
+            //let outputFileName = NSUUID().uuidString
+            let outputFileName = "exporting_video_to_this_file"
+            let outputURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(outputFileName).appendingPathExtension("mov")
+            movieFileOutput.startRecording(toOutputFileURL: outputURL, recordingDelegate: self)
+        }
+    }
+
+    ///
+    /// If there is any recording in progres it will be stopped.
+    ///
+    /// - parameter cancel: if true, recorded file will be deleted and corresponding delegate method will be called.
+    ///
+    func stopVideoRecording(cancel: Bool = false) {
+    
+        guard let movieFileOutput = self.videoFileOutput else {
+            return
+        }
+        
+        sessionQueue.async { [unowned self] in
+            
+            guard movieFileOutput.isRecording else {
+                return
+            }
+            
+            self.recordingIsBeingCancelled = cancel
+            movieFileOutput.stopRecording()
+        }
+    }
+    
+    func capture(_ captureOutput: AVCaptureFileOutput!, didStartRecordingToOutputFileAt fileURL: URL!, fromConnections connections: [Any]!) {
+        DispatchQueue.main.async { [unowned self] in
+            self.videoRecordingDelegate?.captureSessionDidStartVideoRecording(self)
+        }
+    }
+    
+    func capture(_ captureOutput: AVCaptureFileOutput!, didFinishRecordingToOutputFileAt outputFileURL: URL!, fromConnections connections: [Any]!, error: Error!) {
+        
+        func cleanup(deleteFile: Bool) {
+            if let currentBackgroundRecordingID = backgroundRecordingID {
+                backgroundRecordingID = UIBackgroundTaskInvalid
+                if currentBackgroundRecordingID != UIBackgroundTaskInvalid {
+                    UIApplication.shared.endBackgroundTask(currentBackgroundRecordingID)
+                }
+            }
+            if deleteFile {
+                let path = outputFileURL.path
+                if FileManager.default.fileExists(atPath: path) {
+                    do {
+                        try FileManager.default.removeItem(atPath: path)
+                    }
+                    catch let error {
+                        log.warning("could not remove recording at url: \(outputFileURL)")
+                        log.error("error: \(error)")
+                    }
+                }
+
+            }
+            recordingIsBeingCancelled = false
+        }
+        
+        //var success = true
+        if let error = error {
+            log.error("movie recording failed error: \(error)")
+            //this can be true even if recording is stopped due to a reason (no disk space)
+            //let successfullyFinished = (((error as NSError).userInfo[AVErrorRecordingSuccessfullyFinishedKey] as AnyObject).boolValue)
+            cleanup(deleteFile: true)
+            videoRecordingDelegate?.captureSessionDid(self, didFailVideoRecording: error)
+        }
+        else if recordingIsBeingCancelled == true {
+            cleanup(deleteFile: true)
+            self.videoRecordingDelegate?.captureSessionDidCancelVideoRecording(self)
+        }
+        else {
+            cleanup(deleteFile: false)
+            videoRecordingDelegate?.captureSessionDid(self, didFinishVideoRecording: outputFileURL)
+        }
+
+    }
+    
+}
