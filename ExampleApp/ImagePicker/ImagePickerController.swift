@@ -319,11 +319,12 @@ extension ImagePickerController : ImagePickerDelegateDelegate {
     
     func imagePicker(delegate: ImagePickerDelegate, willDisplayCameraCell cell: CameraCollectionViewCell) {
         
-        cell.delegate = self
-
-        cell.previewView.session = captureSession.session
-        captureSession.previewLayer = cell.previewView.previewLayer
-                
+        if cell.delegate == nil {
+            cell.delegate = self
+            cell.previewView.session = captureSession.session
+            captureSession.previewLayer = cell.previewView.previewLayer
+        }
+        
         captureSession.resume()
     }
     

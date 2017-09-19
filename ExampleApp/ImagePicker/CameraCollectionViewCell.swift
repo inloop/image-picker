@@ -24,17 +24,12 @@ open class CameraCollectionViewCell : UICollectionViewCell {
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
-        contentView.addSubview(previewView)
+        backgroundView = previewView
     }
     
     required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        contentView.addSubview(previewView)
-    }
-    
-    open override func layoutSubviews() {
-        super.layoutSubviews()
-        previewView.frame = bounds
+        backgroundView = previewView
     }
     
     // MARK: Camera API
