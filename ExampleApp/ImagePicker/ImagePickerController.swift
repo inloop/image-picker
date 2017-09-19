@@ -135,17 +135,6 @@ open class ImagePickerController : UIViewController {
     
     fileprivate let captureSession = CaptureSession()
     
-    //TODO: this is used temporary, we will need to use proper AVCaptureSession
-//    fileprivate lazy var cameraController: UIImagePickerController = {
-//        let controller = UIImagePickerController()
-//        controller.delegate =  self
-//        controller.sourceType = .camera
-//        controller.showsCameraControls = false
-//        controller.allowsEditing = false
-//        controller.cameraFlashMode = .off
-//        return controller
-//    }()
-    
     private func updateItemSize() {
         
         guard let layout = self.collectionViewDelegate.layout else {
@@ -239,6 +228,10 @@ open class ImagePickerController : UIViewController {
     //this will make sure that collection view layout is reloaded when interface rotates/changes
     //TODO: we need to reload thumbnail sizes and purge all image asset caches
     open override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        
+        //update video orientation at this time status bar orientation has new value so lets convert it to video orientation
+        captureSession.previewLayer?.connection.videoOrientation = UIApplication.shared.statusBarOrientation.captureVideoOrientation
+        
         coordinator.animate(alongsideTransition: { (context) in
             self.collectionView.collectionViewLayout.invalidateLayout()
         }) { (context) in }
@@ -399,11 +392,11 @@ extension ImagePickerController : CaptureSessionVideoRecordingDelegate {
 extension ImagePickerController: CameraCollectionViewCellDelegate {
     
     func takePicture() {
-        //cameraController.takePicture()
+        //TODO: cameraController.takePicture()
     }
     
     func flipCamera() {
-        //cameraController.cameraDevice = (cameraController.cameraDevice == .rear) ? .front : .rear
+        //TODO: cameraController.cameraDevice = (cameraController.cameraDevice == .rear) ? .front : .rear
     }
     
 }

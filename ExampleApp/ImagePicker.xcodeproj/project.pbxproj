@@ -37,7 +37,7 @@
 		42A037E01F66C9E700534350 /* VideoCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 42A037DF1F66C9E700534350 /* VideoCell.xib */; };
 		42EDD4051F7125C700EAD2F5 /* CaptureSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 420CBBC21F712135002288C5 /* CaptureSession.swift */; };
 		42EDD4061F71261600EAD2F5 /* AVPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 420CBBC01F711E83002288C5 /* AVPreviewView.swift */; };
-		42EDD4161F712B2A00EAD2F5 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42EDD4151F712B2A00EAD2F5 /* Logger.swift */; };
+		42EDD4161F712B2A00EAD2F5 /* Miscellaneous.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42EDD4151F712B2A00EAD2F5 /* Miscellaneous.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -97,7 +97,7 @@
 		4275FFC61F62C2830077A2CD /* CameraCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraCell.swift; sourceTree = "<group>"; };
 		429BFDA91F68161D00029440 /* ImagePickerAssetModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePickerAssetModel.swift; sourceTree = "<group>"; };
 		42A037DF1F66C9E700534350 /* VideoCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = VideoCell.xib; sourceTree = "<group>"; };
-		42EDD4151F712B2A00EAD2F5 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
+		42EDD4151F712B2A00EAD2F5 /* Miscellaneous.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Miscellaneous.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -168,7 +168,7 @@
 				420BCC361F66AEC5006E8806 /* ImagePickerAssetCellProtocol.swift */,
 				420CBBC01F711E83002288C5 /* AVPreviewView.swift */,
 				420CBBC21F712135002288C5 /* CaptureSession.swift */,
-				42EDD4151F712B2A00EAD2F5 /* Logger.swift */,
+				42EDD4151F712B2A00EAD2F5 /* Miscellaneous.swift */,
 				420C24191F5D82F9008935D4 /* Info.plist */,
 			);
 			path = ImagePicker;
@@ -337,7 +337,7 @@
 				4217080E1F62D06D000DA508 /* CameraCollectionViewCell.swift in Sources */,
 				42EDD4061F71261600EAD2F5 /* AVPreviewView.swift in Sources */,
 				420C24411F5EEA3C008935D4 /* LayoutConfiguration.swift in Sources */,
-				42EDD4161F712B2A00EAD2F5 /* Logger.swift in Sources */,
+				42EDD4161F712B2A00EAD2F5 /* Miscellaneous.swift in Sources */,
 				420C24261F5D8393008935D4 /* ImagePickerController.swift in Sources */,
 				42EDD4051F7125C700EAD2F5 /* CaptureSession.swift in Sources */,
 			);
