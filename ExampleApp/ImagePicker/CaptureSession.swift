@@ -74,12 +74,28 @@ final class CaptureSession : NSObject {
     fileprivate let sessionQueue = DispatchQueue(label: "session queue", attributes: [], target: nil)
     private var setupResult: SessionSetupResult = .success
     
+    // MARK: Video Recoding
+    
     fileprivate var videoFileOutput: AVCaptureMovieFileOutput?
     fileprivate var backgroundRecordingID: UIBackgroundTaskIdentifier? = nil
     fileprivate var recordingIsBeingCancelled = false
     var isReadyForVideoRecording: Bool {
         return videoFileOutput != nil
     }
+    
+    // MARK: Photo Capturing
+    
+    fileprivate enum LivePhotoMode {
+        case on
+        case off
+    }
+    
+    fileprivate var livePhotoMode: LivePhotoMode = .off
+    fileprivate let photoOutput = AVCapturePhotoOutput()
+    fileprivate var inProgressPhotoCaptureDelegates = [Int64 : PhotoCaptureDelegate]()
+    fileprivate var inProgressLivePhotoCapturesCount = 0
+    
+    // MARK: Public Methods
     
     func prepare() {
         /*
@@ -162,19 +178,31 @@ final class CaptureSession : NSObject {
     }
     
     func suspend() {
+        
+        guard setupResult == .success else {
+            return
+        }
+        
         //we need to capture self in order to postpone deallocation while
         //session is properly stopped and cleaned up
         sessionQueue.async { [capturedSelf = self] in
-            if capturedSelf.setupResult == .success {
-                capturedSelf.session.stopRunning()
-                capturedSelf.isSessionRunning = self.session.isRunning
-                capturedSelf.removeObservers()
-                //we are not calling delegate from here because
-                //we are KVOing `isRunning` on session itself so it's called from there
-            }
+            capturedSelf.session.stopRunning()
+            capturedSelf.isSessionRunning = self.session.isRunning
+            capturedSelf.removeObservers()
+            //we are not calling delegate from here because
+            //we are KVOing `isRunning` on session itself so it's called from there
         }
     }
     
+    // MARK: Private Methods
+    
+    ///
+    /// Cinfigures a session before it can be used, following steps are done:
+    /// 1. adds video input
+    /// 2. adds video output (for recording videos)
+    /// 3. adds audio input (for video recording with audio)
+    /// 4. adds photo output (for capturing photos)
+    ///
     private func configureSession() {
         
         guard setupResult == .success else {
@@ -190,8 +218,16 @@ final class CaptureSession : NSObject {
         do {
             var defaultVideoDevice: AVCaptureDevice?
             
-            // In some cases where users break their phones, the back wide angle camera is not available. In this case, we should default to the front wide angle camera.
-            if let frontCameraDevice = AVCaptureDevice.defaultDevice(withDeviceType: .builtInWideAngleCamera, mediaType: AVMediaTypeVideo, position: .front) {
+            // Choose the back dual camera if available, otherwise default to a wide angle camera.
+            if let dualCameraDevice = AVCaptureDevice.defaultDevice(withDeviceType: .builtInDuoCamera, mediaType: AVMediaTypeVideo, position: .back) {
+                defaultVideoDevice = dualCameraDevice
+            }
+            else if let backCameraDevice = AVCaptureDevice.defaultDevice(withDeviceType: .builtInWideAngleCamera, mediaType: AVMediaTypeVideo, position: .back) {
+                // If the back dual camera is not available, default to the back wide angle camera.
+                defaultVideoDevice = backCameraDevice
+            }
+            else if let frontCameraDevice = AVCaptureDevice.defaultDevice(withDeviceType: .builtInWideAngleCamera, mediaType: AVMediaTypeVideo, position: .front) {
+                // In some cases where users break their phones, the back wide angle camera is not available. In this case, we should default to the front wide angle camera.
                 defaultVideoDevice = frontCameraDevice
             }
             
@@ -208,7 +244,7 @@ final class CaptureSession : NSObject {
                      Note: As an exception to the above rule, it is not necessary to serialize video orientation changes
                      on the AVCaptureVideoPreviewLayer’s connection with other session manipulation.
                      */
-                    self.previewLayer?.connection.videoOrientation = .portrait
+                    self.previewLayer?.connection.videoOrientation = UIApplication.shared.statusBarOrientation.captureVideoOrientation
                 }
             }
             else {
@@ -237,6 +273,36 @@ final class CaptureSession : NSObject {
         }
         else {
             log("capture session: could not add video output to the session")
+            setupResult = .configurationFailed
+            session.commitConfiguration()
+            return
+        }
+        
+        // Add audio input, if fails no need to fail whole configuration
+        do {
+            let audioDevice = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeAudio)
+            let audioDeviceInput = try AVCaptureDeviceInput(device: audioDevice)
+            
+            if session.canAddInput(audioDeviceInput) {
+                session.addInput(audioDeviceInput)
+            }
+            else {
+                log("capture session: could not add audio device input to the session")
+            }
+        }
+        catch {
+            log("capture session: could not create audio device input: \(error)")
+        }
+        
+        // Add photo output.
+        if session.canAddOutput(photoOutput) {
+            session.addOutput(photoOutput)
+            photoOutput.isHighResolutionCaptureEnabled = true
+            photoOutput.isLivePhotoCaptureEnabled = false //photoOutput.isLivePhotoCaptureSupported
+            //livePhotoMode = photoOutput.isLivePhotoCaptureSupported ? .on : .off
+        }
+        else {
+            log("capture session: could not add photo output to the session")
             setupResult = .configurationFailed
             session.commitConfiguration()
             return
@@ -353,6 +419,93 @@ final class CaptureSession : NSObject {
             self?.delegate?.captureSessionInterruptionDidEnd(self!)
         }
     }
+}
+
+extension CaptureSession {
+    
+    func capturePhoto() {
+        /*
+         Retrieve the video preview layer's video orientation on the main queue before
+         entering the session queue. We do this to ensure UI elements are accessed on
+         the main thread and session configuration is done on the session queue.
+         */
+        guard let videoPreviewLayerOrientation = previewLayer?.connection.videoOrientation else {
+            return log("capture session: trying to capture a photo but no preview layer is set")
+        }
+        
+        sessionQueue.async {
+            // Update the photo output's connection to match the video orientation of the video preview layer.
+            if let photoOutputConnection = self.photoOutput.connection(withMediaType: AVMediaTypeVideo) {
+                photoOutputConnection.videoOrientation = videoPreviewLayerOrientation
+            }
+            
+            // Capture a JPEG photo with flash set to auto and high resolution photo enabled.
+            let photoSettings = AVCapturePhotoSettings()
+            photoSettings.flashMode = .auto
+            photoSettings.isHighResolutionPhotoEnabled = true
+            
+            //TODO: we dont need preview photo, we need thumbnail format, read `previewPhotoFormat` docs
+            if photoSettings.availablePreviewPhotoPixelFormatTypes.count > 0 {
+                photoSettings.previewPhotoFormat = [kCVPixelBufferPixelFormatTypeKey as String : photoSettings.availablePreviewPhotoPixelFormatTypes.first!]
+            }
+            
+            //TODO: we dont support live photos now
+            if self.livePhotoMode == .on && self.photoOutput.isLivePhotoCaptureSupported {
+                let livePhotoMovieFileName = NSUUID().uuidString
+                let livePhotoMovieFilePath = (NSTemporaryDirectory() as NSString).appendingPathComponent((livePhotoMovieFileName as NSString).appendingPathExtension("mov")!)
+                photoSettings.livePhotoMovieFileURL = URL(fileURLWithPath: livePhotoMovieFilePath)
+            }
+            
+            // Use a separate object for the photo capture delegate to isolate each capture life cycle.
+            let photoCaptureDelegate = PhotoCaptureDelegate(with: photoSettings, willCapturePhotoAnimation: {
+                DispatchQueue.main.async { //[unowned self] in
+                    //TODO: willCapturePhotoAnimation - here is nice place to call delegate that a photo was taken
+                    //to give opportunuty to update UI with flash or something
+                }
+            }, capturingLivePhoto: { capturing in
+                /*
+                 Because Live Photo captures can overlap, we need to keep track of the
+                 number of in progress Live Photo captures to ensure that the
+                 Live Photo label stays visible during these captures.
+                 */
+                self.sessionQueue.async { [unowned self] in
+                    if capturing {
+                        self.inProgressLivePhotoCapturesCount += 1
+                    }
+                    else {
+                        self.inProgressLivePhotoCapturesCount -= 1
+                    }
+                    
+                    let inProgressLivePhotoCapturesCount = self.inProgressLivePhotoCapturesCount
+                    DispatchQueue.main.async { //[unowned self] in
+                        if inProgressLivePhotoCapturesCount > 0 {
+                            //TODO: live photo is in progress so update delegate about this - it can show nice UI based on this
+                        }
+                        else if inProgressLivePhotoCapturesCount == 0 {
+                            //TODO: live photo is not capturing anymore
+                        }
+                        else {
+                            log("capture session: error - in progress live photo capture count is less than 0");
+                        }
+                    }
+                }
+            }, completed: { [unowned self] photoCaptureDelegate in
+                // When the capture is complete, remove a reference to the photo capture delegate so it can be deallocated.
+                self.sessionQueue.async { [unowned self] in
+                    self.inProgressPhotoCaptureDelegates[photoCaptureDelegate.requestedPhotoSettings.uniqueID] = nil
+                }
+            })
+            
+            /*
+             The Photo Output keeps a weak reference to the photo capture delegate so
+             we store it in an array to maintain a strong reference to this object
+             until the capture is completed.
+             */
+            self.inProgressPhotoCaptureDelegates[photoCaptureDelegate.requestedPhotoSettings.uniqueID] = photoCaptureDelegate
+            self.photoOutput.capturePhoto(with: photoSettings, delegate: photoCaptureDelegate)
+        }
+    }
+    
 }
 
 extension CaptureSession: AVCaptureFileOutputRecordingDelegate {
@@ -479,6 +632,19 @@ extension CaptureSession: AVCaptureFileOutputRecordingDelegate {
             videoRecordingDelegate?.captureSessionDid(self, didFinishVideoRecording: outputFileURL)
         }
 
+    }
+    
+}
+
+extension UIInterfaceOrientation {
+    
+    var captureVideoOrientation: AVCaptureVideoOrientation {
+        switch self {
+        case .portrait, .unknown: return .portrait
+        case .portraitUpsideDown: return .portraitUpsideDown
+        case .landscapeRight: return .landscapeRight
+        case .landscapeLeft: return .landscapeLeft
+        }
     }
     
 }

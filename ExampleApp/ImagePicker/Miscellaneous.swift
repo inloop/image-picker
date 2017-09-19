@@ -15,19 +15,6 @@ func log(_ message: String) {
     #endif
 }
 
-extension UIInterfaceOrientation {
-    
-    var captureVideoOrientation: AVCaptureVideoOrientation {
-        switch self {
-        case .portrait, .unknown: return .portrait
-        case .portraitUpsideDown: return .portraitUpsideDown
-        case .landscapeRight: return .landscapeRight
-        case .landscapeLeft: return .landscapeLeft
-        }
-    }
-    
-}
-
 extension UIInterfaceOrientation : CustomDebugStringConvertible {
     
     public var debugDescription: String {

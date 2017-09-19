@@ -38,6 +38,7 @@
 		42EDD4051F7125C700EAD2F5 /* CaptureSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 420CBBC21F712135002288C5 /* CaptureSession.swift */; };
 		42EDD4061F71261600EAD2F5 /* AVPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 420CBBC01F711E83002288C5 /* AVPreviewView.swift */; };
 		42EDD4161F712B2A00EAD2F5 /* Miscellaneous.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42EDD4151F712B2A00EAD2F5 /* Miscellaneous.swift */; };
+		42EDD4191F71651D00EAD2F5 /* PhotoCaptureDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42EDD4171F7164FB00EAD2F5 /* PhotoCaptureDelegate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -98,6 +99,7 @@
 		429BFDA91F68161D00029440 /* ImagePickerAssetModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePickerAssetModel.swift; sourceTree = "<group>"; };
 		42A037DF1F66C9E700534350 /* VideoCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = VideoCell.xib; sourceTree = "<group>"; };
 		42EDD4151F712B2A00EAD2F5 /* Miscellaneous.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Miscellaneous.swift; sourceTree = "<group>"; };
+		42EDD4171F7164FB00EAD2F5 /* PhotoCaptureDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCaptureDelegate.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -168,6 +170,7 @@
 				420BCC361F66AEC5006E8806 /* ImagePickerAssetCellProtocol.swift */,
 				420CBBC01F711E83002288C5 /* AVPreviewView.swift */,
 				420CBBC21F712135002288C5 /* CaptureSession.swift */,
+				42EDD4171F7164FB00EAD2F5 /* PhotoCaptureDelegate.swift */,
 				42EDD4151F712B2A00EAD2F5 /* Miscellaneous.swift */,
 				420C24191F5D82F9008935D4 /* Info.plist */,
 			);
@@ -329,6 +332,7 @@
 				421442631F6014B3006BA45A /* CellRegistrator.swift in Sources */,
 				420C24361F5ED4AB008935D4 /* ImagePickerLayout.swift in Sources */,
 				429BFDAA1F68161D00029440 /* ImagePickerAssetModel.swift in Sources */,
+				42EDD4191F71651D00EAD2F5 /* PhotoCaptureDelegate.swift in Sources */,
 				420C24341F5DA022008935D4 /* ImagePickerDelegate.swift in Sources */,
 				420C24281F5D925A008935D4 /* ImagePickerDataSource.swift in Sources */,
 				4214426F1F604498006BA45A /* ImagePickerSelectionPolicy.swift in Sources */,
