@@ -248,11 +248,13 @@ extension ImagePickerController: PHPhotoLibraryChangeObserver {
             return
         }
         
-        guard let changes = changeInstance.changeDetails(for: fetchResult) else {
-            return
-        }
-        
         DispatchQueue.main.sync {
+        
+            guard let changes = changeInstance.changeDetails(for: fetchResult) else {
+                //reload collection view
+                self.collectionView.reloadData()
+                return
+            }
             
             //update old fetch result with these updates
             collectionViewDataSource.assetsModel.fetchResult = changes.fetchResultAfterChanges
@@ -394,20 +396,11 @@ extension ImagePickerController: CameraCollectionViewCellDelegate {
     
     func takePicture() {
         //TODO: cameraController.takePicture()
+        captureSession.capturePhoto()
     }
     
     func flipCamera() {
         //TODO: cameraController.cameraDevice = (cameraController.cameraDevice == .rear) ? .front : .rear
-    }
-    
-}
-
-extension ImagePickerController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-    
-    public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
-        if let image = info[UIImagePickerControllerOriginalImage] as? UIImage {
-            delegate?.imagePicker(controller: self, didTake: image)
-        }
     }
     
 }

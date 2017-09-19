@@ -8,6 +8,7 @@
 
 import Foundation
 import AVFoundation
+import Photos
 import UIKit
 
 protocol CaptureSessionVideoRecordingDelegate : class {
@@ -209,7 +210,7 @@ final class CaptureSession : NSObject {
             return
         }
         
-        log("capture session: configuring")
+        log("capture session: configuring - adding video input")
         
         session.beginConfiguration()
         session.sessionPreset = AVCaptureSessionPresetHigh
@@ -219,7 +220,7 @@ final class CaptureSession : NSObject {
             var defaultVideoDevice: AVCaptureDevice?
             
             // Choose the back dual camera if available, otherwise default to a wide angle camera.
-            if let dualCameraDevice = AVCaptureDevice.defaultDevice(withDeviceType: .builtInDuoCamera, mediaType: AVMediaTypeVideo, position: .back) {
+            if let dualCameraDevice = AVCaptureDevice.defaultDevice(withDeviceType: .builtInDualCamera, mediaType: AVMediaTypeVideo, position: .back) {
                 defaultVideoDevice = dualCameraDevice
             }
             else if let backCameraDevice = AVCaptureDevice.defaultDevice(withDeviceType: .builtInWideAngleCamera, mediaType: AVMediaTypeVideo, position: .back) {
@@ -261,6 +262,8 @@ final class CaptureSession : NSObject {
             return
         }
         
+        log("capture session: configuring - adding video output")
+        
         // Add video output.
         let movieFileOutput = AVCaptureMovieFileOutput()
         if self.session.canAddOutput(movieFileOutput) {
@@ -278,6 +281,8 @@ final class CaptureSession : NSObject {
             return
         }
         
+        log("capture session: configuring - adding audio input")
+        
         // Add audio input, if fails no need to fail whole configuration
         do {
             let audioDevice = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeAudio)
@@ -294,6 +299,8 @@ final class CaptureSession : NSObject {
             log("capture session: could not create audio device input: \(error)")
         }
         
+        log("capture session: configuring - adding photo output")
+
         // Add photo output.
         if session.canAddOutput(photoOutput) {
             session.addOutput(photoOutput)
@@ -314,10 +321,13 @@ final class CaptureSession : NSObject {
     // MARK: KVO and Notifications
     
     private var sessionRunningObserveContext = 0
+    private var addedObservers = false
     
     private func addObservers() {
-        session.addObserver(self, forKeyPath: "running", options: .new, context: &sessionRunningObserveContext)
+
+        guard addedObservers == false else { return }
         
+        session.addObserver(self, forKeyPath: "running", options: .new, context: &sessionRunningObserveContext)
         NotificationCenter.default.addObserver(self, selector: #selector(sessionRuntimeError), name: Notification.Name("AVCaptureSessionRuntimeErrorNotification"), object: session)
         
         /*
@@ -329,11 +339,18 @@ final class CaptureSession : NSObject {
          */
         NotificationCenter.default.addObserver(self, selector: #selector(sessionWasInterrupted), name: Notification.Name("AVCaptureSessionWasInterruptedNotification"), object: session)
         NotificationCenter.default.addObserver(self, selector: #selector(sessionInterruptionEnded), name: Notification.Name("AVCaptureSessionInterruptionEndedNotification"), object: session)
+        
+        addedObservers = true
     }
     
     private func removeObservers() {
+        
+        guard addedObservers == true else { return }
+        
         NotificationCenter.default.removeObserver(self)
         session.removeObserver(self, forKeyPath: "running", context: &sessionRunningObserveContext)
+        
+        addedObservers = false
     }
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
@@ -445,9 +462,10 @@ extension CaptureSession {
             photoSettings.isHighResolutionPhotoEnabled = true
             
             //TODO: we dont need preview photo, we need thumbnail format, read `previewPhotoFormat` docs
-            if photoSettings.availablePreviewPhotoPixelFormatTypes.count > 0 {
-                photoSettings.previewPhotoFormat = [kCVPixelBufferPixelFormatTypeKey as String : photoSettings.availablePreviewPhotoPixelFormatTypes.first!]
-            }
+            //photoSettings.embeddedThumbnailPhotoFormat
+            //if photoSettings.availablePreviewPhotoPixelFormatTypes.count > 0 {
+            //    photoSettings.previewPhotoFormat = [kCVPixelBufferPixelFormatTypeKey as String : photoSettings.availablePreviewPhotoPixelFormatTypes.first!]
+            //}
             
             //TODO: we dont support live photos now
             if self.livePhotoMode == .on && self.photoOutput.isLivePhotoCaptureSupported {

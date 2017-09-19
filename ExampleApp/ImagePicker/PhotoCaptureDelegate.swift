@@ -10,16 +10,19 @@ import AVFoundation
 import Photos
 
 class PhotoCaptureDelegate: NSObject, AVCapturePhotoCaptureDelegate {
-	private(set) var requestedPhotoSettings: AVCapturePhotoSettings
 	
+    // MARK: Public Methods
+    
+    /// set this to false if you dont wish to save taken picture to photo library
+    var savesPhotoToLibrary = true //TODO: suppor this
+    
+    // MARK: Private Methods
+    
+    private(set) var requestedPhotoSettings: AVCapturePhotoSettings
 	private let willCapturePhotoAnimation: () -> ()
-	
 	private let capturingLivePhoto: (Bool) -> ()
-	
 	private let completed: (PhotoCaptureDelegate) -> ()
-	
 	private var photoData: Data? = nil
-	
 	private var livePhotoCompanionMovieURL: URL? = nil
 
 	init(with requestedPhotoSettings: AVCapturePhotoSettings, willCapturePhotoAnimation: @escaping () -> (), capturingLivePhoto: @escaping (Bool) -> (), completed: @escaping (PhotoCaptureDelegate) -> ()) {
@@ -36,7 +39,7 @@ class PhotoCaptureDelegate: NSObject, AVCapturePhotoCaptureDelegate {
 					try FileManager.default.removeItem(atPath: livePhotoCompanionMoviePath)
 				}
 				catch {
-					print("Could not remove file at url: \(livePhotoCompanionMoviePath)")
+					log("photo capture delegate: Could not remove file at url: \(livePhotoCompanionMoviePath)")
 				}
 			}
 		}
@@ -58,8 +61,8 @@ class PhotoCaptureDelegate: NSObject, AVCapturePhotoCaptureDelegate {
 		if let photoSampleBuffer = photoSampleBuffer {
             photoData = AVCapturePhotoOutput.jpegPhotoDataRepresentation(forJPEGSampleBuffer: photoSampleBuffer, previewPhotoSampleBuffer: previewPhotoSampleBuffer)
 		}
-		else {
-			print("Error capturing photo: \(error)")
+		else if let error = error {
+			log("photo capture delegate: error capturing photo: \(error)")
 			return
 		}
 	}
@@ -69,8 +72,8 @@ class PhotoCaptureDelegate: NSObject, AVCapturePhotoCaptureDelegate {
 	}
 	
     func capture(_ captureOutput: AVCapturePhotoOutput, didFinishProcessingLivePhotoToMovieFileAt outputFileURL: URL, duration: CMTime, photoDisplay photoDisplayTime: CMTime, resolvedSettings: AVCaptureResolvedPhotoSettings, error: Error?) {
-		if let _ = error {
-			print("Error processing live photo companion movie: \(error)")
+		if let error = error {
+			log("photo capture delegate: error processing live photo companion movie: \(error)")
 			return
 		}
 		
@@ -78,18 +81,25 @@ class PhotoCaptureDelegate: NSObject, AVCapturePhotoCaptureDelegate {
 	}
 	
     func capture(_ captureOutput: AVCapturePhotoOutput, didFinishCaptureForResolvedSettings resolvedSettings: AVCaptureResolvedPhotoSettings, error: Error?) {
-		if let error = error {
-			print("Error capturing photo: \(error)")
+		
+        if let error = error {
+			log("photo capture delegate: Error capturing photo: \(error)")
 			didFinish()
 			return
 		}
 		
 		guard let photoData = photoData else {
-			print("No photo data resource")
+			log("photo capture delegate: No photo data resource")
 			didFinish()
 			return
 		}
 		
+        guard savesPhotoToLibrary == true else {
+            log("photo capture delegate: photo did finish without saving to photo library")
+            didFinish()
+            return
+        }
+        
 		PHPhotoLibrary.requestAuthorization { [unowned self] status in
 			if status == .authorized {
 				PHPhotoLibrary.shared().performChanges({ [unowned self] in
@@ -104,7 +114,7 @@ class PhotoCaptureDelegate: NSObject, AVCapturePhotoCaptureDelegate {
 					
                     }, completionHandler: { [unowned self] success, error in
 						if let error = error {
-							print("Error occurered while saving photo to photo library: \(error)")
+							log("photo capture delegate: Error occurered while saving photo to photo library: \(error)")
 						}
 						
 						self.didFinish()
