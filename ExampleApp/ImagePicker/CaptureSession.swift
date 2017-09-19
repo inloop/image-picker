@@ -48,9 +48,7 @@ protocol CaptureSessionDelegate : class {
 final class CaptureSession : NSObject {
     
     deinit {
-        #if DEBUG
-            print("deinit: \(String(describing: self))")
-        #endif
+        log("deinit: \(String(describing: self))")
     }
     
     private enum SessionSetupResult {
@@ -504,4 +502,10 @@ extension CaptureSession: AVCaptureFileOutputRecordingDelegate {
 
     }
     
+}
+
+private func log(_ message: String) {
+    #if DEBUG
+        print(message)
+    #endif
 }
