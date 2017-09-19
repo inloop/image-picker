@@ -10,7 +10,24 @@ import Foundation
 import UIKit
 import AVFoundation
 
+enum VideoDisplayMode {
+    /// Preserve aspect ratio, fit within layer bounds.
+    case aspectFit
+    /// Preserve aspect ratio, fill view bounds.
+    case aspectFill
+    ///Stretch to fill layer bounds
+    case resize
+}
+
+///
+/// A view whose layer is AVCaptureVideoPreviewLayer so it's used for previewing
+/// output from a capture session.
+///
 class AVPreviewView: UIView {
+    
+    deinit {
+        log("deinit: \(String(describing: self))")
+    }
     
     var previewLayer: AVCaptureVideoPreviewLayer {
         return layer as! AVCaptureVideoPreviewLayer
@@ -21,7 +38,7 @@ class AVPreviewView: UIView {
         set { previewLayer.session = newValue }
     }
     
-    var displayMode: VideoDisplayMode = .aspectFit {
+    var displayMode: VideoDisplayMode = .aspectFill {
         didSet { applyVideoDisplayMode() }
     }
     

@@ -69,9 +69,7 @@ open class ImagePickerController : UIViewController {
    
     deinit {
         PHPhotoLibrary.shared().unregisterChangeObserver(self)
-        #if DEBUG
-            print("deinit: \(String(describing: self))")
-        #endif
+        log("deinit: \(String(describing: self))")
     }
     
     // MARK: Public API
@@ -134,18 +132,18 @@ open class ImagePickerController : UIViewController {
         return view
     }()
     
-    //fileprivate let captureSession = CaptureSession()
+    fileprivate let captureSession = CaptureSession()
     
     //TODO: this is used temporary, we will need to use proper AVCaptureSession
-    fileprivate lazy var cameraController: UIImagePickerController = {
-        let controller = UIImagePickerController()
-        controller.delegate =  self
-        controller.sourceType = .camera
-        controller.showsCameraControls = false
-        controller.allowsEditing = false
-        controller.cameraFlashMode = .off
-        return controller
-    }()
+//    fileprivate lazy var cameraController: UIImagePickerController = {
+//        let controller = UIImagePickerController()
+//        controller.delegate =  self
+//        controller.sourceType = .camera
+//        controller.showsCameraControls = false
+//        controller.allowsEditing = false
+//        controller.cameraFlashMode = .off
+//        return controller
+//    }()
     
     private func updateItemSize() {
         
@@ -209,15 +207,20 @@ open class ImagePickerController : UIViewController {
         collectionView.apply(registrator: cellRegistrator)
         
         //connect all remaining objects as needed
-        self.collectionViewDataSource.cellRegistrator = self.cellRegistrator
-        self.collectionViewDelegate.delegate = self
-        self.collectionViewDelegate.layout = ImagePickerLayout(configuration: layoutConfiguration)
+        collectionViewDataSource.cellRegistrator = cellRegistrator
+        collectionViewDelegate.delegate = self
+        collectionViewDelegate.layout = ImagePickerLayout(configuration: layoutConfiguration)
 
         //rgister for photo library updates - this is needed when changing permissions to photo library
         PHPhotoLibrary.shared().register(self)
         
         //determine auth satus and based on that reload UI
         reloadData(basedOnAuthorizationStatus: PHPhotoLibrary.authorizationStatus())
+        
+        //configure capture session
+        captureSession.delegate = self
+        captureSession.videoRecordingDelegate = self
+        captureSession.prepare()
     }
     
     open override func viewWillAppear(_ animated: Bool) {
@@ -322,8 +325,11 @@ extension ImagePickerController : ImagePickerDelegateDelegate {
     
     func imagePicker(delegate: ImagePickerDelegate, willDisplayCameraCell cell: CameraCollectionViewCell) {
         //TODO: accessing camera controller this way is too expensive - it can take up to 3 seconds
-        cell.cameraView = cameraController.view!
+        //cell.cameraView = cameraController.view!
         cell.delegate = self
+        
+        cell.previewView.session = captureSession.session
+        captureSession.previewLayer = cell.previewView.previewLayer
         
         //TODO: should start capture session
     }
@@ -334,14 +340,62 @@ extension ImagePickerController : ImagePickerDelegateDelegate {
     
 }
 
+extension ImagePickerController : CaptureSessionDelegate {
+    
+    func captureSessionDidResume(_ session: CaptureSession) {
+        log("did resume")
+    }
+    
+    func captureSessionDidSuspend(_ session: CaptureSession) {
+        log("did suspend")
+    }
+    
+    func captureSession(_ session: CaptureSession, didFail error: AVError) {
+        log("did fail")
+    }
+    
+    func captureSessionDidFailConfiguringSession(_ session: CaptureSession) {
+        log("did fail configuring")
+    }
+    
+    func captureSession(_ session: CaptureSession, authorizationStatusFailed status: AVAuthorizationStatus) {
+        log("did fail authorization")
+    }
+    
+}
+
+extension ImagePickerController : CaptureSessionVideoRecordingDelegate {
+    
+    func captureSessionDidBecomeReadyForVideoRecording(_ session: CaptureSession) {
+        log("ready for video recording")
+    }
+    
+    func captureSessionDidStartVideoRecording(_ session: CaptureSession) {
+        log("did start video recording")
+    }
+    
+    func captureSessionDidCancelVideoRecording(_ session: CaptureSession) {
+        log("did cancel video recording")
+    }
+    
+    func captureSessionDid(_ session: CaptureSession, didFinishVideoRecording videoURL: URL) {
+        log("did finish video recording")
+    }
+    
+    func captureSessionDid(_ session: CaptureSession, didFailVideoRecording error: Error) {
+        log("did fail video recording")
+    }
+    
+}
+
 extension ImagePickerController: CameraCollectionViewCellDelegate {
     
     func takePicture() {
-        cameraController.takePicture()
+        //cameraController.takePicture()
     }
     
     func flipCamera() {
-        cameraController.cameraDevice = (cameraController.cameraDevice == .rear) ? .front : .rear
+        //cameraController.cameraDevice = (cameraController.cameraDevice == .rear) ? .front : .rear
     }
     
 }

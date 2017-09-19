@@ -22,6 +22,25 @@ open class CameraCollectionViewCell : UICollectionViewCell {
         #endif
     }
     
+    var previewView = AVPreviewView(frame: .zero)
+    
+    public override init(frame: CGRect) {
+        super.init(frame: frame)
+        contentView.addSubview(previewView)
+    }
+    
+    required public init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        contentView.addSubview(previewView)
+    }
+    
+    open override func layoutSubviews() {
+        super.layoutSubviews()
+        previewView.bounds = bounds
+    }
+    
+    // MARK: Camera API
+    
     weak var delegate: CameraCollectionViewCellDelegate?
     
     public func flipCamera() {
@@ -30,12 +49,6 @@ open class CameraCollectionViewCell : UICollectionViewCell {
     
     public func takePicture() {
         delegate?.takePicture()
-    }
-    
-    var cameraView: UIView? {
-        didSet {
-            backgroundView = cameraView
-        }
     }
     
 }

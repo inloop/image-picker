@@ -176,7 +176,7 @@ final class CaptureSession : NSObject {
             return
         }
         
-        log("capture session: configuring session")
+        log("capture session: configuring")
         
         session.beginConfiguration()
         session.sessionPreset = AVCaptureSessionPresetHigh
@@ -497,10 +497,4 @@ extension CaptureSession: AVCaptureFileOutputRecordingDelegate {
 
     }
     
-}
-
-private func log(_ message: String) {
-    #if DEBUG
-        print(message)
-    #endif
 }
