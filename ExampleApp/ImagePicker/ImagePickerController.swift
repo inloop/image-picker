@@ -223,6 +223,13 @@ open class ImagePickerController : UIViewController {
         //TODO: this is called each time content offset is changed via scrolling,
         //I am not sure if it's proper behavior, need to find out
         updateItemSize()
+        
+        //update safe area insets only once
+        if #available(iOS 11.0, *) {
+            if collectionView.contentInset != view.safeAreaInsets {
+                collectionView.contentInset = view.safeAreaInsets
+            }
+        }
     }
     
     //this will make sure that collection view layout is reloaded when interface rotates/changes
@@ -230,11 +237,20 @@ open class ImagePickerController : UIViewController {
     open override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         
         //update video orientation at this time status bar orientation has new value so lets convert it to video orientation
-        captureSession.previewLayer?.connection.videoOrientation = UIApplication.shared.statusBarOrientation.captureVideoOrientation
+        captureSession.previewLayer?.connection?.videoOrientation = UIApplication.shared.statusBarOrientation.captureVideoOrientation
+        
+        //TODO: add support for upadating safe area and content inset when rotating, this is
+        //problem because at this point of execution safe are does not have new values
+        //update safe area insets only once
+//        if #available(iOS 11.0, *) {
+//            self.collectionView.contentInset = self.view.safeAreaInsets
+//        }
         
         coordinator.animate(alongsideTransition: { (context) in
             self.collectionView.collectionViewLayout.invalidateLayout()
-        }) { (context) in }
+        }) { (context) in
+            
+        }
         super.viewWillTransition(to: size, with: coordinator)
     }
     
