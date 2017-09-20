@@ -446,7 +446,7 @@ extension CaptureSession {
          entering the session queue. We do this to ensure UI elements are accessed on
          the main thread and session configuration is done on the session queue.
          */
-        guard let videoPreviewLayerOrientation = previewLayer?.connection.videoOrientation else {
+        guard let videoPreviewLayerOrientation = previewLayer?.connection?.videoOrientation else {
             return log("capture session: trying to capture a photo but no preview layer is set")
         }
         
