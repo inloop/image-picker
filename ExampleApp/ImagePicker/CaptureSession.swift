@@ -11,6 +11,17 @@ import AVFoundation
 import Photos
 import UIKit
 
+/// Groups a method that informs a delegate about progress and state of photo capturing.
+protocol CaptureSessionPhotoCapturingDelegate : class {
+    
+    /// called as soon as the photo was taken, use this to update UI - for example show flash animation or live photo icon
+    func captureSession(_ session: CaptureSession, willCapturePhotoWith settings: AVCapturePhotoSettings)
+    
+    /// called when captured photo is processed and ready for use
+    func captureSession(_ session: CaptureSession, didCapturePhotoWith settings: AVCapturePhotoSettings)
+}
+
+/// Groups a method that informs a delegate about progress and state of video recording.
 protocol CaptureSessionVideoRecordingDelegate : class {
  
     ///called when video file recording output is added to the session
@@ -65,7 +76,6 @@ final class CaptureSession : NSObject {
     }
     
     weak var delegate: CaptureSessionDelegate?
-    weak var videoRecordingDelegate: CaptureSessionVideoRecordingDelegate?
     
     let session = AVCaptureSession()
     var isSessionRunning = false
@@ -77,6 +87,7 @@ final class CaptureSession : NSObject {
     
     // MARK: Video Recoding
     
+    weak var videoRecordingDelegate: CaptureSessionVideoRecordingDelegate?
     fileprivate var videoFileOutput: AVCaptureMovieFileOutput?
     fileprivate var backgroundRecordingID: UIBackgroundTaskIdentifier? = nil
     fileprivate var recordingIsBeingCancelled = false
@@ -91,6 +102,7 @@ final class CaptureSession : NSObject {
         case off
     }
     
+    weak var photoCapturingDelegate: CaptureSessionPhotoCapturingDelegate?
     fileprivate var livePhotoMode: LivePhotoMode = .off
     fileprivate let photoOutput = AVCapturePhotoOutput()
     fileprivate var inProgressPhotoCaptureDelegates = [Int64 : PhotoCaptureDelegate]()
@@ -305,8 +317,13 @@ final class CaptureSession : NSObject {
         if session.canAddOutput(photoOutput) {
             session.addOutput(photoOutput)
             photoOutput.isHighResolutionCaptureEnabled = true
-            photoOutput.isLivePhotoCaptureEnabled = false //photoOutput.isLivePhotoCaptureSupported
-            //livePhotoMode = photoOutput.isLivePhotoCaptureSupported ? .on : .off
+            if livePhotoMode == .on {
+                photoOutput.isLivePhotoCaptureEnabled = photoOutput.isLivePhotoCaptureSupported
+                if photoOutput.isLivePhotoCaptureSupported == false {
+                    log("capture session: configuring - requested live photo mode is not supported by the device")
+                }
+            }
+            log("capture session: configuring - live photo mode is \(photoOutput.isLivePhotoCaptureEnabled ? "enabled" : "disabled")")
         }
         else {
             log("capture session: could not add photo output to the session")
@@ -467,7 +484,6 @@ extension CaptureSession {
             //    photoSettings.previewPhotoFormat = [kCVPixelBufferPixelFormatTypeKey as String : photoSettings.availablePreviewPhotoPixelFormatTypes.first!]
             //}
             
-            //TODO: we dont support live photos now
             if self.livePhotoMode == .on && self.photoOutput.isLivePhotoCaptureSupported {
                 let livePhotoMovieFileName = NSUUID().uuidString
                 let livePhotoMovieFilePath = (NSTemporaryDirectory() as NSString).appendingPathComponent((livePhotoMovieFileName as NSString).appendingPathExtension("mov")!)
@@ -476,9 +492,8 @@ extension CaptureSession {
             
             // Use a separate object for the photo capture delegate to isolate each capture life cycle.
             let photoCaptureDelegate = PhotoCaptureDelegate(with: photoSettings, willCapturePhotoAnimation: {
-                DispatchQueue.main.async { //[unowned self] in
-                    //TODO: willCapturePhotoAnimation - here is nice place to call delegate that a photo was taken
-                    //to give opportunuty to update UI with flash or something
+                DispatchQueue.main.async { [unowned self] in
+                    self.photoCapturingDelegate?.captureSession(self, willCapturePhotoWith: photoSettings)
                 }
             }, capturingLivePhoto: { capturing in
                 /*
@@ -511,6 +526,10 @@ extension CaptureSession {
                 // When the capture is complete, remove a reference to the photo capture delegate so it can be deallocated.
                 self.sessionQueue.async { [unowned self] in
                     self.inProgressPhotoCaptureDelegates[photoCaptureDelegate.requestedPhotoSettings.uniqueID] = nil
+                }
+                
+                DispatchQueue.main.async {
+                    self.photoCapturingDelegate?.captureSession(self, didCapturePhotoWith: photoCaptureDelegate.requestedPhotoSettings)
                 }
             })
             
