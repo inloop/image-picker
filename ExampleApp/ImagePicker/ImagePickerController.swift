@@ -210,6 +210,7 @@ open class ImagePickerController : UIViewController {
         //configure capture session
         captureSession.delegate = self
         captureSession.videoRecordingDelegate = self
+        captureSession.photoCapturingDelegate = self
         captureSession.prepare()
     }
     
@@ -382,6 +383,22 @@ extension ImagePickerController : CaptureSessionDelegate {
         log("interruption ended")
     }
     
+}
+
+extension ImagePickerController : CaptureSessionPhotoCapturingDelegate {
+    
+    func captureSession(_ session: CaptureSession, didCapturePhotoData: Data, with settings: AVCapturePhotoSettings) {
+        log("did capture photo \(settings.uniqueID)")
+        self.delegate?.imagePicker(controller: self, didTake: UIImage(data: didCapturePhotoData)!)
+    }
+    
+    func captureSession(_ session: CaptureSession, willCapturePhotoWith settings: AVCapturePhotoSettings) {
+        log("will capture photo \(settings.uniqueID)")
+    }
+    
+    func captureSession(_ session: CaptureSession, didFailCapturingPhotoWith error: Error) {
+        log("did fail capturing: \(error)")
+    }
 }
 
 extension ImagePickerController : CaptureSessionVideoRecordingDelegate {

@@ -22,3 +22,4 @@ App must have in info plist permissions for:
 ## Known Issues
 
 1. autorotate to landsacpe on iPhone X does not work properly - safe area is not updated so layout is broken
+2. live photos does not work - it says device does not support live photos event thought all shold be set correctly (does not work on SE nor iPhone 7)

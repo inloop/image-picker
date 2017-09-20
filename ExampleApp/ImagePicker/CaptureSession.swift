@@ -18,7 +18,10 @@ protocol CaptureSessionPhotoCapturingDelegate : class {
     func captureSession(_ session: CaptureSession, willCapturePhotoWith settings: AVCapturePhotoSettings)
     
     /// called when captured photo is processed and ready for use
-    func captureSession(_ session: CaptureSession, didCapturePhotoWith settings: AVCapturePhotoSettings)
+    func captureSession(_ session: CaptureSession, didCapturePhotoData: Data, with settings: AVCapturePhotoSettings)
+    
+    /// called when captured photo is processed and ready for use
+    func captureSession(_ session: CaptureSession, didFailCapturingPhotoWith error: Error)
 }
 
 /// Groups a method that informs a delegate about progress and state of video recording.
@@ -103,7 +106,7 @@ final class CaptureSession : NSObject {
     }
     
     weak var photoCapturingDelegate: CaptureSessionPhotoCapturingDelegate?
-    fileprivate var livePhotoMode: LivePhotoMode = .off
+    fileprivate var livePhotoMode: LivePhotoMode = .on
     fileprivate let photoOutput = AVCapturePhotoOutput()
     fileprivate var inProgressPhotoCaptureDelegates = [Int64 : PhotoCaptureDelegate]()
     fileprivate var inProgressLivePhotoCapturesCount = 0
@@ -276,22 +279,26 @@ final class CaptureSession : NSObject {
         
         log("capture session: configuring - adding video output")
         
-        // Add video output.
-        let movieFileOutput = AVCaptureMovieFileOutput()
-        if self.session.canAddOutput(movieFileOutput) {
-            self.session.addOutput(movieFileOutput)
-            self.videoFileOutput = movieFileOutput
-            
-            DispatchQueue.main.async { [weak self] in
-                self?.videoRecordingDelegate?.captureSessionDidBecomeReadyForVideoRecording(self!)
-            }
-        }
-        else {
-            log("capture session: could not add video output to the session")
-            setupResult = .configurationFailed
-            session.commitConfiguration()
-            return
-        }
+        // A capture session cannot support both Live Photo capture and movie file output.
+        // If your capture session includes an AVCaptureMovieFileOutput object, the
+        // isLivePhotoCaptureSupported property becomes false.
+        
+//        // Add video output.
+//        let movieFileOutput = AVCaptureMovieFileOutput()
+//        if self.session.canAddOutput(movieFileOutput) {
+//            self.session.addOutput(movieFileOutput)
+//            self.videoFileOutput = movieFileOutput
+//
+//            DispatchQueue.main.async { [weak self] in
+//                self?.videoRecordingDelegate?.captureSessionDidBecomeReadyForVideoRecording(self!)
+//            }
+//        }
+//        else {
+//            log("capture session: could not add video output to the session")
+//            setupResult = .configurationFailed
+//            session.commitConfiguration()
+//            return
+//        }
         
         log("capture session: configuring - adding audio input")
         
@@ -317,6 +324,8 @@ final class CaptureSession : NSObject {
         if session.canAddOutput(photoOutput) {
             session.addOutput(photoOutput)
             photoOutput.isHighResolutionCaptureEnabled = true
+            
+            //enable live photos only if we intend to use it explicitly 
             if livePhotoMode == .on {
                 photoOutput.isLivePhotoCaptureEnabled = photoOutput.isLivePhotoCaptureSupported
                 if photoOutput.isLivePhotoCaptureSupported == false {
@@ -484,6 +493,19 @@ extension CaptureSession {
             //    photoSettings.previewPhotoFormat = [kCVPixelBufferPixelFormatTypeKey as String : photoSettings.availablePreviewPhotoPixelFormatTypes.first!]
             //}
             
+            //TODO: THIS I dont know how it works, need to find out
+            if #available(iOS 11.0, *) {
+                if photoSettings.availableEmbeddedThumbnailPhotoCodecTypes.count > 0 {
+                    //TODO: specify thumb size somehow, this does crash!
+                    //let size = CGSize(width: 200, height: 200)
+                    photoSettings.embeddedThumbnailPhotoFormat = [
+                        //kCVPixelBufferWidthKey as String : size.width as CFNumber,
+                        //kCVPixelBufferHeightKey as String : size.height as CFNumber,
+                        AVVideoCodecKey : photoSettings.availableEmbeddedThumbnailPhotoCodecTypes[0]
+                    ]
+                }
+            }
+            
             if self.livePhotoMode == .on && self.photoOutput.isLivePhotoCaptureSupported {
                 let livePhotoMovieFileName = NSUUID().uuidString
                 let livePhotoMovieFilePath = (NSTemporaryDirectory() as NSString).appendingPathComponent((livePhotoMovieFileName as NSString).appendingPathExtension("mov")!)
@@ -522,14 +544,19 @@ extension CaptureSession {
                         }
                     }
                 }
-            }, completed: { [unowned self] photoCaptureDelegate in
+            }, completed: { [unowned self] delegate in
                 // When the capture is complete, remove a reference to the photo capture delegate so it can be deallocated.
                 self.sessionQueue.async { [unowned self] in
-                    self.inProgressPhotoCaptureDelegates[photoCaptureDelegate.requestedPhotoSettings.uniqueID] = nil
+                    self.inProgressPhotoCaptureDelegates[delegate.requestedPhotoSettings.uniqueID] = nil
                 }
                 
                 DispatchQueue.main.async {
-                    self.photoCapturingDelegate?.captureSession(self, didCapturePhotoWith: photoCaptureDelegate.requestedPhotoSettings)
+                    if let data = delegate.photoData {
+                        self.photoCapturingDelegate?.captureSession(self, didCapturePhotoData: data, with: delegate.requestedPhotoSettings)
+                    }
+                    else if let error = delegate.processError {
+                        self.photoCapturingDelegate?.captureSession(self, didFailCapturingPhotoWith: error)
+                    }
                 }
             })
             

@@ -14,15 +14,21 @@ class PhotoCaptureDelegate: NSObject, AVCapturePhotoCaptureDelegate {
     // MARK: Public Methods
     
     /// set this to false if you dont wish to save taken picture to photo library
-    var savesPhotoToLibrary = true //TODO: suppor this
+    var savesPhotoToLibrary = true
+    
+    /// this contains photo data when taken
+    private(set) var photoData: Data? = nil
+    
+    private(set) var requestedPhotoSettings: AVCapturePhotoSettings
+    
+    /// not nil if error occured during capturing
+    private(set) var processError: Error?
     
     // MARK: Private Methods
     
-    private(set) var requestedPhotoSettings: AVCapturePhotoSettings
 	private let willCapturePhotoAnimation: () -> ()
 	private let capturingLivePhoto: (Bool) -> ()
 	private let completed: (PhotoCaptureDelegate) -> ()
-	private var photoData: Data? = nil
 	private var livePhotoCompanionMovieURL: URL? = nil
 
 	init(with requestedPhotoSettings: AVCapturePhotoSettings, willCapturePhotoAnimation: @escaping () -> (), capturingLivePhoto: @escaping (Bool) -> (), completed: @escaping (PhotoCaptureDelegate) -> ()) {
@@ -56,13 +62,27 @@ class PhotoCaptureDelegate: NSObject, AVCapturePhotoCaptureDelegate {
 	func capture(_ captureOutput: AVCapturePhotoOutput, willCapturePhotoForResolvedSettings resolvedSettings: AVCaptureResolvedPhotoSettings) {
 		willCapturePhotoAnimation()
 	}
-	
+    
+    @available(iOS 11.0, *)
+    func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
+        if let data = photo.fileDataRepresentation() {
+            photoData = data
+        }
+        else if let error = error {
+            log("photo capture delegate: error capturing photo: \(error)")
+            processError = error
+            return
+        }
+    }
+    
+    //this method is not called on iOS 11 if method above is implemented
     func capture(_ captureOutput: AVCapturePhotoOutput, didFinishProcessingPhotoSampleBuffer photoSampleBuffer: CMSampleBuffer?, previewPhotoSampleBuffer: CMSampleBuffer?, resolvedSettings: AVCaptureResolvedPhotoSettings, bracketSettings: AVCaptureBracketedStillImageSettings?, error: Error?) {
 		if let photoSampleBuffer = photoSampleBuffer {
             photoData = AVCapturePhotoOutput.jpegPhotoDataRepresentation(forJPEGSampleBuffer: photoSampleBuffer, previewPhotoSampleBuffer: previewPhotoSampleBuffer)
 		}
 		else if let error = error {
 			log("photo capture delegate: error capturing photo: \(error)")
+            processError = error
 			return
 		}
 	}
