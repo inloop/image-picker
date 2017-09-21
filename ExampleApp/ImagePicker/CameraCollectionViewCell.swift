@@ -62,6 +62,57 @@ open class CameraCollectionViewCell : UICollectionViewCell {
         blurView.frame = previewView.bounds
     }
     
+    // MARK: Internal Methods
+    
+    func blurIfNeeded(blurImage: UIImage?, animated: Bool) {
+        
+        guard blurView.isHidden == true else {
+            return
+        }
+        
+        imageView.alpha = 0
+        imageView.image = blurImage
+        
+        if animated == false {
+            imageView.alpha = 1
+            blurView.alpha = 1
+            blurView.isHidden = false
+        }
+        else {
+            UIView.animate(withDuration: 0.25, delay: 0, options: .allowAnimatedContent, animations: {
+                self.imageView.alpha = 1
+                self.blurView.alpha = 1
+            }, completion: { (finished) in
+                self.blurView.isHidden = false
+            })
+        }
+        
+    }
+    
+    func unblurIfNeeded(blurImage: UIImage?, animated: Bool) {
+        
+        guard blurView.isHidden == false else {
+            return
+        }
+        
+        if animated == false {
+            blurView.alpha = 0
+            imageView.alpha = 0
+            blurView.isHidden = true
+            imageView.image = nil
+        }
+        else {
+            
+            UIView.animate(withDuration: 0.25, delay: 0, options: .allowAnimatedContent, animations: {
+                self.blurView.alpha = 0
+                self.imageView.alpha = 0
+            }, completion: { (finished) in
+                self.blurView.isHidden = true
+                self.imageView.image = nil
+            })
+        }
+    }
+    
     // MARK: Camera API
     
     weak var delegate: CameraCollectionViewCellDelegate?

@@ -10,7 +10,8 @@ import Foundation
 import AVFoundation
 
 /*
- TODO: If your frame processing is consistently unable to keep up with the rate of incoming frames, you should consider using the minFrameDuration property, which will generally yield better performance characteristics and more consistent frame rates than frame dropping alone.
+ TODO: [not possible!] If your frame processing is consistently unable to keep up with the rate of incoming frames, you should consider using the minFrameDuration property, which will generally yield better performance characteristics and more consistent frame rates than frame dropping alone.
+ TODO: try to optimize this so it's really eanbled only when we need it, not all the time
  NOTE: if video file output is provided, video data output is not working!!! there must be only 1 output at the same time
  */
 
@@ -26,7 +27,7 @@ final class VideoOutputSampleBufferDelegate : NSObject, AVCaptureVideoDataOutput
     func captureOutput(_ output: AVCaptureOutput!, didOutputSampleBuffer sampleBuffer: CMSampleBuffer!, from connection: AVCaptureConnection!) {
         if let image = sampleBuffer.imageRepresentation {
             latestImage = image
-            log("output size: \(image.size)")
+            //log("output size: \(image.size)")
         }
     }
     

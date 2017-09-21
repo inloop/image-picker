@@ -524,7 +524,7 @@ extension CaptureSession {
 //        focus(with: .autoFocus, exposureMode: .continuousAutoExposure, at: devicePoint, monitorSubjectAreaChange: false)
     }
     
-    func changeCamera() {
+    func changeCamera(completion: (() -> Void)?) {
         
         sessionQueue.async { [unowned self] in
             let currentVideoDevice = self.videoDeviceInput.device
@@ -594,14 +594,14 @@ extension CaptureSession {
                     }
                     
                     self.session.commitConfiguration()
+                    
+                    DispatchQueue.main.async { //[unowned self] in
+                        completion?()
+                    }
                 }
                 catch {
                     print("Error occured while creating video device input: \(error)")
                 }
-            }
-            
-            DispatchQueue.main.async { [unowned self] in
-                //TODO: inform delegate that camera was flipped
             }
         }
     }

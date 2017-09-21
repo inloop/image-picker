@@ -346,23 +346,49 @@ extension ImagePickerController : ImagePickerDelegateDelegate {
             captureSession.previewLayer = cell.previewView.previewLayer
         }
         
-        captureSession.resume()
+        captureSession.resume()        
     }
     
     func imagePicker(delegate: ImagePickerDelegate, didEndDisplayingCameraCell cell: CameraCollectionViewCell) {
         captureSession.suspend()
+        cell.blurIfNeeded(blurImage: captureSession.latestVideoBufferImage, animated: false)
     }
     
 }
 
 extension ImagePickerController : CaptureSessionDelegate {
     
+    func blurCellIfNeeded(animated: Bool) {
+        
+        //TODO: path is hardcoded, should be returned by layout configuration
+        let cameraIndexPath = IndexPath(item: 0, section: 1)
+        guard let cameraCell = collectionView.cellForItem(at: cameraIndexPath) as? CameraCollectionViewCell else {
+            return
+        }
+        
+        cameraCell.blurIfNeeded(blurImage: captureSession.latestVideoBufferImage, animated: animated)
+    }
+    
+    func unblurCellIfNeeded(animated: Bool) {
+        
+        //TODO: path is hardcoded, should be returned by layout configuration
+        let cameraIndexPath = IndexPath(item: 0, section: 1)
+        guard let cameraCell = collectionView.cellForItem(at: cameraIndexPath) as? CameraCollectionViewCell else {
+            return
+        }
+        
+        cameraCell.unblurIfNeeded(blurImage: captureSession.latestVideoBufferImage, animated: animated)
+        
+    }
+    
     func captureSessionDidResume(_ session: CaptureSession) {
         log("did resume")
+        unblurCellIfNeeded(animated: true)
     }
     
     func captureSessionDidSuspend(_ session: CaptureSession) {
         log("did suspend")
+        blurCellIfNeeded(animated: true)
     }
     
     func captureSession(_ session: CaptureSession, didFail error: AVError) {
@@ -434,10 +460,11 @@ extension ImagePickerController: CameraCollectionViewCellDelegate {
     }
     
     func flipCamera() {
+        
         //TODO: path is hardcoded, should be returned by layout configuration
         let cameraIndexPath = IndexPath(item: 0, section: 1)
         guard let cameraCell = collectionView.cellForItem(at: cameraIndexPath) as? CameraCollectionViewCell else {
-            return captureSession.changeCamera()
+            return captureSession.changeCamera(completion: nil)
         }
         
         cameraCell.blurView.isHidden = false
@@ -447,23 +474,34 @@ extension ImagePickerController: CameraCollectionViewCellDelegate {
             cameraCell.imageView.image = image
         }
         
-//        //TODO: this animation is not very nice, it should be updated, see issues in Readme.md
-        UIView.animate(withDuration: 0.25, delay: 0, options: .curveLinear, animations: {
+        // 1. blur
+        UIView.animate(withDuration: 0.1, delay: 0, options: .curveLinear, animations: {
             cameraCell.blurView.alpha = 1
         }) { (finished) in
-            self.captureSession.changeCamera()
-            UIView.transition(with: cameraCell.previewView, duration: 0.25, options: [.transitionFlipFromLeft, .allowAnimatedContent], animations: nil) { (finished) in
+            
+            // 2. flip camera
+            self.captureSession.changeCamera(completion: {
                 
-                //unblur
-                UIView.animate(withDuration: 0.5, delay: 0.2, options: .curveLinear, animations: {
-                    cameraCell.blurView.alpha = 0
-                    cameraCell.imageView.alpha = 0
-                }) { (finished) in
-                    cameraCell.blurView.isHidden = true
-                    cameraCell.imageView.image = nil
-                    cameraCell.imageView.alpha = 1
+                // 3. flip animation
+                UIView.transition(with: cameraCell.previewView, duration: 0.3, options: [.transitionFlipFromLeft, .allowAnimatedContent], animations: nil) { (finished) in
+                    
+                    //set new image from buffer
+                    if let image = self.captureSession.latestVideoBufferImage {
+                        cameraCell.imageView.image = image
+                    }
+                    
+                    // 4. unblur
+                    UIView.animate(withDuration: 0.1, delay: 0.0, options: .curveLinear, animations: {
+                        cameraCell.blurView.alpha = 0
+                        cameraCell.imageView.alpha = 0
+                    }) { (finished) in
+                        cameraCell.blurView.isHidden = true
+                        cameraCell.imageView.image = nil
+                        cameraCell.imageView.alpha = 1
+                    }
                 }
-            }
+            })
+            
         }
         
     }
