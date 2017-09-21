@@ -87,6 +87,8 @@ final class CaptureSession : NSObject {
     /// Communicate with the session and other session objects on this queue.
     fileprivate let sessionQueue = DispatchQueue(label: "session queue", attributes: [], target: nil)
     private var setupResult: SessionSetupResult = .success
+    fileprivate var videoDeviceInput: AVCaptureDeviceInput!
+    fileprivate let videoDeviceDiscoverySession = AVCaptureDeviceDiscoverySession(deviceTypes: [.builtInWideAngleCamera, .builtInDuoCamera], mediaType: AVMediaTypeVideo, position: .unspecified)!
     
     // MARK: Video Recoding
     
@@ -252,6 +254,8 @@ final class CaptureSession : NSObject {
             if session.canAddInput(videoDeviceInput) {
                 session.addInput(videoDeviceInput)
                 
+                self.videoDeviceInput = videoDeviceInput
+                
                 DispatchQueue.main.async {
                     /*
                      Why are we dispatching this to the main queue?
@@ -354,6 +358,7 @@ final class CaptureSession : NSObject {
         guard addedObservers == false else { return }
         
         session.addObserver(self, forKeyPath: "running", options: .new, context: &sessionRunningObserveContext)
+        NotificationCenter.default.addObserver(self, selector: #selector(subjectAreaDidChange), name: Notification.Name("AVCaptureDeviceSubjectAreaDidChangeNotification"), object: videoDeviceInput.device)
         NotificationCenter.default.addObserver(self, selector: #selector(sessionRuntimeError), name: Notification.Name("AVCaptureSessionRuntimeErrorNotification"), object: session)
         
         /*
@@ -462,6 +467,92 @@ final class CaptureSession : NSObject {
             self?.delegate?.captureSessionInterruptionDidEnd(self!)
         }
     }
+}
+
+extension CaptureSession {
+    
+    func subjectAreaDidChange(notification: NSNotification) {
+//        let devicePoint = CGPoint(x: 0.5, y: 0.5)
+//        focus(with: .autoFocus, exposureMode: .continuousAutoExposure, at: devicePoint, monitorSubjectAreaChange: false)
+    }
+    
+    func changeCamera() {
+        
+        sessionQueue.async { [unowned self] in
+            let currentVideoDevice = self.videoDeviceInput.device
+            let currentPosition = currentVideoDevice!.position
+            
+            let preferredPosition: AVCaptureDevicePosition
+            let preferredDeviceType: AVCaptureDeviceType
+            
+            switch currentPosition {
+            case .unspecified, .front:
+                preferredPosition = .back
+                preferredDeviceType = .builtInDuoCamera
+                
+            case .back:
+                preferredPosition = .front
+                preferredDeviceType = .builtInWideAngleCamera
+            }
+            
+            let devices = self.videoDeviceDiscoverySession.devices!
+            var newVideoDevice: AVCaptureDevice? = nil
+            
+            // First, look for a device with both the preferred position and device type. Otherwise, look for a device with only the preferred position.
+            if let device = devices.filter({ $0.position == preferredPosition && $0.deviceType == preferredDeviceType }).first {
+                newVideoDevice = device
+            }
+            else if let device = devices.filter({ $0.position == preferredPosition }).first {
+                newVideoDevice = device
+            }
+            
+            if let videoDevice = newVideoDevice {
+                do {
+                    let videoDeviceInput = try AVCaptureDeviceInput(device: videoDevice)
+                    
+                    self.session.beginConfiguration()
+                    
+                    // Remove the existing device input first, since using the front and back camera simultaneously is not supported.
+                    self.session.removeInput(self.videoDeviceInput)
+                    
+                    if self.session.canAddInput(videoDeviceInput) {
+                        NotificationCenter.default.removeObserver(self, name: Notification.Name("AVCaptureDeviceSubjectAreaDidChangeNotification"), object: currentVideoDevice!)
+                        NotificationCenter.default.addObserver(self, selector: #selector(self.subjectAreaDidChange), name: Notification.Name("AVCaptureDeviceSubjectAreaDidChangeNotification"), object: videoDeviceInput.device)
+                        
+                        self.session.addInput(videoDeviceInput)
+                        self.videoDeviceInput = videoDeviceInput
+                    }
+                    else {
+                        self.session.addInput(self.videoDeviceInput);
+                    }
+                    
+                    if let connection = self.videoFileOutput?.connection(withMediaType: AVMediaTypeVideo) {
+                        if connection.isVideoStabilizationSupported {
+                            connection.preferredVideoStabilizationMode = .auto
+                        }
+                    }
+                    
+                    /*
+                     Set Live Photo capture enabled if it is supported. When changing cameras, the
+                     `isLivePhotoCaptureEnabled` property of the AVCapturePhotoOutput gets set to NO when
+                     a video device is disconnected from the session. After the new video device is
+                     added to the session, re-enable Live Photo capture on the AVCapturePhotoOutput if it is supported.
+                     */
+                    self.photoOutput.isLivePhotoCaptureEnabled = self.photoOutput.isLivePhotoCaptureSupported && self.livePhotoMode == .on;
+                    
+                    self.session.commitConfiguration()
+                }
+                catch {
+                    print("Error occured while creating video device input: \(error)")
+                }
+            }
+            
+            DispatchQueue.main.async { [unowned self] in
+                //TODO: inform delegate that camera was flipped
+            }
+        }
+    }
+    
 }
 
 extension CaptureSession {

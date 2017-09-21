@@ -207,6 +207,7 @@ open class ImagePickerController : UIViewController {
         //determine auth satus and based on that reload UI
         reloadData(basedOnAuthorizationStatus: PHPhotoLibrary.authorizationStatus())
         
+        //TODO: use capture session only if camera is enabled
         //configure capture session
         captureSession.delegate = self
         captureSession.videoRecordingDelegate = self
@@ -389,7 +390,7 @@ extension ImagePickerController : CaptureSessionPhotoCapturingDelegate {
     
     func captureSession(_ session: CaptureSession, didCapturePhotoData: Data, with settings: AVCapturePhotoSettings) {
         log("did capture photo \(settings.uniqueID)")
-        self.delegate?.imagePicker(controller: self, didTake: UIImage(data: didCapturePhotoData)!)
+        delegate?.imagePicker(controller: self, didTake: UIImage(data: didCapturePhotoData)!)
     }
     
     func captureSession(_ session: CaptureSession, willCapturePhotoWith settings: AVCapturePhotoSettings) {
@@ -428,12 +429,11 @@ extension ImagePickerController : CaptureSessionVideoRecordingDelegate {
 extension ImagePickerController: CameraCollectionViewCellDelegate {
     
     func takePicture() {
-        //TODO: cameraController.takePicture()
         captureSession.capturePhoto()
     }
     
     func flipCamera() {
-        //TODO: cameraController.cameraDevice = (cameraController.cameraDevice == .rear) ? .front : .rear
+        captureSession.changeCamera()
     }
     
 }
