@@ -89,6 +89,12 @@ final class CaptureSession : NSObject {
     private var setupResult: SessionSetupResult = .success
     fileprivate var videoDeviceInput: AVCaptureDeviceInput!
     fileprivate let videoDeviceDiscoverySession = AVCaptureDeviceDiscoverySession(deviceTypes: [.builtInWideAngleCamera, .builtInDuoCamera], mediaType: AVMediaTypeVideo, position: .unspecified)!
+    fileprivate let videoOutpuSampleBufferDelegate = VideoOutputSampleBufferDelegate()
+    
+    /// returns latest captured image
+    var latestVideoBufferImage: UIImage? {
+        return videoOutpuSampleBufferDelegate.latestImage
+    }
     
     // MARK: Video Recoding
     
@@ -281,13 +287,16 @@ final class CaptureSession : NSObject {
             return
         }
         
-        log("capture session: configuring - adding video output")
+        //log("capture session: configuring - adding video output")
         
-        // A capture session cannot support both Live Photo capture and movie file output.
+        // A capture session cannot support at the same time:
+        // - Live Photo capture and
+        // - movie file output
+        // - video data output
         // If your capture session includes an AVCaptureMovieFileOutput object, the
         // isLivePhotoCaptureSupported property becomes false.
         
-//        // Add video output.
+        // Add video output.
 //        let movieFileOutput = AVCaptureMovieFileOutput()
 //        if self.session.canAddOutput(movieFileOutput) {
 //            self.session.addOutput(movieFileOutput)
@@ -343,6 +352,20 @@ final class CaptureSession : NSObject {
             setupResult = .configurationFailed
             session.commitConfiguration()
             return
+        }
+        
+        // Add video data output - we use this to capture last video sample that is
+        // used when blurring video layer - for example when capture session is suspended, changing configuration etc.
+        // NOTE: video data output can not be connected at the same time as video file output!
+        let videoDataOutput = AVCaptureVideoDataOutput()
+        if session.canAddOutput(videoDataOutput) {
+            session.addOutput(videoDataOutput)
+            videoDataOutput.alwaysDiscardsLateVideoFrames = true 
+            videoDataOutput.setSampleBufferDelegate(videoOutpuSampleBufferDelegate, queue: videoOutpuSampleBufferDelegate.processQueue)
+            //TODO: perhaps we will also set the video orientation to the connection!!??
+        }
+        else {
+            log("capture session: warning - could not add video data output to the session")
         }
         
         session.commitConfiguration()

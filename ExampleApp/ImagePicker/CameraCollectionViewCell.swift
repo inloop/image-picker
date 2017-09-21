@@ -20,8 +20,10 @@ open class CameraCollectionViewCell : UICollectionViewCell {
         log("deinit: \(String(describing: self))")
     }
     
+    /// contains video preview layer
     internal var previewView = AVPreviewView(frame: .zero)
     
+    /// visual view that is blurring preview view
     internal var blurView: UIVisualEffectView = {
        let view = UIVisualEffectView(effect: UIBlurEffect(style: .light))
         view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
@@ -29,20 +31,34 @@ open class CameraCollectionViewCell : UICollectionViewCell {
         return view
     }()
     
+    ///
+    /// holds static image that is above blur view to achieve nicer presentation
+    /// - note: when capture session is interrupted, there is no input stream so
+    /// output is black, adding image here will nicely hide this black background
+    ///
+    internal var imageView: UIImageView = {
+        let view = UIImageView(frame: .zero)
+        view.contentMode = .scaleAspectFill
+        return view
+    }()
+    
     public override init(frame: CGRect) {
         super.init(frame: frame)
         backgroundView = previewView
+        previewView.addSubview(imageView)
         previewView.addSubview(blurView)
     }
     
     required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         backgroundView = previewView
+        previewView.addSubview(imageView)
         previewView.addSubview(blurView)
     }
     
     open override func layoutSubviews() {
         super.layoutSubviews()
+        imageView.frame = previewView.bounds
         blurView.frame = previewView.bounds
     }
     

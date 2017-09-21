@@ -439,22 +439,25 @@ extension ImagePickerController: CameraCollectionViewCellDelegate {
             return captureSession.changeCamera()
         }
         
-        
         cameraCell.blurView.isHidden = false
         cameraCell.blurView.alpha = 0
+
+        if let image = captureSession.latestVideoBufferImage {
+            cameraCell.imageView.image = image
+        }
         
-        //TODO: this animation is not very nice, it should be updated, see issues in Readme.md
-        UIView.animate(withDuration: 0.1, delay: 0, options: .curveLinear, animations: {
+//        //TODO: this animation is not very nice, it should be updated, see issues in Readme.md
+        UIView.animate(withDuration: 0.25, delay: 0, options: .curveLinear, animations: {
             cameraCell.blurView.alpha = 1
         }) { (finished) in
             self.captureSession.changeCamera()
-            UIView.transition(with: cameraCell.previewView, duration: 0.25, options: [.transitionFlipFromLeft, .allowAnimatedContent], animations: nil) { (finished) in
-                UIView.animate(withDuration: 0.5, delay: 0.2, options: .curveLinear, animations: {
-                    cameraCell.blurView.alpha = 0
-                }) { (finished) in
-                    cameraCell.blurView.isHidden = true
-                }
-            }
+//            UIView.transition(with: cameraCell.previewView, duration: 0.25, options: [.transitionFlipFromLeft, .allowAnimatedContent], animations: nil) { (finished) in
+//                UIView.animate(withDuration: 0.5, delay: 0.2, options: .curveLinear, animations: {
+//                    cameraCell.blurView.alpha = 0
+//                }) { (finished) in
+//                    cameraCell.blurView.isHidden = true
+//                }
+//            }
         }
         
     }
