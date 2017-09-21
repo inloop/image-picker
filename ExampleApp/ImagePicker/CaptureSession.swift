@@ -99,10 +99,15 @@ final class CaptureSession : NSObject {
         videoOrientation = new
         
         //we need to change orientation on all outputs
-        previewLayer?.connection?.videoOrientation = new
+        self.previewLayer?.connection?.videoOrientation = new
         
-        //TODO: perhaps when device is disconnected also video data output connection orientation is reset, so we need to set to new proper value
-        videoDataOutput?.connection(withMediaType: AVMediaTypeVideo).videoOrientation = new
+        //TODO: we have to update orientation of video data output but it's blinking a bit which is
+        //uggly, I have no idea how to fix this
+        sessionQueue.async {
+            //when device is disconnected also video data output connection orientation is reset, so we need to set to new proper value
+            self.videoDataOutput?.connection(withMediaType: AVMediaTypeVideo).videoOrientation = new
+        }
+        
     }
     
     /// Communicate with the session and other session objects on this queue.
