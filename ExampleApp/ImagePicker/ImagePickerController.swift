@@ -209,6 +209,7 @@ open class ImagePickerController : UIViewController {
         
         //TODO: use capture session only if camera is enabled
         //configure capture session
+        captureSession.videoOrientation = UIApplication.shared.statusBarOrientation.captureVideoOrientation
         captureSession.delegate = self
         captureSession.videoRecordingDelegate = self
         captureSession.photoCapturingDelegate = self
@@ -238,8 +239,8 @@ open class ImagePickerController : UIViewController {
     //TODO: we need to reload thumbnail sizes and purge all image asset caches
     open override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         
-        //update video orientation at this time status bar orientation has new value so lets convert it to video orientation
-        captureSession.previewLayer?.connection?.videoOrientation = UIApplication.shared.statusBarOrientation.captureVideoOrientation
+        //update capture session with new interface orientation
+        captureSession.updateVideoOrientation(new: UIApplication.shared.statusBarOrientation.captureVideoOrientation)
         
         //TODO: add support for upadating safe area and content inset when rotating, this is
         //problem because at this point of execution safe are does not have new values
@@ -451,13 +452,18 @@ extension ImagePickerController: CameraCollectionViewCellDelegate {
             cameraCell.blurView.alpha = 1
         }) { (finished) in
             self.captureSession.changeCamera()
-//            UIView.transition(with: cameraCell.previewView, duration: 0.25, options: [.transitionFlipFromLeft, .allowAnimatedContent], animations: nil) { (finished) in
-//                UIView.animate(withDuration: 0.5, delay: 0.2, options: .curveLinear, animations: {
-//                    cameraCell.blurView.alpha = 0
-//                }) { (finished) in
-//                    cameraCell.blurView.isHidden = true
-//                }
-//            }
+            UIView.transition(with: cameraCell.previewView, duration: 0.25, options: [.transitionFlipFromLeft, .allowAnimatedContent], animations: nil) { (finished) in
+                
+                //unblur
+                UIView.animate(withDuration: 0.5, delay: 0.2, options: .curveLinear, animations: {
+                    cameraCell.blurView.alpha = 0
+                    cameraCell.imageView.alpha = 0
+                }) { (finished) in
+                    cameraCell.blurView.isHidden = true
+                    cameraCell.imageView.image = nil
+                    cameraCell.imageView.alpha = 1
+                }
+            }
         }
         
     }

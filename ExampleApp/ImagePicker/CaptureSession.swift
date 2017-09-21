@@ -84,11 +84,33 @@ final class CaptureSession : NSObject {
     var isSessionRunning = false
     weak var previewLayer: AVCaptureVideoPreviewLayer?
     
+    ///
+    /// Set this method to orientation that mathches UI orientation before `prepare()`
+    /// method is called. If you need to update orientation when session is running,
+    /// use `updateVideoOrientation()` method instead
+    ///
+    var videoOrientation: AVCaptureVideoOrientation = .portrait
+    
+    ///
+    /// Updates orientaiton on video outputs
+    ///
+    func updateVideoOrientation(new: AVCaptureVideoOrientation) {
+        
+        videoOrientation = new
+        
+        //we need to change orientation on all outputs
+        previewLayer?.connection?.videoOrientation = new
+        
+        //TODO: perhaps when device is disconnected also video data output connection orientation is reset, so we need to set to new proper value
+        videoDataOutput?.connection(withMediaType: AVMediaTypeVideo).videoOrientation = new
+    }
+    
     /// Communicate with the session and other session objects on this queue.
     fileprivate let sessionQueue = DispatchQueue(label: "session queue", attributes: [], target: nil)
     private var setupResult: SessionSetupResult = .success
     fileprivate var videoDeviceInput: AVCaptureDeviceInput!
     fileprivate let videoDeviceDiscoverySession = AVCaptureDeviceDiscoverySession(deviceTypes: [.builtInWideAngleCamera, .builtInDuoCamera], mediaType: AVMediaTypeVideo, position: .unspecified)!
+    fileprivate var videoDataOutput: AVCaptureVideoDataOutput?
     fileprivate let videoOutpuSampleBufferDelegate = VideoOutputSampleBufferDelegate()
     
     /// returns latest captured image
@@ -270,7 +292,7 @@ final class CaptureSession : NSObject {
                      Note: As an exception to the above rule, it is not necessary to serialize video orientation changes
                      on the AVCaptureVideoPreviewLayer’s connection with other session manipulation.
                      */
-                    self.previewLayer?.connection.videoOrientation = UIApplication.shared.statusBarOrientation.captureVideoOrientation
+                    self.previewLayer?.connection.videoOrientation = self.videoOrientation
                 }
             }
             else {
@@ -357,12 +379,15 @@ final class CaptureSession : NSObject {
         // Add video data output - we use this to capture last video sample that is
         // used when blurring video layer - for example when capture session is suspended, changing configuration etc.
         // NOTE: video data output can not be connected at the same time as video file output!
-        let videoDataOutput = AVCaptureVideoDataOutput()
-        if session.canAddOutput(videoDataOutput) {
-            session.addOutput(videoDataOutput)
-            videoDataOutput.alwaysDiscardsLateVideoFrames = true 
-            videoDataOutput.setSampleBufferDelegate(videoOutpuSampleBufferDelegate, queue: videoOutpuSampleBufferDelegate.processQueue)
-            //TODO: perhaps we will also set the video orientation to the connection!!??
+        videoDataOutput = AVCaptureVideoDataOutput()
+        if session.canAddOutput(videoDataOutput!) {
+            session.addOutput(videoDataOutput!)
+            videoDataOutput!.alwaysDiscardsLateVideoFrames = true
+            videoDataOutput!.setSampleBufferDelegate(videoOutpuSampleBufferDelegate, queue: videoOutpuSampleBufferDelegate.processQueue)
+            
+            if let connection = videoDataOutput!.connection(withMediaType: AVMediaTypeVideo) {
+                connection.videoOrientation = self.videoOrientation
+            }
         }
         else {
             log("capture session: warning - could not add video data output to the session")
@@ -562,6 +587,11 @@ extension CaptureSession {
                      added to the session, re-enable Live Photo capture on the AVCapturePhotoOutput if it is supported.
                      */
                     self.photoOutput.isLivePhotoCaptureEnabled = self.photoOutput.isLivePhotoCaptureSupported && self.livePhotoMode == .on;
+                    
+                    //TODO: perhaps when device is disconnected also video data output connection orientation is reset, so we need to set to new proper value
+                    if let videoDataOutputConnection = self.videoDataOutput?.connection(withMediaType: AVMediaTypeVideo) {
+                        videoDataOutputConnection.videoOrientation = self.videoOrientation
+                    }
                     
                     self.session.commitConfiguration()
                 }

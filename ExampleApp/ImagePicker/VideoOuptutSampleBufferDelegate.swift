@@ -24,10 +24,9 @@ final class VideoOutputSampleBufferDelegate : NSObject, AVCaptureVideoDataOutput
     var latestImage: UIImage?
     
     func captureOutput(_ output: AVCaptureOutput!, didOutputSampleBuffer sampleBuffer: CMSampleBuffer!, from connection: AVCaptureConnection!) {
-        let timeStamp = CMSampleBufferGetOutputDecodeTimeStamp(sampleBuffer)
-        log("output sample: \(timeStamp)")
         if let image = sampleBuffer.imageRepresentation {
             latestImage = image
+            log("output size: \(image.size)")
         }
     }
     
