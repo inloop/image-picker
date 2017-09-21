@@ -20,16 +20,30 @@ open class CameraCollectionViewCell : UICollectionViewCell {
         log("deinit: \(String(describing: self))")
     }
     
-    var previewView = AVPreviewView(frame: .zero)
+    internal var previewView = AVPreviewView(frame: .zero)
+    
+    internal var blurView: UIVisualEffectView = {
+       let view = UIVisualEffectView(effect: UIBlurEffect(style: .light))
+        view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        view.isHidden = true
+        return view
+    }()
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
         backgroundView = previewView
+        previewView.addSubview(blurView)
     }
     
     required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         backgroundView = previewView
+        previewView.addSubview(blurView)
+    }
+    
+    open override func layoutSubviews() {
+        super.layoutSubviews()
+        blurView.frame = previewView.bounds
     }
     
     // MARK: Camera API

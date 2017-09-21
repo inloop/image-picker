@@ -433,7 +433,30 @@ extension ImagePickerController: CameraCollectionViewCellDelegate {
     }
     
     func flipCamera() {
-        captureSession.changeCamera()
+        //TODO: path is hardcoded, should be returned by layout configuration
+        let cameraIndexPath = IndexPath(item: 0, section: 1)
+        guard let cameraCell = collectionView.cellForItem(at: cameraIndexPath) as? CameraCollectionViewCell else {
+            return captureSession.changeCamera()
+        }
+        
+        
+        cameraCell.blurView.isHidden = false
+        cameraCell.blurView.alpha = 0
+        
+        //TODO: this animation is not very nice, it should be updated, see issues in Readme.md
+        UIView.animate(withDuration: 0.1, delay: 0, options: .curveLinear, animations: {
+            cameraCell.blurView.alpha = 1
+        }) { (finished) in
+            self.captureSession.changeCamera()
+            UIView.transition(with: cameraCell.previewView, duration: 0.25, options: [.transitionFlipFromLeft, .allowAnimatedContent], animations: nil) { (finished) in
+                UIView.animate(withDuration: 0.5, delay: 0.2, options: .curveLinear, animations: {
+                    cameraCell.blurView.alpha = 0
+                }) { (finished) in
+                    cameraCell.blurView.isHidden = true
+                }
+            }
+        }
+        
     }
     
 }
