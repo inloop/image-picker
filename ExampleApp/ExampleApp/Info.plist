@@ -37,6 +37,8 @@
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>App uses access to Photos when picking images</string>
 	<key>NSCameraUsageDescription</key>
-	<string>Camera is used by Image picker when taking new photos</string>
+	<string>Camera is used by Image picker when taking new photos or recording videos</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Microphone is used by Image picker when recording videos</string>
 </dict>
 </plist>
