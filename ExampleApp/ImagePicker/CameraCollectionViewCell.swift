@@ -67,13 +67,13 @@ open class CameraCollectionViewCell : UICollectionViewCell {
             completion?(true)
         }
         else {
-            UIView.animate(withDuration: 0.25, delay: 0, options: .allowAnimatedContent, animations: {
+            UIView.animate(withDuration: 0.1, delay: 0, options: .allowAnimatedContent, animations: {
                 self.imageView.alpha = 1
             }, completion: completion)
         }
     }
     
-    func unblurIfNeeded(blurImage: UIImage?, animated: Bool, completion: ((Bool) -> Void)?) {
+    func unblurIfNeeded(unblurImage: UIImage?, animated: Bool, completion: ((Bool) -> Void)?) {
         
         guard imageView.image != nil else {
             return
@@ -85,7 +85,12 @@ open class CameraCollectionViewCell : UICollectionViewCell {
             completion?(true)
         }
         else {
-            UIView.animate(withDuration: 0.25, delay: 0, options: .allowAnimatedContent, animations: {
+            
+            if let image = unblurImage {
+                imageView.image = image
+            }
+            
+            UIView.animate(withDuration: 0.1, delay: 0, options: .allowAnimatedContent, animations: {
                 self.imageView.alpha = 0
             }, completion: { (finished) in
                 self.imageView.image = nil

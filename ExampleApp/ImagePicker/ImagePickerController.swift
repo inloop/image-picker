@@ -351,10 +351,12 @@ extension ImagePickerController : ImagePickerDelegateDelegate {
     
     func imagePicker(delegate: ImagePickerDelegate, didEndDisplayingCameraCell cell: CameraCollectionViewCell) {
         captureSession.suspend()
+        
+        // blur cell asap
         DispatchQueue.global(qos: .userInteractive).async {
             if let image = self.captureSession.latestVideoBufferImage?.applyLightEffectWithExtraSaturation() {
                 DispatchQueue.main.async {
-                    cell.blurIfNeeded(blurImage: image, animated: false)
+                    cell.blurIfNeeded(blurImage: image, animated: false, completion: nil)
                 }
             }
         }
@@ -372,7 +374,7 @@ extension ImagePickerController : CaptureSessionDelegate {
             return
         }
         
-        cameraCell.blurIfNeeded(blurImage: captureSession.latestVideoBufferImage, animated: animated)
+        cameraCell.blurIfNeeded(blurImage: captureSession.latestVideoBufferImage, animated: animated, completion: nil)
     }
     
     func unblurCellIfNeeded(animated: Bool) {
@@ -383,7 +385,7 @@ extension ImagePickerController : CaptureSessionDelegate {
             return
         }
         
-        cameraCell.unblurIfNeeded(blurImage: captureSession.latestVideoBufferImage, animated: animated)
+        cameraCell.unblurIfNeeded(unblurImage: nil, animated: animated, completion: nil)
     }
     
     func captureSessionDidResume(_ session: CaptureSession) {
@@ -472,19 +474,11 @@ extension ImagePickerController: CameraCollectionViewCellDelegate {
             return captureSession.changeCamera(completion: nil)
         }
         
-        //cameraCell.blurView.isHidden = false
-        cameraCell.imageView.alpha = 0
-
-        if let image = captureSession.latestVideoBufferImage?.applyLightEffectWithExtraSaturation() {
-            cameraCell.imageView.image = image
-        }
+        let image = captureSession.latestVideoBufferImage?.applyLightEffectWithExtraSaturation()
         
         //TODO: move this code to the cell itself
         
-        // 1. blur
-        UIView.animate(withDuration: 0.1, delay: 0, options: .curveLinear, animations: {
-            cameraCell.imageView.alpha = 1
-        }) { (finished) in
+        cameraCell.blurIfNeeded(blurImage: image, animated: true) { _ in
             
             // 2. flip camera
             self.captureSession.changeCamera(completion: {
@@ -493,24 +487,14 @@ extension ImagePickerController: CameraCollectionViewCellDelegate {
                 UIView.transition(with: cameraCell.previewView, duration: 0.3, options: [.transitionFlipFromLeft, .allowAnimatedContent], animations: nil) { (finished) in
                     
                     //set new image from buffer
-                    if let image = self.captureSession.latestVideoBufferImage?.applyLightEffectWithExtraSaturation() {
-                        cameraCell.imageView.image = image
-                    }
+                    let image = self.captureSession.latestVideoBufferImage?.applyLightEffectWithExtraSaturation()
                     
                     // 4. unblur
-                    UIView.animate(withDuration: 0.1, delay: 0.1, options: .curveLinear, animations: {
-                        //cameraCell.blurView.alpha = 0
-                        cameraCell.imageView.alpha = 0
-                    }) { (finished) in
-                        //cameraCell.blurView.isHidden = true
-                        cameraCell.imageView.image = nil
-                        cameraCell.imageView.alpha = 1
-                    }
+                    cameraCell.unblurIfNeeded(unblurImage: image, animated: true, completion: nil)
                 }
             })
             
         }
-        
     }
     
 }
