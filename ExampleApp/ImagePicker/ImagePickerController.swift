@@ -214,6 +214,13 @@ open class ImagePickerController : UIViewController {
         captureSession.videoRecordingDelegate = self
         captureSession.photoCapturingDelegate = self
         captureSession.prepare()
+        
+        let notification = Notification.Name.UIApplicationDidEnterBackground
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground(_:)), name: notification, object: nil)
+    }
+    
+    private dynamic func applicationDidEnterBackground(_ notification: Notification) {
+        blurCellIfNeeded(animated: false)
     }
     
     open override func viewWillAppear(_ animated: Bool) {
