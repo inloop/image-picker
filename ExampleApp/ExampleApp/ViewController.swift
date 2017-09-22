@@ -26,7 +26,7 @@ class ViewController: UITableViewController {
         tableView.keyboardDismissMode = .onDrag
     }
 
-    func presentPickerModally() {
+    @objc func presentPickerModally() {
         print("presenting modally")
         
         var configuration = LayoutConfiguration.default
@@ -53,7 +53,7 @@ class ViewController: UITableViewController {
         presentPickerModally(vc)
     }
     
-    func presentPickerModallyCustomFetch() {
+    @objc func presentPickerModallyCustomFetch() {
         print("presenting modally")
         
         var configuration = LayoutConfiguration.default
@@ -82,7 +82,7 @@ class ViewController: UITableViewController {
         presentPickerModally(vc)
     }
     
-    func presentPickerAsInputViewPhotosAs1Col() {
+    @objc func presentPickerAsInputViewPhotosAs1Col() {
         print("presenting as input view")
         
         let registrator = CellRegistrator()
@@ -103,7 +103,7 @@ class ViewController: UITableViewController {
         presentPickerAsInputView(vc)
     }
     
-    func presentPickerAsInputView() {
+    @objc func presentPickerAsInputView() {
         print("presenting as input view")
         
         let registrator = CellRegistrator()
@@ -126,7 +126,7 @@ class ViewController: UITableViewController {
         presentPickerAsInputView(vc)
     }
     
-    func presentPickerAsInputViewCustomCameraCell() {
+    @objc func presentPickerAsInputViewCustomCameraCell() {
         
         let registrator = CellRegistrator()
         let actionNib = UINib(nibName: "IconWithTextCell", bundle: nil)
@@ -167,7 +167,7 @@ class ViewController: UITableViewController {
         present(nc, animated: true, completion: nil)
     }
     
-    dynamic func dismissPresentedImagePicker(sender: UIBarButtonItem) {
+    @objc dynamic func dismissPresentedImagePicker(sender: UIBarButtonItem) {
         navigationController?.visibleViewController?.dismiss(animated: true, completion: nil)
     }
     
@@ -233,7 +233,7 @@ extension ViewController : ImagePickerControllerDelegate {
             else if asset.mediaSubtypes.contains(.photoPanorama) {
                 imageCell.subtypeImageView.image = #imageLiteral(resourceName: "icon-pano")
             }
-            else if asset.mediaSubtypes.contains(.photoDepthEffect) {
+            else if #available(iOS 10.2, *), asset.mediaSubtypes.contains(.photoDepthEffect) {
                 imageCell.subtypeImageView.image = #imageLiteral(resourceName: "icon-depth")
             }
         default:

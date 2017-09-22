@@ -219,7 +219,7 @@ open class ImagePickerController : UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground(_:)), name: notification, object: nil)
     }
     
-    private dynamic func applicationDidEnterBackground(_ notification: Notification) {
+    @objc private dynamic func applicationDidEnterBackground(_ notification: Notification) {
         blurCellIfNeeded(animated: false)
     }
     
@@ -417,7 +417,7 @@ extension ImagePickerController : CaptureSessionDelegate {
         log("did fail authorization")
     }
     
-    func captureSession(_ session: CaptureSession, wasInterrupted reason: AVCaptureSessionInterruptionReason) {
+    func captureSession(_ session: CaptureSession, wasInterrupted reason: AVCaptureSession.InterruptionReason) {
         log("interrupted")
     }
     

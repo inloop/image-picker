@@ -27,10 +27,8 @@ final class VideoOutputSampleBufferDelegate : NSObject, AVCaptureVideoDataOutput
     
     private var latestSampleBuffer: CMSampleBuffer?
     
-    func captureOutput(_ output: AVCaptureOutput!, didOutputSampleBuffer sampleBuffer: CMSampleBuffer!, from connection: AVCaptureConnection!) {
-        if let sample = sampleBuffer {
-            latestSampleBuffer = sample
-        }
+    func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
+        latestSampleBuffer = sampleBuffer
     }
     
 }
