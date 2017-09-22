@@ -384,7 +384,6 @@ extension ImagePickerController : CaptureSessionDelegate {
         }
         
         cameraCell.unblurIfNeeded(blurImage: captureSession.latestVideoBufferImage, animated: animated)
-        
     }
     
     func captureSessionDidResume(_ session: CaptureSession) {
@@ -473,10 +472,10 @@ extension ImagePickerController: CameraCollectionViewCellDelegate {
             return captureSession.changeCamera(completion: nil)
         }
         
-        cameraCell.blurView.isHidden = false
-        cameraCell.blurView.alpha = 0
+        //cameraCell.blurView.isHidden = false
+        cameraCell.imageView.alpha = 0
 
-        if let image = captureSession.latestVideoBufferImage {
+        if let image = captureSession.latestVideoBufferImage?.applyLightEffectWithExtraSaturation() {
             cameraCell.imageView.image = image
         }
         
@@ -484,7 +483,7 @@ extension ImagePickerController: CameraCollectionViewCellDelegate {
         
         // 1. blur
         UIView.animate(withDuration: 0.1, delay: 0, options: .curveLinear, animations: {
-            cameraCell.blurView.alpha = 1
+            cameraCell.imageView.alpha = 1
         }) { (finished) in
             
             // 2. flip camera
@@ -494,16 +493,16 @@ extension ImagePickerController: CameraCollectionViewCellDelegate {
                 UIView.transition(with: cameraCell.previewView, duration: 0.3, options: [.transitionFlipFromLeft, .allowAnimatedContent], animations: nil) { (finished) in
                     
                     //set new image from buffer
-                    if let image = self.captureSession.latestVideoBufferImage {
+                    if let image = self.captureSession.latestVideoBufferImage?.applyLightEffectWithExtraSaturation() {
                         cameraCell.imageView.image = image
                     }
                     
                     // 4. unblur
-                    UIView.animate(withDuration: 0.1, delay: 0.0, options: .curveLinear, animations: {
-                        cameraCell.blurView.alpha = 0
+                    UIView.animate(withDuration: 0.1, delay: 0.1, options: .curveLinear, animations: {
+                        //cameraCell.blurView.alpha = 0
                         cameraCell.imageView.alpha = 0
                     }) { (finished) in
-                        cameraCell.blurView.isHidden = true
+                        //cameraCell.blurView.isHidden = true
                         cameraCell.imageView.image = nil
                         cameraCell.imageView.alpha = 1
                     }

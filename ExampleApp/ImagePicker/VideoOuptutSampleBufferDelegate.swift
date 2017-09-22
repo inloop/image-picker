@@ -10,8 +10,6 @@ import Foundation
 import AVFoundation
 
 /*
- TODO: [not possible!] If your frame processing is consistently unable to keep up with the rate of incoming frames, you should consider using the minFrameDuration property, which will generally yield better performance characteristics and more consistent frame rates than frame dropping alone.
- TODO: try to optimize this so it's really eanbled only when we need it, not all the time
  NOTE: if video file output is provided, video data output is not working!!! there must be only 1 output at the same time
  */
 
@@ -59,6 +57,8 @@ extension CMSampleBuffer {
         filter.setValue(0.25, forKey: "inputScale")
         filter.setValue(1.0, forKey: "inputAspectRatio")
         let resizedCiImage = filter.value(forKey: "outputImage") as! CIImage
+        
+        // TODO: consider using CIFilter also for bluring and saturating
         
         // we need to convert CIImage to CGImage because we are using Apples blurring
         // functions (see UIImage+ImageEffects.h) and it requires UIImage with
