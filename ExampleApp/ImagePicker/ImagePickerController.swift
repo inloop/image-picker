@@ -235,11 +235,12 @@ open class ImagePickerController : UIViewController {
         updateItemSize()
         
         //update safe area insets only once
-        if #available(iOS 11.0, *) {
-            if collectionView.contentInset != view.safeAreaInsets {
-                collectionView.contentInset = view.safeAreaInsets
-            }
-        }
+        //TODO: implement support for iPhone X 
+//        if #available(iOS 11.0, *) {
+//            if collectionView.contentInset != view.safeAreaInsets {
+//                collectionView.contentInset = view.safeAreaInsets
+//            }
+//        }
     }
     
     //this will make sure that collection view layout is reloaded when interface rotates/changes

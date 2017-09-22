@@ -19,6 +19,7 @@ App must have in info plist permissions for:
 5. add public API for recording videos
 6. add public API for enabling/disabling live photos
 7. add public API for setting if taken pictures should be saved in camera roll or just directly provided through delegate
+8. when user denies access to camera, don't show camera cell or show that access is denied
 
 ## Known Issues
 
