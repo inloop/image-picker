@@ -346,12 +346,11 @@ extension ImagePickerController : ImagePickerDelegateDelegate {
             captureSession.previewLayer = cell.previewView.previewLayer
         }
         
-        captureSession.resume()        
+        captureSession.resume()
     }
     
     func imagePicker(delegate: ImagePickerDelegate, didEndDisplayingCameraCell cell: CameraCollectionViewCell) {
         captureSession.suspend()
-        
         // blur cell asap
         DispatchQueue.global(qos: .userInteractive).async {
             if let image = self.captureSession.latestVideoBufferImage?.applyLightEffectWithExtraSaturation() {
@@ -475,8 +474,6 @@ extension ImagePickerController: CameraCollectionViewCellDelegate {
         }
         
         let image = captureSession.latestVideoBufferImage?.applyLightEffectWithExtraSaturation()
-        
-        //TODO: move this code to the cell itself
         
         cameraCell.blurIfNeeded(blurImage: image, animated: true) { _ in
             

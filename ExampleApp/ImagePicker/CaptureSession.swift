@@ -200,6 +200,11 @@ final class CaptureSession : NSObject {
     
     func resume() {
         sessionQueue.async {
+            
+            guard self.isSessionRunning == false else {
+                return log("capture session: warning - trying to resume already running session")
+            }
+            
             switch self.setupResult {
             case .success:
                 // Only setup observers and start the session running if setup succeeded.
@@ -237,6 +242,11 @@ final class CaptureSession : NSObject {
         //we need to capture self in order to postpone deallocation while
         //session is properly stopped and cleaned up
         sessionQueue.async { [capturedSelf = self] in
+            
+            guard self.isSessionRunning == true else {
+                return log("capture session: warning - trying to suspend non running session")
+            }
+            
             capturedSelf.session.stopRunning()
             capturedSelf.isSessionRunning = self.session.isRunning
             capturedSelf.removeObservers()

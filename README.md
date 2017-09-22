@@ -15,7 +15,7 @@ App must have in info plist permissions for:
 1. landscape layout for camera cell - video is already in landscape but cell must be wider to properly display it
 2. [ok] flip cameras
 3. [ok] blur/unblur camera cell video layer when capture session is suspended/unsuspended
-4. blur/unblur camera cell video layer when capture session is interrupted, failed or app goes to background/unactive
+4. [ok] blur/unblur camera cell video layer when capture session is interrupted, failed or app goes to background/unactive
 5. add public API for recording videos
 6. add public API for enabling/disabling live photos
 7. add public API for setting if taken pictures should be saved in camera roll or just directly provided through delegate

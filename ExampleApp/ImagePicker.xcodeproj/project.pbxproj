@@ -71,7 +71,7 @@
 /* Begin PBXFileReference section */
 		420BCC361F66AEC5006E8806 /* ImagePickerAssetCellProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePickerAssetCellProtocol.swift; sourceTree = "<group>"; };
 		420BCC3A1F66C53A006E8806 /* VideoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCell.swift; sourceTree = "<group>"; };
-		420C23FC1F5D82C6008935D4 /* ExampleApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ExampleApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		420C23FC1F5D82C6008935D4 /* Image Picker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Image Picker.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		420C23FF1F5D82C6008935D4 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		420C24011F5D82C6008935D4 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		420C24041F5D82C6008935D4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -141,7 +141,7 @@
 		420C23FD1F5D82C6008935D4 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				420C23FC1F5D82C6008935D4 /* ExampleApp.app */,
+				420C23FC1F5D82C6008935D4 /* Image Picker.app */,
 				420C24161F5D82F9008935D4 /* ImagePicker.framework */,
 			);
 			name = Products;
@@ -235,7 +235,7 @@
 			);
 			name = ExampleApp;
 			productName = ExampleApp;
-			productReference = 420C23FC1F5D82C6008935D4 /* ExampleApp.app */;
+			productReference = 420C23FC1F5D82C6008935D4 /* Image Picker.app */;
 			productType = "com.apple.product-type.application";
 		};
 		420C24151F5D82F9008935D4 /* ImagePicker */ = {
@@ -493,7 +493,7 @@
 				INFOPLIST_FILE = ExampleApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = eu.inloop.ExampleApp;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "Image Picker";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
@@ -507,7 +507,7 @@
 				INFOPLIST_FILE = ExampleApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = eu.inloop.ExampleApp;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "Image Picker";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
