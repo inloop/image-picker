@@ -22,12 +22,16 @@ final class VideoOutputSampleBufferDelegate : NSObject, AVCaptureVideoDataOutput
     }
     
     let processQueue = DispatchQueue(label: "eu.inloop.video-output-sample-buffer-delegate.queue")
-    var latestImage: UIImage?
+    
+    var latestImage: UIImage? {
+        return latestSampleBuffer?.imageRepresentation
+    }
+    
+    private var latestSampleBuffer: CMSampleBuffer?
     
     func captureOutput(_ output: AVCaptureOutput!, didOutputSampleBuffer sampleBuffer: CMSampleBuffer!, from connection: AVCaptureConnection!) {
-        if let image = sampleBuffer.imageRepresentation {
-            latestImage = image
-            //log("output size: \(image.size)")
+        if let sample = sampleBuffer {
+            latestSampleBuffer = sample
         }
     }
     
@@ -35,10 +39,36 @@ final class VideoOutputSampleBufferDelegate : NSObject, AVCaptureVideoDataOutput
 
 extension CMSampleBuffer {
     
-    var imageRepresentation: UIImage? {
+    static let context = CIContext(options: [kCIContextUseSoftwareRenderer: false])
+    
+    ///
+    /// Converts Sample Buffer to UIImage with backing CGImage. This conversion
+    /// is expensive, use it lazily.
+    ///
+    fileprivate var imageRepresentation: UIImage? {
+        
         guard let pixelBuffer = CMSampleBufferGetImageBuffer(self) else {
             return nil
         }
-        return UIImage(ciImage: CIImage(cvPixelBuffer: pixelBuffer))
+        
+        let ciImage = CIImage(cvPixelBuffer: pixelBuffer)
+        
+        // resize image
+        let filter = CIFilter(name: "CILanczosScaleTransform")!
+        filter.setValue(ciImage, forKey: "inputImage")
+        filter.setValue(0.25, forKey: "inputScale")
+        filter.setValue(1.0, forKey: "inputAspectRatio")
+        let resizedCiImage = filter.value(forKey: "outputImage") as! CIImage
+        
+        // we need to convert CIImage to CGImage because we are using Apples blurring
+        // functions (see UIImage+ImageEffects.h) and it requires UIImage with
+        // backed CGImage. This conversion is very expensive, use it only
+        // when you really need it
+        
+        if let cgImage = CMSampleBuffer.context.createCGImage(resizedCiImage, from: resizedCiImage.extent) {
+            return UIImage(cgImage: cgImage)
+        }
+        
+        return nil
     }
 }

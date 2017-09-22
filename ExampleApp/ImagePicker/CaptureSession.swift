@@ -593,9 +593,12 @@ extension CaptureSession {
                      */
                     self.photoOutput.isLivePhotoCaptureEnabled = self.photoOutput.isLivePhotoCaptureSupported && self.livePhotoMode == .on;
                     
-                    //TODO: perhaps when device is disconnected also video data output connection orientation is reset, so we need to set to new proper value
+                    // when device is disconnected:
+                    // - video data output connection orientation is reset, so we need to set to new proper value
+                    // - video mirroring is set to true if camera is front, make sure we use no mirroring
                     if let videoDataOutputConnection = self.videoDataOutput?.connection(withMediaType: AVMediaTypeVideo) {
                         videoDataOutputConnection.videoOrientation = self.videoOrientation
+                        videoDataOutputConnection.isVideoMirrored = false
                     }
                     
                     self.session.commitConfiguration()

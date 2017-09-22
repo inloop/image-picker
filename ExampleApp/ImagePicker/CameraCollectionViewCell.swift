@@ -27,7 +27,8 @@ open class CameraCollectionViewCell : UICollectionViewCell {
     internal var blurView: UIVisualEffectView = {
        let view = UIVisualEffectView(effect: UIBlurEffect(style: .light))
         view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        view.isHidden = true
+        view.isHidden = false
+        view.alpha = 0
         return view
     }()
     
@@ -66,24 +67,24 @@ open class CameraCollectionViewCell : UICollectionViewCell {
     
     func blurIfNeeded(blurImage: UIImage?, animated: Bool) {
         
-        guard blurView.isHidden == true else {
-            return
-        }
+//        guard blurView.isHidden == true else {
+//            return
+//        }
         
         imageView.alpha = 0
-        imageView.image = blurImage
-        
+        imageView.image = blurImage//?.applyLightEffect()
+
         if animated == false {
             imageView.alpha = 1
-            blurView.alpha = 1
-            blurView.isHidden = false
+            //blurView.alpha = 1
+            //blurView.isHidden = false
         }
         else {
             UIView.animate(withDuration: 0.25, delay: 0, options: .allowAnimatedContent, animations: {
                 self.imageView.alpha = 1
-                self.blurView.alpha = 1
+                //self.blurView.alpha = 1
             }, completion: { (finished) in
-                self.blurView.isHidden = false
+                //self.blurView.isHidden = false
             })
         }
         
@@ -91,23 +92,23 @@ open class CameraCollectionViewCell : UICollectionViewCell {
     
     func unblurIfNeeded(blurImage: UIImage?, animated: Bool) {
         
-        guard blurView.isHidden == false else {
-            return
-        }
-        
+//        guard blurView.isHidden == false else {
+//            return
+//        }
+
         if animated == false {
-            blurView.alpha = 0
+            //blurView.alpha = 0
             imageView.alpha = 0
-            blurView.isHidden = true
+            //blurView.isHidden = true
             imageView.image = nil
         }
         else {
-            
+
             UIView.animate(withDuration: 0.25, delay: 0, options: .allowAnimatedContent, animations: {
-                self.blurView.alpha = 0
+                //self.blurView.alpha = 0
                 self.imageView.alpha = 0
             }, completion: { (finished) in
-                self.blurView.isHidden = true
+                //self.blurView.isHidden = true
                 self.imageView.image = nil
             })
         }
