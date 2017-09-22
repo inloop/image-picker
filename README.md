@@ -42,6 +42,6 @@ App must have in info plist permissions for:
     2. video output view was not rotating properly when interface was rotating and there was no API to rotate it manually
     3. when video output is not more visible on screen (user scrolled elsewhere) there was no API to resume/suspend the capture session and that is wasting resources
 3. By using custom capture session instead of using existing UIImagePickerController we gained much of flexibility, but on the other side we had to reimplement many features such us:
-    1. bluring / unbluring video output when capture session is suspended / resumed - to achieve this we used UIVisualEffect view that is covering video output, however there was still a lag when there was black frames (for example when fliping cameras) so we had to take recent image frame and paste it under the visual effect view. To collect recent frame from sample buffer we had to implement custom video data output and remember latest frame from the buffer. This is then converted to UIImage and used with the visual effect view.
+    1. bluring / unbluring video output when capture session is suspended / resumed - to achieve this we used latest frame from sample buffer and added is as blurred UIImageView subview. To collect recent frame from sample buffer we had to implement custom video data output and remember latest frame from the buffer. This is then converted to UIImage and used with the visual effect view.
     2. flipping front / rear camera - we use method similar to mentioned in point 1.
     
