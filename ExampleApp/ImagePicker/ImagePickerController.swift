@@ -65,7 +65,7 @@ public protocol ImagePickerControllerDataSource : class {
     func imagePicker(controller: ImagePickerController,  viewForAuthorizationStatus status: PHAuthorizationStatus) -> UIView
 }
 
-open class ImagePickerController : UIViewController {
+public final class ImagePickerController : UIViewController {
    
     deinit {
         PHPhotoLibrary.shared().unregisterChangeObserver(self)
