@@ -126,7 +126,8 @@ class ViewController: UITableViewController {
         
         let vc = ImagePickerController()
         vc.cellRegistrator = registrator
-        vc.captureSettings.savesCapturedAssetToPhotoLibrary = false
+        vc.captureSettings.cameraMode = .photo
+        vc.captureSettings.savesCapturedAssetToPhotoLibrary = true
         
         presentPickerAsInputView(vc)
     }

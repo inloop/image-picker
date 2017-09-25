@@ -78,11 +78,18 @@ final class CaptureSession : NSObject {
         case configurationFailed
     }
     
+    enum SessionPresetConfiguration {
+        case photos, livePhotos
+        case videos
+    }
+    
     weak var delegate: CaptureSessionDelegate?
     
     let session = AVCaptureSession()
     var isSessionRunning = false
     weak var previewLayer: AVCaptureVideoPreviewLayer?
+    
+    var presetConfiguration: SessionPresetConfiguration = .livePhotos
     
     ///
     /// Save assets to library or not. Appropriate delegate is called in all cases.
@@ -140,13 +147,15 @@ final class CaptureSession : NSObject {
     
     // MARK: Photo Capturing
     
-    fileprivate enum LivePhotoMode {
+    enum LivePhotoMode {
         case on
         case off
     }
     
     weak var photoCapturingDelegate: CaptureSessionPhotoCapturingDelegate?
-    fileprivate var livePhotoMode: LivePhotoMode = .on
+    
+    // this is provided by argument of capturePhoto()
+    //fileprivate var livePhotoMode: LivePhotoMode = .off
     fileprivate let photoOutput = AVCapturePhotoOutput()
     fileprivate var inProgressPhotoCaptureDelegates = [Int64 : PhotoCaptureDelegate]()
     fileprivate var inProgressLivePhotoCapturesCount = 0
@@ -278,7 +287,13 @@ final class CaptureSession : NSObject {
         log("capture session: configuring - adding video input")
         
         session.beginConfiguration()
-        session.sessionPreset = AVCaptureSession.Preset.high
+        
+        switch presetConfiguration {
+        case .livePhotos, .photos:
+            session.sessionPreset = AVCaptureSession.Preset.photo
+        case .videos:
+            session.sessionPreset = AVCaptureSession.Preset.high
+        }
         
         // Add video input.
         do {
@@ -355,45 +370,48 @@ final class CaptureSession : NSObject {
 //            return
 //        }
         
-        log("capture session: configuring - adding audio input")
+//        log("capture session: configuring - adding audio input")
+//
+//        // Add audio input, if fails no need to fail whole configuration
+//        do {
+//            let audioDevice = AVCaptureDevice.default(for: AVMediaType.audio)
+//            let audioDeviceInput = try AVCaptureDeviceInput(device: audioDevice!)
+//
+//            if session.canAddInput(audioDeviceInput) {
+//                session.addInput(audioDeviceInput)
+//            }
+//            else {
+//                log("capture session: could not add audio device input to the session")
+//            }
+//        }
+//        catch {
+//            log("capture session: could not create audio device input: \(error)")
+//        }
         
-        // Add audio input, if fails no need to fail whole configuration
-        do {
-            let audioDevice = AVCaptureDevice.default(for: AVMediaType.audio)
-            let audioDeviceInput = try AVCaptureDeviceInput(device: audioDevice!)
+        
+        if presetConfiguration == .livePhotos || presetConfiguration == .photos {
+            // Add photo output.
+            log("capture session: configuring - adding photo output")
             
-            if session.canAddInput(audioDeviceInput) {
-                session.addInput(audioDeviceInput)
+            if session.canAddOutput(photoOutput) {
+                session.addOutput(photoOutput)
+                photoOutput.isHighResolutionCaptureEnabled = true
+                
+                //enable live photos only if we intend to use it explicitly
+                if presetConfiguration == .livePhotos {
+                    photoOutput.isLivePhotoCaptureEnabled = photoOutput.isLivePhotoCaptureSupported
+                    if photoOutput.isLivePhotoCaptureSupported == false {
+                        log("capture session: configuring - requested live photo mode is not supported by the device")
+                    }
+                }
+                log("capture session: configuring - live photo mode is \(photoOutput.isLivePhotoCaptureEnabled ? "enabled" : "disabled")")
             }
             else {
-                log("capture session: could not add audio device input to the session")
+                log("capture session: could not add photo output to the session")
+                setupResult = .configurationFailed
+                session.commitConfiguration()
+                return
             }
-        }
-        catch {
-            log("capture session: could not create audio device input: \(error)")
-        }
-        
-        log("capture session: configuring - adding photo output")
-
-        // Add photo output.
-        if session.canAddOutput(photoOutput) {
-            session.addOutput(photoOutput)
-            photoOutput.isHighResolutionCaptureEnabled = true
-            
-            //enable live photos only if we intend to use it explicitly 
-            if livePhotoMode == .on {
-                photoOutput.isLivePhotoCaptureEnabled = photoOutput.isLivePhotoCaptureSupported
-                if photoOutput.isLivePhotoCaptureSupported == false {
-                    log("capture session: configuring - requested live photo mode is not supported by the device")
-                }
-            }
-            log("capture session: configuring - live photo mode is \(photoOutput.isLivePhotoCaptureEnabled ? "enabled" : "disabled")")
-        }
-        else {
-            log("capture session: could not add photo output to the session")
-            setupResult = .configurationFailed
-            session.commitConfiguration()
-            return
         }
         
         // Add video data output - we use this to capture last video sample that is
@@ -606,7 +624,7 @@ extension CaptureSession {
                      a video device is disconnected from the session. After the new video device is
                      added to the session, re-enable Live Photo capture on the AVCapturePhotoOutput if it is supported.
                      */
-                    self.photoOutput.isLivePhotoCaptureEnabled = self.photoOutput.isLivePhotoCaptureSupported && self.livePhotoMode == .on;
+                    self.photoOutput.isLivePhotoCaptureEnabled = self.photoOutput.isLivePhotoCaptureSupported && self.presetConfiguration == .livePhotos;
                     
                     // when device is disconnected:
                     // - video data output connection orientation is reset, so we need to set to new proper value
@@ -633,7 +651,7 @@ extension CaptureSession {
 
 extension CaptureSession {
     
-    func capturePhoto() {
+    func capturePhoto(livePhotoMode: LivePhotoMode) {
         /*
          Retrieve the video preview layer's video orientation on the main queue before
          entering the session queue. We do this to ensure UI elements are accessed on
@@ -673,10 +691,15 @@ extension CaptureSession {
                 }
             }
             
-            if self.livePhotoMode == .on && self.photoOutput.isLivePhotoCaptureSupported {
-                let livePhotoMovieFileName = NSUUID().uuidString
-                let livePhotoMovieFilePath = (NSTemporaryDirectory() as NSString).appendingPathComponent((livePhotoMovieFileName as NSString).appendingPathExtension("mov")!)
-                photoSettings.livePhotoMovieFileURL = URL(fileURLWithPath: livePhotoMovieFilePath)
+            if livePhotoMode == .on {
+                if self.presetConfiguration == .livePhotos && self.photoOutput.isLivePhotoCaptureSupported {
+                    let livePhotoMovieFileName = NSUUID().uuidString
+                    let livePhotoMovieFilePath = (NSTemporaryDirectory() as NSString).appendingPathComponent((livePhotoMovieFileName as NSString).appendingPathExtension("mov")!)
+                    photoSettings.livePhotoMovieFileURL = URL(fileURLWithPath: livePhotoMovieFilePath)
+                }
+                else {
+                    log("capture session: warning - trying to capture live photo but it's not supported by current configuration, capturing regular photo instead")
+                }
             }
             
             // Use a separate object for the photo capture delegate to isolate each capture life cycle.

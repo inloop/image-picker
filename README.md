@@ -21,6 +21,7 @@ App must have in info plist permissions for:
 7. [ok] add public API for setting if taken pictures should be saved in camera roll or just directly provided through delegate
 8. when user denies access to camera, don't show camera cell or show that access is denied
 9. implement image pre-caching based on visible rectangle bounds
+10. add default features for base CameraCollectionViewCell - tap to take photo
 
 ## Known Issues
 

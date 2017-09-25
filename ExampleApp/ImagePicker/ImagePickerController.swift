@@ -206,7 +206,7 @@ public final class ImagePickerController : UIViewController {
         collectionViewDelegate.delegate = self
         collectionViewDelegate.layout = ImagePickerLayout(configuration: layoutConfiguration)
 
-        //rgister for photo library updates - this is needed when changing permissions to photo library
+        //register for photo library updates - this is needed when changing permissions to photo library
         PHPhotoLibrary.shared().register(self)
         
         //determine auth satus and based on that reload UI
@@ -214,6 +214,7 @@ public final class ImagePickerController : UIViewController {
         
         //TODO: use capture session only if camera is enabled
         //configure capture session
+        captureSession.presetConfiguration = captureSettings.cameraMode.captureSessionPresetConfiguration
         captureSession.saveCapturedAssetsToPhotoLibrary = captureSettings.savesCapturedAssetToPhotoLibrary
         captureSession.videoOrientation = UIApplication.shared.statusBarOrientation.captureVideoOrientation
         captureSession.delegate = self
@@ -476,15 +477,19 @@ extension ImagePickerController : CaptureSessionVideoRecordingDelegate {
 extension ImagePickerController: CameraCollectionViewCellDelegate {
     
     func takePicture() {
-        captureSession.capturePhoto()
+        captureSession.capturePhoto(livePhotoMode: .off)
     }
     
-    func flipCamera() {
+    func takeLivePhoto() {
+        captureSession.capturePhoto(livePhotoMode: .on)
+    }
+    
+    func flipCamera(_ completion: (() -> Void)? = nil) {
         
         //TODO: path is hardcoded, should be returned by layout configuration
         let cameraIndexPath = IndexPath(item: 0, section: 1)
         guard let cameraCell = collectionView.cellForItem(at: cameraIndexPath) as? CameraCollectionViewCell else {
-            return captureSession.changeCamera(completion: nil)
+            return captureSession.changeCamera(completion: completion)
         }
         
         let image = captureSession.latestVideoBufferImage?.applyLightEffectWithExtraSaturation()
@@ -501,7 +506,9 @@ extension ImagePickerController: CameraCollectionViewCellDelegate {
                     let image = self.captureSession.latestVideoBufferImage?.applyLightEffectWithExtraSaturation()
                     
                     // 4. unblur
-                    cameraCell.unblurIfNeeded(unblurImage: image, animated: true, completion: nil)
+                    cameraCell.unblurIfNeeded(unblurImage: image, animated: true, completion: { _ in
+                        completion?()
+                    })
                 }
             })
             

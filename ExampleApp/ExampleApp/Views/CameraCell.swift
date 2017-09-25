@@ -16,11 +16,12 @@ class CameraCell : CameraCollectionViewCell {
     @IBOutlet weak var flipButton: UIButton!
     
     @IBAction func snapButtonTapped(_ sender: UIButton) {
-        takePicture()
+        //takePicture()
+        takeLivePhoto()
     }
     
     @IBAction func flipButtonTapped(_ sender: UIButton) {
-        flipCamera()
+        flipCamera(nil)
     }
     
 }
