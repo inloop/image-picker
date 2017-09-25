@@ -14,6 +14,9 @@ protocol CameraCollectionViewCellDelegate : class {
     func flipCamera()
 }
 
+///
+/// Each custom camera cell must inherit from this base class.
+///
 open class CameraCollectionViewCell : UICollectionViewCell {
 
     deinit {

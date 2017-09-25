@@ -8,6 +8,9 @@
 
 import Foundation
 
+///
+/// Each image picker asset cell must conform to this protocol.
+///
 public protocol ImagePickerAssetCell : class {
     
     /// This image view will be used when setting an asset's image

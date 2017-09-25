@@ -168,14 +168,11 @@
 			children = (
 				420C24181F5D82F9008935D4 /* ImagePicker.h */,
 				42D7036F1F7909100057D557 /* Public */,
+				42D703701F790A3F0057D557 /* Media */,
 				420C24351F5ED4AA008935D4 /* ImagePickerLayout.swift */,
 				429BFDA91F68161D00029440 /* ImagePickerAssetModel.swift */,
 				420C243E1F5EEA19008935D4 /* LayoutModel.swift */,
 				4214426E1F604498006BA45A /* ImagePickerSelectionPolicy.swift */,
-				420CBBC01F711E83002288C5 /* AVPreviewView.swift */,
-				420CBBC21F712135002288C5 /* CaptureSession.swift */,
-				42EDD4171F7164FB00EAD2F5 /* PhotoCaptureDelegate.swift */,
-				42311FFB1F73DBBE00B1AEB4 /* VideoOuptutSampleBufferDelegate.swift */,
 				42EDD4151F712B2A00EAD2F5 /* Miscellaneous.swift */,
 				42310B971F75013C0096DA5D /* UIImage+ImageEffects.h */,
 				42310B981F75013E0096DA5D /* UIImage+ImageEffects.m */,
@@ -203,16 +200,27 @@
 		42D7036F1F7909100057D557 /* Public */ = {
 			isa = PBXGroup;
 			children = (
+				4217080D1F62D06D000DA508 /* CameraCollectionViewCell.swift */,
+				42D7036A1F7908B00057D557 /* CaptureSettings.swift */,
+				421442621F6014B3006BA45A /* CellRegistrator.swift */,
+				420BCC361F66AEC5006E8806 /* ImagePickerAssetCellProtocol.swift */,
 				420C24251F5D8393008935D4 /* ImagePickerController.swift */,
 				420C24271F5D925A008935D4 /* ImagePickerDataSource.swift */,
 				420C24331F5DA022008935D4 /* ImagePickerDelegate.swift */,
 				420C24401F5EEA3C008935D4 /* LayoutConfiguration.swift */,
-				421442621F6014B3006BA45A /* CellRegistrator.swift */,
-				4217080D1F62D06D000DA508 /* CameraCollectionViewCell.swift */,
-				420BCC361F66AEC5006E8806 /* ImagePickerAssetCellProtocol.swift */,
-				42D7036A1F7908B00057D557 /* CaptureSettings.swift */,
 			);
 			name = Public;
+			sourceTree = "<group>";
+		};
+		42D703701F790A3F0057D557 /* Media */ = {
+			isa = PBXGroup;
+			children = (
+				420CBBC01F711E83002288C5 /* AVPreviewView.swift */,
+				420CBBC21F712135002288C5 /* CaptureSession.swift */,
+				42EDD4171F7164FB00EAD2F5 /* PhotoCaptureDelegate.swift */,
+				42311FFB1F73DBBE00B1AEB4 /* VideoOuptutSampleBufferDelegate.swift */,
+			);
+			name = Media;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
