@@ -20,6 +20,7 @@ App must have in info plist permissions for:
 6. add public API for enabling/disabling live photos
 7. add public API for setting if taken pictures should be saved in camera roll or just directly provided through delegate
 8. when user denies access to camera, don't show camera cell or show that access is denied
+9. implement image pre-caching based on visible rectangle bounds
 
 ## Known Issues
 
@@ -34,6 +35,7 @@ App must have in info plist permissions for:
     reproduce: simple scroll camera cell so it's not visible, you will notice a lag (iPhone SE)
 5. when rotating device, there is a little lag in video when changing orientation of outputs - it should be smooth though
 6. when flipping from front camera to back camera, latest sample buffer image that is used does not have proper transform, you can see that it is rotated horizontally so it creates unpleasant effect durring unblur animation when flipping cameras
+7. when user defines layout configuration without camera - image picker still initializes capture session wich asks for permissions, crashes if no privacy key in info.plist is set and this is all not necessary 
 
 ## Technologies used
 

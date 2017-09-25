@@ -28,6 +28,7 @@ class ImageCell : UICollectionViewCell, ImagePickerAssetCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         subtypeImageView.backgroundColor = UIColor.clear
+        selectedImageView.isHidden = !isSelected
     }
     
     override func prepareForReuse() {
