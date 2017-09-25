@@ -22,6 +22,9 @@ protocol CaptureSessionPhotoCapturingDelegate : class {
     
     /// called when captured photo is processed and ready for use
     func captureSession(_ session: CaptureSession, didFailCapturingPhotoWith error: Error)
+    
+    /// called when number of processing live photos changed, see inProgressLivePhotoCapturesCount for current count
+    func captureSessionDidChangeNumberOfProcessingLivePhotos(_ session: CaptureSession)
 }
 
 /// Groups a method that informs a delegate about progress and state of video recording.
@@ -158,7 +161,9 @@ final class CaptureSession : NSObject {
     //fileprivate var livePhotoMode: LivePhotoMode = .off
     fileprivate let photoOutput = AVCapturePhotoOutput()
     fileprivate var inProgressPhotoCaptureDelegates = [Int64 : PhotoCaptureDelegate]()
-    fileprivate var inProgressLivePhotoCapturesCount = 0
+    
+    /// contains number of currently processing live photos
+    fileprivate(set) var inProgressLivePhotoCapturesCount = 0
     
     // MARK: Public Methods
     
@@ -722,12 +727,9 @@ extension CaptureSession {
                     }
                     
                     let inProgressLivePhotoCapturesCount = self.inProgressLivePhotoCapturesCount
-                    DispatchQueue.main.async { //[unowned self] in
-                        if inProgressLivePhotoCapturesCount > 0 {
-                            //TODO: live photo is in progress so update delegate about this - it can show nice UI based on this
-                        }
-                        else if inProgressLivePhotoCapturesCount == 0 {
-                            //TODO: live photo is not capturing anymore
+                    DispatchQueue.main.async { [unowned self] in
+                        if inProgressLivePhotoCapturesCount >= 0 {
+                            self.photoCapturingDelegate?.captureSessionDidChangeNumberOfProcessingLivePhotos(self)
                         }
                         else {
                             log("capture session: error - in progress live photo capture count is less than 0");

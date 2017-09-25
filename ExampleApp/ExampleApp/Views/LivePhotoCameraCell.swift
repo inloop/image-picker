@@ -14,6 +14,12 @@ class LivePhotoCameraCell : CameraCollectionViewCell {
     
     @IBOutlet weak var snapButton: UIButton!
     @IBOutlet weak var enableLivePhotosButton: StationaryButton!
+    @IBOutlet weak var liveIndicator: UILabel!
+    
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        liveIndicator.alpha = 0
+    }
     
     @IBAction func snapButtonTapped(_ sender: UIButton) {
         if enableLivePhotosButton.isSelected {
@@ -28,6 +34,16 @@ class LivePhotoCameraCell : CameraCollectionViewCell {
         flipCamera(nil)
     }
     
+    // MARK: Override Methods
+    
+    override func updateLivePhotoStatus(isProcessing: Bool, shouldAnimate: Bool) {
+        
+        let updates: () -> Void = {
+            self.liveIndicator.alpha = isProcessing ? 1 : 0
+        }
+        
+        shouldAnimate ? UIView.animate(withDuration: 0.25, animations: updates) : updates()
+    }
 }
 
 open class StationaryButton : UIButton {

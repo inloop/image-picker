@@ -361,6 +361,9 @@ extension ImagePickerController : ImagePickerDelegateDelegate {
             captureSession.previewLayer = cell.previewView.previewLayer
         }
         
+        let inProgressLivePhotos = captureSession.inProgressLivePhotoCapturesCount
+        cell.updateLivePhotoStatus(isProcessing: inProgressLivePhotos > 0, shouldAnimate: false)
+        
         captureSession.resume()
     }
     
@@ -447,6 +450,18 @@ extension ImagePickerController : CaptureSessionPhotoCapturingDelegate {
     
     func captureSession(_ session: CaptureSession, didFailCapturingPhotoWith error: Error) {
         log("did fail capturing: \(error)")
+    }
+    
+    func captureSessionDidChangeNumberOfProcessingLivePhotos(_ session: CaptureSession) {
+        
+        //TODO: path is hardcoded, should be returned by layout configuration
+        let cameraIndexPath = IndexPath(item: 0, section: 1)
+        guard let cameraCell = collectionView.cellForItem(at: cameraIndexPath) as? CameraCollectionViewCell else {
+            return
+        }
+        
+        let count = session.inProgressLivePhotoCapturesCount
+        cameraCell.updateLivePhotoStatus(isProcessing: count > 0, shouldAnimate: true)
     }
 }
 

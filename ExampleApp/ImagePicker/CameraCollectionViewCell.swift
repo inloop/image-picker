@@ -103,6 +103,10 @@ open class CameraCollectionViewCell : UICollectionViewCell {
         }
     }
     
+    open func updateLivePhotoStatus(isProcessing: Bool, shouldAnimate: Bool) {
+        
+    }
+    
     // MARK: Camera API
     
     internal weak var delegate: CameraCollectionViewCellDelegate?
