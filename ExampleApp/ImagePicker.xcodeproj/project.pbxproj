@@ -43,6 +43,8 @@
 		42EDD4061F71261600EAD2F5 /* AVPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 420CBBC01F711E83002288C5 /* AVPreviewView.swift */; };
 		42EDD4161F712B2A00EAD2F5 /* Miscellaneous.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42EDD4151F712B2A00EAD2F5 /* Miscellaneous.swift */; };
 		42EDD41A1F716F6300EAD2F5 /* PhotoCaptureDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42EDD4171F7164FB00EAD2F5 /* PhotoCaptureDelegate.swift */; };
+		42F7D7F21F7932F7009D378A /* LivePhotoCameraCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 42F7D7F11F7932F7009D378A /* LivePhotoCameraCell.xib */; };
+		42F7D7F41F793305009D378A /* LivePhotoCameraCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42F7D7F31F793305009D378A /* LivePhotoCameraCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -109,6 +111,8 @@
 		42EDD4151F712B2A00EAD2F5 /* Miscellaneous.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Miscellaneous.swift; sourceTree = "<group>"; };
 		42EDD4171F7164FB00EAD2F5 /* PhotoCaptureDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCaptureDelegate.swift; sourceTree = "<group>"; };
 		42EDD41B1F71727500EAD2F5 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
+		42F7D7F11F7932F7009D378A /* LivePhotoCameraCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LivePhotoCameraCell.xib; sourceTree = "<group>"; };
+		42F7D7F31F793305009D378A /* LivePhotoCameraCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LivePhotoCameraCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -193,6 +197,8 @@
 				4214426C1F603612006BA45A /* GreenCell.swift */,
 				4217080B1F62C30B000DA508 /* CameraCell.xib */,
 				4275FFC61F62C2830077A2CD /* CameraCell.swift */,
+				42F7D7F11F7932F7009D378A /* LivePhotoCameraCell.xib */,
+				42F7D7F31F793305009D378A /* LivePhotoCameraCell.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -326,6 +332,7 @@
 				420C240A1F5D82C6008935D4 /* LaunchScreen.storyboard in Resources */,
 				420C24071F5D82C6008935D4 /* Assets.xcassets in Resources */,
 				42A037E01F66C9E700534350 /* VideoCell.xib in Resources */,
+				42F7D7F21F7932F7009D378A /* LivePhotoCameraCell.xib in Resources */,
 				420C24051F5D82C6008935D4 /* Main.storyboard in Resources */,
 				4217080C1F62C30B000DA508 /* CameraCell.xib in Resources */,
 				4214426B1F602C68006BA45A /* ImageCell.xib in Resources */,
@@ -354,6 +361,7 @@
 				4275FFC71F62C2830077A2CD /* CameraCell.swift in Sources */,
 				421442711F604993006BA45A /* IconWithTextCell.swift in Sources */,
 				42428A8E1F618E4200D4EB3B /* ImageCell.swift in Sources */,
+				42F7D7F41F793305009D378A /* LivePhotoCameraCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

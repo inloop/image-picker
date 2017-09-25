@@ -111,7 +111,7 @@ class ViewController: UITableViewController {
         presentPickerAsInputView(vc)
     }
     
-    @objc func presentPickerAsInputViewCustomCameraCell() {
+    @objc func presentPickerAsInputViewPhotosConfiguration() {
         
         let registrator = CellRegistrator()
         let actionNib = UINib(nibName: "IconWithTextCell", bundle: nil)
@@ -124,6 +124,20 @@ class ViewController: UITableViewController {
         let vc = ImagePickerController()
         vc.cellRegistrator = registrator
         vc.captureSettings.cameraMode = .photo
+        
+        presentPickerAsInputView(vc)
+    }
+    
+    @objc func presentPickerAsInputViewLivePhotosConfiguration() {
+        
+        let registrator = CellRegistrator()
+        registrator.registerNibForActionItems(UINib(nibName: "IconWithTextCell", bundle: nil))
+        registrator.registerNibForCameraItem(UINib(nibName: "LivePhotoCameraCell", bundle: nil))
+        registrator.registerNibForAssetItems(UINib(nibName: "ImageCell", bundle: nil))
+        
+        let vc = ImagePickerController()
+        vc.cellRegistrator = registrator
+        vc.captureSettings.cameraMode = .photoAndLivePhoto
         vc.captureSettings.savesCapturedAssetToPhotoLibrary = true
         
         presentPickerAsInputView(vc)
@@ -265,7 +279,8 @@ let data = [
     [
         ("Input view - default", #selector(ViewController.presentPickerAsInputView)),
         ("Input view - 1 photo cols", #selector(ViewController.presentPickerAsInputViewPhotosAs1Col)),
-        ("Input view - custom camera cell", #selector(ViewController.presentPickerAsInputViewCustomCameraCell))]
+        ("Input view - photos configuration", #selector(ViewController.presentPickerAsInputViewPhotosConfiguration)),
+        ("Input view - live photos configuration", #selector(ViewController.presentPickerAsInputViewLivePhotosConfiguration))]
 ]
 let selectors = [#selector(ViewController.presentPickerAsInputView)]
 

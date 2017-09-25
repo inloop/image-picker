@@ -45,7 +45,7 @@ public struct CaptureSettings {
     public static var `default`: CaptureSettings {
         return CaptureSettings(
             cameraMode: .photo,
-            savesCapturedAssetToPhotoLibrary: true
+            savesCapturedAssetToPhotoLibrary: false
         )
     }
 }
