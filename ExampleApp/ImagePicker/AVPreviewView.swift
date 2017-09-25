@@ -23,7 +23,7 @@ enum VideoDisplayMode {
 /// A view whose layer is AVCaptureVideoPreviewLayer so it's used for previewing
 /// output from a capture session.
 ///
-class AVPreviewView: UIView {
+final class AVPreviewView: UIView {
     
     deinit {
         log("deinit: \(String(describing: self))")
@@ -66,9 +66,9 @@ class AVPreviewView: UIView {
     
     private func applyVideoDisplayMode() {
         switch displayMode {
-        case .aspectFill:    previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill
-        case .aspectFit:    previewLayer.videoGravity = AVLayerVideoGravityResizeAspect
-        case .resize:       previewLayer.videoGravity = AVLayerVideoGravityResize
+        case .aspectFill:    previewLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
+        case .aspectFit:    previewLayer.videoGravity = AVLayerVideoGravity.resizeAspect
+        case .resize:       previewLayer.videoGravity = AVLayerVideoGravity.resize
         }
     }
 }

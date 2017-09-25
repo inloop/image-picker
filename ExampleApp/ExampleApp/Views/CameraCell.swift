@@ -20,7 +20,7 @@ class CameraCell : CameraCollectionViewCell {
     }
     
     @IBAction func flipButtonTapped(_ sender: UIButton) {
-        flipCamera()
+        flipCamera(nil)
     }
     
 }

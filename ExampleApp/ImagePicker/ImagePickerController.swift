@@ -65,7 +65,7 @@ public protocol ImagePickerControllerDataSource : class {
     func imagePicker(controller: ImagePickerController,  viewForAuthorizationStatus status: PHAuthorizationStatus) -> UIView
 }
 
-open class ImagePickerController : UIViewController {
+public final class ImagePickerController : UIViewController {
    
     deinit {
         PHPhotoLibrary.shared().unregisterChangeObserver(self)
@@ -84,6 +84,11 @@ open class ImagePickerController : UIViewController {
     /// Use this to register a cell classes or nibs for each item types
     ///
     public var cellRegistrator: CellRegistrator?
+    
+    ///
+    /// Use these settings to configure how the capturing should behave
+    ///
+    public var captureSettings = CaptureSettings.default
     
     ///
     /// Get informed about user interaction and changes
@@ -201,7 +206,7 @@ open class ImagePickerController : UIViewController {
         collectionViewDelegate.delegate = self
         collectionViewDelegate.layout = ImagePickerLayout(configuration: layoutConfiguration)
 
-        //rgister for photo library updates - this is needed when changing permissions to photo library
+        //register for photo library updates - this is needed when changing permissions to photo library
         PHPhotoLibrary.shared().register(self)
         
         //determine auth satus and based on that reload UI
@@ -209,6 +214,8 @@ open class ImagePickerController : UIViewController {
         
         //TODO: use capture session only if camera is enabled
         //configure capture session
+        captureSession.presetConfiguration = captureSettings.cameraMode.captureSessionPresetConfiguration
+        captureSession.saveCapturedAssetsToPhotoLibrary = captureSettings.savesCapturedAssetToPhotoLibrary
         captureSession.videoOrientation = UIApplication.shared.statusBarOrientation.captureVideoOrientation
         captureSession.delegate = self
         captureSession.videoRecordingDelegate = self
@@ -219,7 +226,7 @@ open class ImagePickerController : UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground(_:)), name: notification, object: nil)
     }
     
-    private dynamic func applicationDidEnterBackground(_ notification: Notification) {
+    @objc private dynamic func applicationDidEnterBackground(_ notification: Notification) {
         blurCellIfNeeded(animated: false)
     }
     
@@ -354,6 +361,9 @@ extension ImagePickerController : ImagePickerDelegateDelegate {
             captureSession.previewLayer = cell.previewView.previewLayer
         }
         
+        let inProgressLivePhotos = captureSession.inProgressLivePhotoCapturesCount
+        cell.updateLivePhotoStatus(isProcessing: inProgressLivePhotos > 0, shouldAnimate: false)
+        
         captureSession.resume()
     }
     
@@ -417,7 +427,7 @@ extension ImagePickerController : CaptureSessionDelegate {
         log("did fail authorization")
     }
     
-    func captureSession(_ session: CaptureSession, wasInterrupted reason: AVCaptureSessionInterruptionReason) {
+    func captureSession(_ session: CaptureSession, wasInterrupted reason: AVCaptureSession.InterruptionReason) {
         log("interrupted")
     }
     
@@ -440,6 +450,18 @@ extension ImagePickerController : CaptureSessionPhotoCapturingDelegate {
     
     func captureSession(_ session: CaptureSession, didFailCapturingPhotoWith error: Error) {
         log("did fail capturing: \(error)")
+    }
+    
+    func captureSessionDidChangeNumberOfProcessingLivePhotos(_ session: CaptureSession) {
+        
+        //TODO: path is hardcoded, should be returned by layout configuration
+        let cameraIndexPath = IndexPath(item: 0, section: 1)
+        guard let cameraCell = collectionView.cellForItem(at: cameraIndexPath) as? CameraCollectionViewCell else {
+            return
+        }
+        
+        let count = session.inProgressLivePhotoCapturesCount
+        cameraCell.updateLivePhotoStatus(isProcessing: count > 0, shouldAnimate: true)
     }
 }
 
@@ -470,15 +492,19 @@ extension ImagePickerController : CaptureSessionVideoRecordingDelegate {
 extension ImagePickerController: CameraCollectionViewCellDelegate {
     
     func takePicture() {
-        captureSession.capturePhoto()
+        captureSession.capturePhoto(livePhotoMode: .off)
     }
     
-    func flipCamera() {
+    func takeLivePhoto() {
+        captureSession.capturePhoto(livePhotoMode: .on)
+    }
+    
+    func flipCamera(_ completion: (() -> Void)? = nil) {
         
         //TODO: path is hardcoded, should be returned by layout configuration
         let cameraIndexPath = IndexPath(item: 0, section: 1)
         guard let cameraCell = collectionView.cellForItem(at: cameraIndexPath) as? CameraCollectionViewCell else {
-            return captureSession.changeCamera(completion: nil)
+            return captureSession.changeCamera(completion: completion)
         }
         
         let image = captureSession.latestVideoBufferImage?.applyLightEffectWithExtraSaturation()
@@ -495,7 +521,9 @@ extension ImagePickerController: CameraCollectionViewCellDelegate {
                     let image = self.captureSession.latestVideoBufferImage?.applyLightEffectWithExtraSaturation()
                     
                     // 4. unblur
-                    cameraCell.unblurIfNeeded(unblurImage: image, animated: true, completion: nil)
+                    cameraCell.unblurIfNeeded(unblurImage: image, animated: true, completion: { _ in
+                        completion?()
+                    })
                 }
             })
             

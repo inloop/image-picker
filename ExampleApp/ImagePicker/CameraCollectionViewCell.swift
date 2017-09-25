@@ -11,9 +11,13 @@ import UIKit
 
 protocol CameraCollectionViewCellDelegate : class {
     func takePicture()
-    func flipCamera()
+    func takeLivePhoto()
+    func flipCamera(_ completion: (() -> Void)?)
 }
 
+///
+/// Each custom camera cell must inherit from this base class.
+///
 open class CameraCollectionViewCell : UICollectionViewCell {
 
     deinit {
@@ -99,16 +103,24 @@ open class CameraCollectionViewCell : UICollectionViewCell {
         }
     }
     
+    open func updateLivePhotoStatus(isProcessing: Bool, shouldAnimate: Bool) {
+        
+    }
+    
     // MARK: Camera API
     
-    weak var delegate: CameraCollectionViewCellDelegate?
-    
-    public func flipCamera() {
-        delegate?.flipCamera()
+    internal weak var delegate: CameraCollectionViewCellDelegate?
+ 
+    public func flipCamera(_ completion: (() -> Void)?) {
+        delegate?.flipCamera(completion)
     }
     
     public func takePicture() {
         delegate?.takePicture()
+    }
+    
+    public func takeLivePhoto() {
+        delegate?.takeLivePhoto()
     }
     
 }

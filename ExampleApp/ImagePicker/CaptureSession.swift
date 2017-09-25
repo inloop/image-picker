@@ -22,6 +22,9 @@ protocol CaptureSessionPhotoCapturingDelegate : class {
     
     /// called when captured photo is processed and ready for use
     func captureSession(_ session: CaptureSession, didFailCapturingPhotoWith error: Error)
+    
+    /// called when number of processing live photos changed, see inProgressLivePhotoCapturesCount for current count
+    func captureSessionDidChangeNumberOfProcessingLivePhotos(_ session: CaptureSession)
 }
 
 /// Groups a method that informs a delegate about progress and state of video recording.
@@ -57,7 +60,7 @@ protocol CaptureSessionDelegate : class {
     func captureSession(_ session: CaptureSession, authorizationStatusFailed status: AVAuthorizationStatus)
     
     ///called when session is interrupted due to various reasons, for example when a phone call or user starts an audio using control center, etc.
-    func captureSession(_ session: CaptureSession, wasInterrupted reason: AVCaptureSessionInterruptionReason)
+    func captureSession(_ session: CaptureSession, wasInterrupted reason: AVCaptureSession.InterruptionReason)
     
     ///called when and interruption is ended and the session was automatically resumed.
     func captureSessionInterruptionDidEnd(_ session: CaptureSession)
@@ -78,11 +81,23 @@ final class CaptureSession : NSObject {
         case configurationFailed
     }
     
+    enum SessionPresetConfiguration {
+        case photos, livePhotos
+        case videos
+    }
+    
     weak var delegate: CaptureSessionDelegate?
     
     let session = AVCaptureSession()
     var isSessionRunning = false
     weak var previewLayer: AVCaptureVideoPreviewLayer?
+    
+    var presetConfiguration: SessionPresetConfiguration = .livePhotos
+    
+    ///
+    /// Save assets to library or not. Appropriate delegate is called in all cases.
+    ///
+    var saveCapturedAssetsToPhotoLibrary = false
     
     ///
     /// Set this method to orientation that mathches UI orientation before `prepare()`
@@ -105,7 +120,7 @@ final class CaptureSession : NSObject {
         //uggly, I have no idea how to fix this
         sessionQueue.async {
             //when device is disconnected also video data output connection orientation is reset, so we need to set to new proper value
-            self.videoDataOutput?.connection(withMediaType: AVMediaTypeVideo).videoOrientation = new
+            self.videoDataOutput?.connection(with: AVMediaType.video)?.videoOrientation = new
         }
         
     }
@@ -114,7 +129,7 @@ final class CaptureSession : NSObject {
     fileprivate let sessionQueue = DispatchQueue(label: "session queue", attributes: [], target: nil)
     private var setupResult: SessionSetupResult = .success
     fileprivate var videoDeviceInput: AVCaptureDeviceInput!
-    fileprivate let videoDeviceDiscoverySession = AVCaptureDeviceDiscoverySession(deviceTypes: [.builtInWideAngleCamera, .builtInDuoCamera], mediaType: AVMediaTypeVideo, position: .unspecified)!
+    fileprivate let videoDeviceDiscoverySession = AVCaptureDevice.DiscoverySession(deviceTypes: [AVCaptureDevice.DeviceType.builtInWideAngleCamera, AVCaptureDevice.DeviceType.builtInDuoCamera], mediaType: AVMediaType.video, position: .unspecified)
     fileprivate var videoDataOutput: AVCaptureVideoDataOutput?
     fileprivate let videoOutpuSampleBufferDelegate = VideoOutputSampleBufferDelegate()
     
@@ -135,16 +150,20 @@ final class CaptureSession : NSObject {
     
     // MARK: Photo Capturing
     
-    fileprivate enum LivePhotoMode {
+    enum LivePhotoMode {
         case on
         case off
     }
     
     weak var photoCapturingDelegate: CaptureSessionPhotoCapturingDelegate?
-    fileprivate var livePhotoMode: LivePhotoMode = .on
+    
+    // this is provided by argument of capturePhoto()
+    //fileprivate var livePhotoMode: LivePhotoMode = .off
     fileprivate let photoOutput = AVCapturePhotoOutput()
     fileprivate var inProgressPhotoCaptureDelegates = [Int64 : PhotoCaptureDelegate]()
-    fileprivate var inProgressLivePhotoCapturesCount = 0
+    
+    /// contains number of currently processing live photos
+    fileprivate(set) var inProgressLivePhotoCapturesCount = 0
     
     // MARK: Public Methods
     
@@ -155,8 +174,8 @@ final class CaptureSession : NSObject {
          during movie recording.
          */
         //TODO: support also media type audio later!
-        let mediaType = AVMediaTypeVideo
-        switch AVCaptureDevice.authorizationStatus(forMediaType: mediaType) {
+        let mediaType = AVMediaType.video
+        switch AVCaptureDevice.authorizationStatus(for: mediaType) {
         case .authorized:
             // The user has previously granted access to the camera.
             break
@@ -171,7 +190,7 @@ final class CaptureSession : NSObject {
              create an AVCaptureDeviceInput for audio during session setup.
              */
             sessionQueue.suspend()
-            AVCaptureDevice.requestAccess(forMediaType: AVMediaTypeVideo, completionHandler: { [capturedSelf = self] granted in
+            AVCaptureDevice.requestAccess(for: AVMediaType.video, completionHandler: { [capturedSelf = self] granted in
                 if !granted {
                     capturedSelf.setupResult = .notAuthorized
                 }
@@ -219,7 +238,7 @@ final class CaptureSession : NSObject {
                 
                 //TODO: be carefull, here we explicitly add media type video!
                 DispatchQueue.main.async { [weak self] in
-                    let status = AVCaptureDevice.authorizationStatus(forMediaType: AVMediaTypeVideo)
+                    let status = AVCaptureDevice.authorizationStatus(for: AVMediaType.video)
                     self?.delegate?.captureSession(self!, authorizationStatusFailed: status)
                 }
                 
@@ -273,26 +292,32 @@ final class CaptureSession : NSObject {
         log("capture session: configuring - adding video input")
         
         session.beginConfiguration()
-        session.sessionPreset = AVCaptureSessionPresetHigh
+        
+        switch presetConfiguration {
+        case .livePhotos, .photos:
+            session.sessionPreset = AVCaptureSession.Preset.photo
+        case .videos:
+            session.sessionPreset = AVCaptureSession.Preset.high
+        }
         
         // Add video input.
         do {
             var defaultVideoDevice: AVCaptureDevice?
             
             // Choose the back dual camera if available, otherwise default to a wide angle camera.
-            if let dualCameraDevice = AVCaptureDevice.defaultDevice(withDeviceType: .builtInDualCamera, mediaType: AVMediaTypeVideo, position: .back) {
+            if let dualCameraDevice = AVCaptureDevice.default(AVCaptureDevice.DeviceType.builtInDuoCamera, for: AVMediaType.video, position: .back) {
                 defaultVideoDevice = dualCameraDevice
             }
-            else if let backCameraDevice = AVCaptureDevice.defaultDevice(withDeviceType: .builtInWideAngleCamera, mediaType: AVMediaTypeVideo, position: .back) {
+            else if let backCameraDevice = AVCaptureDevice.default(AVCaptureDevice.DeviceType.builtInWideAngleCamera, for: AVMediaType.video, position: .back) {
                 // If the back dual camera is not available, default to the back wide angle camera.
                 defaultVideoDevice = backCameraDevice
             }
-            else if let frontCameraDevice = AVCaptureDevice.defaultDevice(withDeviceType: .builtInWideAngleCamera, mediaType: AVMediaTypeVideo, position: .front) {
+            else if let frontCameraDevice = AVCaptureDevice.default(AVCaptureDevice.DeviceType.builtInWideAngleCamera, for: AVMediaType.video, position: .front) {
                 // In some cases where users break their phones, the back wide angle camera is not available. In this case, we should default to the front wide angle camera.
                 defaultVideoDevice = frontCameraDevice
             }
             
-            let videoDeviceInput = try AVCaptureDeviceInput(device: defaultVideoDevice)
+            let videoDeviceInput = try AVCaptureDeviceInput(device: defaultVideoDevice!)
             
             if session.canAddInput(videoDeviceInput) {
                 session.addInput(videoDeviceInput)
@@ -307,7 +332,7 @@ final class CaptureSession : NSObject {
                      Note: As an exception to the above rule, it is not necessary to serialize video orientation changes
                      on the AVCaptureVideoPreviewLayer’s connection with other session manipulation.
                      */
-                    self.previewLayer?.connection.videoOrientation = self.videoOrientation
+                    self.previewLayer?.connection?.videoOrientation = self.videoOrientation
                 }
             }
             else {
@@ -350,45 +375,48 @@ final class CaptureSession : NSObject {
 //            return
 //        }
         
-        log("capture session: configuring - adding audio input")
+//        log("capture session: configuring - adding audio input")
+//
+//        // Add audio input, if fails no need to fail whole configuration
+//        do {
+//            let audioDevice = AVCaptureDevice.default(for: AVMediaType.audio)
+//            let audioDeviceInput = try AVCaptureDeviceInput(device: audioDevice!)
+//
+//            if session.canAddInput(audioDeviceInput) {
+//                session.addInput(audioDeviceInput)
+//            }
+//            else {
+//                log("capture session: could not add audio device input to the session")
+//            }
+//        }
+//        catch {
+//            log("capture session: could not create audio device input: \(error)")
+//        }
         
-        // Add audio input, if fails no need to fail whole configuration
-        do {
-            let audioDevice = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeAudio)
-            let audioDeviceInput = try AVCaptureDeviceInput(device: audioDevice)
+        
+        if presetConfiguration == .livePhotos || presetConfiguration == .photos {
+            // Add photo output.
+            log("capture session: configuring - adding photo output")
             
-            if session.canAddInput(audioDeviceInput) {
-                session.addInput(audioDeviceInput)
+            if session.canAddOutput(photoOutput) {
+                session.addOutput(photoOutput)
+                photoOutput.isHighResolutionCaptureEnabled = true
+                
+                //enable live photos only if we intend to use it explicitly
+                if presetConfiguration == .livePhotos {
+                    photoOutput.isLivePhotoCaptureEnabled = photoOutput.isLivePhotoCaptureSupported
+                    if photoOutput.isLivePhotoCaptureSupported == false {
+                        log("capture session: configuring - requested live photo mode is not supported by the device")
+                    }
+                }
+                log("capture session: configuring - live photo mode is \(photoOutput.isLivePhotoCaptureEnabled ? "enabled" : "disabled")")
             }
             else {
-                log("capture session: could not add audio device input to the session")
+                log("capture session: could not add photo output to the session")
+                setupResult = .configurationFailed
+                session.commitConfiguration()
+                return
             }
-        }
-        catch {
-            log("capture session: could not create audio device input: \(error)")
-        }
-        
-        log("capture session: configuring - adding photo output")
-
-        // Add photo output.
-        if session.canAddOutput(photoOutput) {
-            session.addOutput(photoOutput)
-            photoOutput.isHighResolutionCaptureEnabled = true
-            
-            //enable live photos only if we intend to use it explicitly 
-            if livePhotoMode == .on {
-                photoOutput.isLivePhotoCaptureEnabled = photoOutput.isLivePhotoCaptureSupported
-                if photoOutput.isLivePhotoCaptureSupported == false {
-                    log("capture session: configuring - requested live photo mode is not supported by the device")
-                }
-            }
-            log("capture session: configuring - live photo mode is \(photoOutput.isLivePhotoCaptureEnabled ? "enabled" : "disabled")")
-        }
-        else {
-            log("capture session: could not add photo output to the session")
-            setupResult = .configurationFailed
-            session.commitConfiguration()
-            return
         }
         
         // Add video data output - we use this to capture last video sample that is
@@ -400,7 +428,7 @@ final class CaptureSession : NSObject {
             videoDataOutput!.alwaysDiscardsLateVideoFrames = true
             videoDataOutput!.setSampleBufferDelegate(videoOutpuSampleBufferDelegate, queue: videoOutpuSampleBufferDelegate.processQueue)
             
-            if let connection = videoDataOutput!.connection(withMediaType: AVMediaTypeVideo) {
+            if let connection = videoDataOutput!.connection(with: AVMediaType.video) {
                 connection.videoOrientation = self.videoOrientation
             }
         }
@@ -467,7 +495,7 @@ final class CaptureSession : NSObject {
         }
     }
     
-    func sessionRuntimeError(notification: NSNotification) {
+    @objc func sessionRuntimeError(notification: NSNotification) {
         guard let errorValue = notification.userInfo?[AVCaptureSessionErrorKey] as? NSError else {
             return
         }
@@ -500,7 +528,7 @@ final class CaptureSession : NSObject {
         }
     }
     
-    func sessionWasInterrupted(notification: NSNotification) {
+    @objc func sessionWasInterrupted(notification: NSNotification) {
         /*
          In some scenarios we want to enable the user to resume the session running.
          For example, if music playback is initiated via control center while
@@ -509,7 +537,7 @@ final class CaptureSession : NSObject {
          music playback in control center will not automatically resume the session
          running. Also note that it is not always possible to resume, see `resumeInterruptedSession(_:)`.
          */
-        if let userInfoValue = notification.userInfo?[AVCaptureSessionInterruptionReasonKey] as AnyObject?, let reasonIntegerValue = userInfoValue.integerValue, let reason = AVCaptureSessionInterruptionReason(rawValue: reasonIntegerValue) {
+        if let userInfoValue = notification.userInfo?[AVCaptureSessionInterruptionReasonKey] as AnyObject?, let reasonIntegerValue = userInfoValue.integerValue, let reason = AVCaptureSession.InterruptionReason(rawValue: reasonIntegerValue) {
             log("capture session: session was interrupted with reason \(reason)")
             DispatchQueue.main.async { [weak self] in
                 self?.delegate?.captureSession(self!, wasInterrupted: reason)
@@ -520,7 +548,7 @@ final class CaptureSession : NSObject {
         }
     }
     
-    func sessionInterruptionEnded(notification: NSNotification) {
+    @objc func sessionInterruptionEnded(notification: NSNotification) {
         log("capture session: interruption ended")
         
         //this is called automatically when interruption is done and session
@@ -534,7 +562,7 @@ final class CaptureSession : NSObject {
 
 extension CaptureSession {
     
-    func subjectAreaDidChange(notification: NSNotification) {
+    @objc func subjectAreaDidChange(notification: NSNotification) {
 //        let devicePoint = CGPoint(x: 0.5, y: 0.5)
 //        focus(with: .autoFocus, exposureMode: .continuousAutoExposure, at: devicePoint, monitorSubjectAreaChange: false)
     }
@@ -543,22 +571,22 @@ extension CaptureSession {
         
         sessionQueue.async { [unowned self] in
             let currentVideoDevice = self.videoDeviceInput.device
-            let currentPosition = currentVideoDevice!.position
+            let currentPosition = currentVideoDevice.position
             
-            let preferredPosition: AVCaptureDevicePosition
-            let preferredDeviceType: AVCaptureDeviceType
+            let preferredPosition: AVCaptureDevice.Position
+            let preferredDeviceType: AVCaptureDevice.DeviceType
             
             switch currentPosition {
             case .unspecified, .front:
                 preferredPosition = .back
-                preferredDeviceType = .builtInDuoCamera
+                preferredDeviceType = AVCaptureDevice.DeviceType.builtInDuoCamera
                 
             case .back:
                 preferredPosition = .front
-                preferredDeviceType = .builtInWideAngleCamera
+                preferredDeviceType = AVCaptureDevice.DeviceType.builtInWideAngleCamera
             }
             
-            let devices = self.videoDeviceDiscoverySession.devices!
+            let devices = self.videoDeviceDiscoverySession.devices
             var newVideoDevice: AVCaptureDevice? = nil
             
             // First, look for a device with both the preferred position and device type. Otherwise, look for a device with only the preferred position.
@@ -579,7 +607,7 @@ extension CaptureSession {
                     self.session.removeInput(self.videoDeviceInput)
                     
                     if self.session.canAddInput(videoDeviceInput) {
-                        NotificationCenter.default.removeObserver(self, name: Notification.Name("AVCaptureDeviceSubjectAreaDidChangeNotification"), object: currentVideoDevice!)
+                        NotificationCenter.default.removeObserver(self, name: Notification.Name("AVCaptureDeviceSubjectAreaDidChangeNotification"), object: currentVideoDevice)
                         NotificationCenter.default.addObserver(self, selector: #selector(self.subjectAreaDidChange), name: Notification.Name("AVCaptureDeviceSubjectAreaDidChangeNotification"), object: videoDeviceInput.device)
                         
                         self.session.addInput(videoDeviceInput)
@@ -589,7 +617,7 @@ extension CaptureSession {
                         self.session.addInput(self.videoDeviceInput);
                     }
                     
-                    if let connection = self.videoFileOutput?.connection(withMediaType: AVMediaTypeVideo) {
+                    if let connection = self.videoFileOutput?.connection(with: AVMediaType.video) {
                         if connection.isVideoStabilizationSupported {
                             connection.preferredVideoStabilizationMode = .auto
                         }
@@ -601,12 +629,12 @@ extension CaptureSession {
                      a video device is disconnected from the session. After the new video device is
                      added to the session, re-enable Live Photo capture on the AVCapturePhotoOutput if it is supported.
                      */
-                    self.photoOutput.isLivePhotoCaptureEnabled = self.photoOutput.isLivePhotoCaptureSupported && self.livePhotoMode == .on;
+                    self.photoOutput.isLivePhotoCaptureEnabled = self.photoOutput.isLivePhotoCaptureSupported && self.presetConfiguration == .livePhotos;
                     
                     // when device is disconnected:
                     // - video data output connection orientation is reset, so we need to set to new proper value
                     // - video mirroring is set to true if camera is front, make sure we use no mirroring
-                    if let videoDataOutputConnection = self.videoDataOutput?.connection(withMediaType: AVMediaTypeVideo) {
+                    if let videoDataOutputConnection = self.videoDataOutput?.connection(with: AVMediaType.video) {
                         videoDataOutputConnection.videoOrientation = self.videoOrientation
                         videoDataOutputConnection.isVideoMirrored = false
                     }
@@ -628,7 +656,7 @@ extension CaptureSession {
 
 extension CaptureSession {
     
-    func capturePhoto() {
+    func capturePhoto(livePhotoMode: LivePhotoMode) {
         /*
          Retrieve the video preview layer's video orientation on the main queue before
          entering the session queue. We do this to ensure UI elements are accessed on
@@ -640,7 +668,7 @@ extension CaptureSession {
         
         sessionQueue.async {
             // Update the photo output's connection to match the video orientation of the video preview layer.
-            if let photoOutputConnection = self.photoOutput.connection(withMediaType: AVMediaTypeVideo) {
+            if let photoOutputConnection = self.photoOutput.connection(with: AVMediaType.video) {
                 photoOutputConnection.videoOrientation = videoPreviewLayerOrientation
             }
             
@@ -668,10 +696,15 @@ extension CaptureSession {
                 }
             }
             
-            if self.livePhotoMode == .on && self.photoOutput.isLivePhotoCaptureSupported {
-                let livePhotoMovieFileName = NSUUID().uuidString
-                let livePhotoMovieFilePath = (NSTemporaryDirectory() as NSString).appendingPathComponent((livePhotoMovieFileName as NSString).appendingPathExtension("mov")!)
-                photoSettings.livePhotoMovieFileURL = URL(fileURLWithPath: livePhotoMovieFilePath)
+            if livePhotoMode == .on {
+                if self.presetConfiguration == .livePhotos && self.photoOutput.isLivePhotoCaptureSupported {
+                    let livePhotoMovieFileName = NSUUID().uuidString
+                    let livePhotoMovieFilePath = (NSTemporaryDirectory() as NSString).appendingPathComponent((livePhotoMovieFileName as NSString).appendingPathExtension("mov")!)
+                    photoSettings.livePhotoMovieFileURL = URL(fileURLWithPath: livePhotoMovieFilePath)
+                }
+                else {
+                    log("capture session: warning - trying to capture live photo but it's not supported by current configuration, capturing regular photo instead")
+                }
             }
             
             // Use a separate object for the photo capture delegate to isolate each capture life cycle.
@@ -694,12 +727,9 @@ extension CaptureSession {
                     }
                     
                     let inProgressLivePhotoCapturesCount = self.inProgressLivePhotoCapturesCount
-                    DispatchQueue.main.async { //[unowned self] in
-                        if inProgressLivePhotoCapturesCount > 0 {
-                            //TODO: live photo is in progress so update delegate about this - it can show nice UI based on this
-                        }
-                        else if inProgressLivePhotoCapturesCount == 0 {
-                            //TODO: live photo is not capturing anymore
+                    DispatchQueue.main.async { [unowned self] in
+                        if inProgressLivePhotoCapturesCount >= 0 {
+                            self.photoCapturingDelegate?.captureSessionDidChangeNumberOfProcessingLivePhotos(self)
                         }
                         else {
                             log("capture session: error - in progress live photo capture count is less than 0");
@@ -721,6 +751,8 @@ extension CaptureSession {
                     }
                 }
             })
+            
+            photoCaptureDelegate.savesPhotoToLibrary = self.saveCapturedAssetsToPhotoLibrary
             
             /*
              The Photo Output keeps a weak reference to the photo capture delegate so
@@ -751,7 +783,7 @@ extension CaptureSession: AVCaptureFileOutputRecordingDelegate {
          before entering the session queue. We do this to ensure UI elements are
          accessed on the main thread and session configuration is done on the session queue.
          */
-        let videoPreviewLayerOrientation = previewLayer.connection.videoOrientation
+        let videoPreviewLayerOrientation = previewLayer.connection?.videoOrientation
         
         sessionQueue.async { [weak self] in
             
@@ -777,14 +809,14 @@ extension CaptureSession: AVCaptureFileOutputRecordingDelegate {
             }
             
             // Update the orientation on the movie file output video connection before starting recording.
-            let movieFileOutputConnection = strongSelf.videoFileOutput?.connection(withMediaType: AVMediaTypeVideo)
-            movieFileOutputConnection?.videoOrientation = videoPreviewLayerOrientation
+            let movieFileOutputConnection = strongSelf.videoFileOutput?.connection(with: AVMediaType.video)
+            movieFileOutputConnection?.videoOrientation = videoPreviewLayerOrientation!
             
             // Start recording to a temporary file.
             //let outputFileName = NSUUID().uuidString
             let outputFileName = "exporting_video_to_this_file"
             let outputURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(outputFileName).appendingPathExtension("mov")
-            movieFileOutput.startRecording(toOutputFileURL: outputURL, recordingDelegate: self)
+            movieFileOutput.startRecording(to: outputURL, recordingDelegate: self!)
         }
     }
 
@@ -810,13 +842,13 @@ extension CaptureSession: AVCaptureFileOutputRecordingDelegate {
         }
     }
     
-    func capture(_ captureOutput: AVCaptureFileOutput!, didStartRecordingToOutputFileAt fileURL: URL!, fromConnections connections: [Any]!) {
+    func fileOutput(_ captureOutput: AVCaptureFileOutput, didStartRecordingTo fileURL: URL, from connections: [AVCaptureConnection]) {
         DispatchQueue.main.async { [weak self] in
             self?.videoRecordingDelegate?.captureSessionDidStartVideoRecording(self!)
         }
     }
     
-    func capture(_ captureOutput: AVCaptureFileOutput!, didFinishRecordingToOutputFileAt outputFileURL: URL!, fromConnections connections: [Any]!, error: Error!) {
+    func fileOutput(_ captureOutput: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
         
         func cleanup(deleteFile: Bool) {
             if let currentBackgroundRecordingID = backgroundRecordingID {
