@@ -23,7 +23,7 @@ enum VideoDisplayMode {
 /// A view whose layer is AVCaptureVideoPreviewLayer so it's used for previewing
 /// output from a capture session.
 ///
-class AVPreviewView: UIView {
+final class AVPreviewView: UIView {
     
     deinit {
         log("deinit: \(String(describing: self))")

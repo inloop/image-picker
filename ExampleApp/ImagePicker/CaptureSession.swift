@@ -85,6 +85,11 @@ final class CaptureSession : NSObject {
     weak var previewLayer: AVCaptureVideoPreviewLayer?
     
     ///
+    /// Save assets to library or not. Appropriate delegate is called in all cases.
+    ///
+    var saveCapturedAssetsToPhotoLibrary = false
+    
+    ///
     /// Set this method to orientation that mathches UI orientation before `prepare()`
     /// method is called. If you need to update orientation when session is running,
     /// use `updateVideoOrientation()` method instead
@@ -721,6 +726,8 @@ extension CaptureSession {
                     }
                 }
             })
+            
+            photoCaptureDelegate.savesPhotoToLibrary = self.saveCapturedAssetsToPhotoLibrary
             
             /*
              The Photo Output keeps a weak reference to the photo capture delegate so

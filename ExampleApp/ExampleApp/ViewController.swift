@@ -29,11 +29,6 @@ class ViewController: UITableViewController {
     @objc func presentPickerModally() {
         print("presenting modally")
         
-        var configuration = LayoutConfiguration.default
-        configuration.scrollDirection = .vertical
-        configuration.showsCameraActionItem = false
-        configuration.numberOfAssetItemsInRow = 3
-        
         let registrator = CellRegistrator()
         let actionNib = UINib(nibName: "IconWithTextCell", bundle: nil)
         registrator.register(nib: actionNib, forActionItemAt: 0)
@@ -47,7 +42,9 @@ class ViewController: UITableViewController {
 //        registrator.registerCellClassForAssetItems(ImageCell.self)
         
         let vc = ImagePickerController()
-        vc.layoutConfiguration = configuration
+        vc.layoutConfiguration.scrollDirection = .vertical
+        vc.layoutConfiguration.showsCameraActionItem = false
+        vc.layoutConfiguration.numberOfAssetItemsInRow = 3
         vc.cellRegistrator = registrator
         
         presentPickerModally(vc)
@@ -56,19 +53,16 @@ class ViewController: UITableViewController {
     @objc func presentPickerModallyCustomFetch() {
         print("presenting modally")
         
-        var configuration = LayoutConfiguration.default
-        configuration.scrollDirection = .vertical
-        configuration.showsCameraActionItem = false
-        configuration.showsFirstActionItem = false
-        configuration.showsSecondActionItem = false
-        
         let registrator = CellRegistrator()
         
         let imageNib = UINib(nibName: "ImageCell", bundle: nil)
         registrator.registerNibForAssetItems(imageNib)
         
         let vc = ImagePickerController()
-        vc.layoutConfiguration = configuration
+        vc.layoutConfiguration.scrollDirection = .vertical
+        vc.layoutConfiguration.showsCameraActionItem = false
+        vc.layoutConfiguration.showsFirstActionItem = false
+        vc.layoutConfiguration.showsSecondActionItem = false
         vc.cellRegistrator = registrator
         vc.assetsFetchResultBlock = {
             guard let momentsCollection = PHAssetCollection.fetchMoments(with: nil).firstObject else {
@@ -93,12 +87,9 @@ class ViewController: UITableViewController {
         let assetNib = UINib(nibName: "ImageCell", bundle: nil)
         registrator.registerNibForAssetItems(assetNib)
         
-        var configuration = LayoutConfiguration.default
-        configuration.numberOfAssetItemsInRow = 1
-        
         let vc = ImagePickerController()
         vc.cellRegistrator = registrator
-        vc.layoutConfiguration = configuration
+        vc.layoutConfiguration.numberOfAssetItemsInRow = 1
         
         presentPickerAsInputView(vc)
     }
@@ -116,12 +107,9 @@ class ViewController: UITableViewController {
         registrator.registerNibForActionItems(actionNib)
         registrator.registerNibForAssetItems(assetNib)
         
-        var configuration = LayoutConfiguration.default
-        configuration.showsSecondActionItem = true
-        
         let vc = ImagePickerController()
         vc.cellRegistrator = registrator
-        vc.layoutConfiguration = configuration
+        vc.layoutConfiguration.showsSecondActionItem = true
         
         presentPickerAsInputView(vc)
     }
@@ -138,6 +126,7 @@ class ViewController: UITableViewController {
         
         let vc = ImagePickerController()
         vc.cellRegistrator = registrator
+        vc.captureSettings.savesCapturedAssetToPhotoLibrary = false
         
         presentPickerAsInputView(vc)
     }

@@ -86,6 +86,11 @@ public final class ImagePickerController : UIViewController {
     public var cellRegistrator: CellRegistrator?
     
     ///
+    /// Use these settings to configure how the capturing should behave
+    ///
+    public var captureSettings = CaptureSettings.default
+    
+    ///
     /// Get informed about user interaction and changes
     ///
     public weak var delegate: ImagePickerControllerDelegate?
@@ -209,6 +214,7 @@ public final class ImagePickerController : UIViewController {
         
         //TODO: use capture session only if camera is enabled
         //configure capture session
+        captureSession.saveCapturedAssetsToPhotoLibrary = captureSettings.savesCapturedAssetToPhotoLibrary
         captureSession.videoOrientation = UIApplication.shared.statusBarOrientation.captureVideoOrientation
         captureSession.delegate = self
         captureSession.videoRecordingDelegate = self
