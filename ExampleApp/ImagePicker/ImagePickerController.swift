@@ -9,7 +9,6 @@
 import Foundation
 import UIKit
 import Photos
-//import AVFoundation
 
 ///
 /// Group of methods informing what image picker is currently doing
@@ -63,6 +62,10 @@ public protocol ImagePickerControllerDataSource : class {
     /// when user did not grant or has restricted access to photo library.
     ///
     func imagePicker(controller: ImagePickerController,  viewForAuthorizationStatus status: PHAuthorizationStatus) -> UIView
+}
+
+public class Appearance {
+    public var backgroundColor: UIColor = UIColor.red
 }
 
 public final class ImagePickerController : UIViewController {
@@ -121,6 +124,27 @@ public final class ImagePickerController : UIViewController {
     ///
     public var assetsFetchResultBlock: (() -> PHFetchResult<PHAsset>?)?
     
+    ///
+    /// Global appearance proxy object. Use this object to set appearance
+    /// for all instances of Image Picker. If you wish to set an appearance
+    /// on instances use corresponding instance method.
+    ///
+    public static func appearance() -> Appearance {
+        return classAppearanceProxy
+    }
+    
+    ///
+    /// Instance appearance proxy object. Use this object to set appearance
+    /// for this particular instance of Image Picker. This has precedence over
+    /// global appearance.
+    ///
+    public func appearance() -> Appearance {
+        if instanceAppearanceProxy == nil {
+            instanceAppearanceProxy = Appearance()
+        }
+        return instanceAppearanceProxy!
+    }
+    
     // MARK: Private Methods
     
     fileprivate var collectionViewDataSource = ImagePickerDataSource(assetsModel: ImagePickerAssetModel())
@@ -129,8 +153,6 @@ public final class ImagePickerController : UIViewController {
     fileprivate lazy var collectionView: UICollectionView = {
         
         let view = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
-        view.backgroundColor = UIColor.red
-        view.contentInset = UIEdgeInsets.zero
         view.dataSource = self.collectionViewDataSource
         view.delegate = self.collectionViewDelegate
         view.allowsMultipleSelection = true
@@ -154,6 +176,8 @@ public final class ImagePickerController : UIViewController {
         self.collectionViewDataSource.assetsModel.thumbnailSize = thumbnailSize
     }
     
+    /// View is used when there is a need for an overlay view over whole image picker
+    /// view hierarchy. For example when there is no permissions to photo library.
     private var overlayView: UIView?
     
     private func reloadData(basedOnAuthorizationStatus status: PHAuthorizationStatus) {
@@ -176,6 +200,12 @@ public final class ImagePickerController : UIViewController {
         }
     }
     
+    ///appearance object for global instances
+    static let classAppearanceProxy = Appearance()
+    
+    ///appearance object for an instance
+    var instanceAppearanceProxy: Appearance?
+    
     // MARK: View Lifecycle
     
     open override func loadView() {
@@ -185,13 +215,18 @@ public final class ImagePickerController : UIViewController {
     open override func viewDidLoad() {
         super.viewDidLoad()
         
+        //apply appearance
+        let appearance = instanceAppearanceProxy ?? ImagePickerController.classAppearanceProxy
+        collectionView.backgroundColor = appearance.backgroundColor
+        
         //configure flow layout
         let collectionViewLayout = self.collectionView.collectionViewLayout as! UICollectionViewFlowLayout
         collectionViewLayout.scrollDirection = layoutConfiguration.scrollDirection
         collectionViewLayout.minimumInteritemSpacing = layoutConfiguration.interitemSpacing
         collectionViewLayout.minimumLineSpacing = layoutConfiguration.interitemSpacing
         
-        //make sure collection view is bouncing nicely
+        //finish configuring collection view
+        collectionView.contentInset = layoutConfiguration.contentInset
         switch layoutConfiguration.scrollDirection {
         case .horizontal: collectionView.alwaysBounceHorizontal = true
         case .vertical: collectionView.alwaysBounceVertical = true

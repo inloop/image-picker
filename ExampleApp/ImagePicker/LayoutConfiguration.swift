@@ -45,6 +45,10 @@ public struct LayoutConfiguration {
     ///
     public var cameraSectionSpacing: CGFloat = 10
     
+    ///
+    /// Content inset of the underlaying collection view.
+    ///
+    public var contentInset: UIEdgeInsets = .zero
 }
 
 extension LayoutConfiguration {

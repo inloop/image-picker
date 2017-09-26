@@ -22,6 +22,11 @@ class ViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        //configure global appearance. If you wish to specify appearance per
+        //instance simple set appearance() on the instance itself. It will
+        //have a precedense over global appearance
+        ImagePickerController.appearance().backgroundColor = UIColor.black
+        
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cellId")
         tableView.keyboardDismissMode = .onDrag
     }
