@@ -10,6 +10,27 @@ App must have in info plist permissions for:
 - NSCameraUsageDescription - for taking pictures
 - NSMicrophoneUsageDescription - for recording videos with audio track
 
+## Styling
+
+Image picker view hierarchy contains of `UICollectionView` and an overlay view. Collection view has all cells provided by user and overlay view is asked by datasource when needed, so it's users responsibility to style her views. However, few style attributes are supported such as background color. Please use custom appearance mechanism to achieve desired styling.
+
+1. to style all image pickers globally use global appearance proxy object:
+
+```
+ImagePickerController.appearance().backgroundColor = UIColor.black
+```
+
+1. to style a particular instance of image picker use instances appearance proxy object:
+
+```
+let vc = ImagePickerController()
+vc.appearance().backgroundColor = UIColor.black
+```
+
+For default styling attributes and more info please refer to public interface of `Appearance` class.
+
+Please note that UIKit's appearance proxy is not currently supported.
+
 ## Features to add
 
 1. landscape layout for camera cell - video is already in landscape but cell must be wider to properly display it
@@ -22,7 +43,7 @@ App must have in info plist permissions for:
 8. when user denies access to camera, don't show camera cell or show that access is denied
 9. implement image pre-caching based on visible rectangle bounds
 10. add default features for base CameraCollectionViewCell - tap to take photo
-11. support styling through appearance
+11. [ok] support styling through appearance
 
 ## Known Issues
 

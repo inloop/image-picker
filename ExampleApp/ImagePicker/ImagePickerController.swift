@@ -64,10 +64,6 @@ public protocol ImagePickerControllerDataSource : class {
     func imagePicker(controller: ImagePickerController,  viewForAuthorizationStatus status: PHAuthorizationStatus) -> UIView
 }
 
-public class Appearance {
-    public var backgroundColor: UIColor = UIColor.red
-}
-
 public final class ImagePickerController : UIViewController {
    
     deinit {
@@ -151,12 +147,9 @@ public final class ImagePickerController : UIViewController {
     fileprivate var collectionViewDelegate = ImagePickerDelegate()
     
     fileprivate lazy var collectionView: UICollectionView = {
-        
         let view = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
         view.dataSource = self.collectionViewDataSource
         view.delegate = self.collectionViewDelegate
-        view.allowsMultipleSelection = true
-
         return view
     }()
     
@@ -227,6 +220,7 @@ public final class ImagePickerController : UIViewController {
         
         //finish configuring collection view
         collectionView.contentInset = layoutConfiguration.contentInset
+        collectionView.allowsMultipleSelection = true
         switch layoutConfiguration.scrollDirection {
         case .horizontal: collectionView.alwaysBounceHorizontal = true
         case .vertical: collectionView.alwaysBounceVertical = true
