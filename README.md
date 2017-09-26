@@ -42,7 +42,7 @@ Please note that UIKit's appearance proxy is not currently supported.
 7. [ok] add public API for setting if taken pictures should be saved in camera roll or just directly provided through delegate
 8. when user denies access to camera, don't show camera cell or show that access is denied
 9. implement image pre-caching based on visible rectangle bounds
-10. add default features for base CameraCollectionViewCell - tap to take photo
+10. [ok] add default features for base CameraCollectionViewCell - tap to take photo
 11. [ok] support styling through appearance
 
 ## Known Issues
@@ -55,7 +55,7 @@ Please note that UIKit's appearance proxy is not currently supported.
     used solution: use image buffer from AVVideoCaptureOutupt, blur it and add it as subview to the cell
     TODO: need to transform image from front camera horizontally - it's mirrored so the blurring effect is not 100% nice when flipping camera
 4. when camera cell will be blurred first time it lags - need to use instruments to find out why it's lagging
-    reproduce: simple scroll camera cell so it's not visible, you will notice a lag (iPhone SE)
+    reproduce: simple scroll camera cell so it's not visible, you will notice a lag (iPhone SE), this lag might be caused by Photos framework when loading first buch of images
 5. when rotating device, there is a little lag in video when changing orientation of outputs - it should be smooth though
 6. [fixed] when flipping from front camera to back camera, latest sample buffer image that is used does not have proper transform, you can see that it is rotated horizontally so it creates unpleasant effect durring unblur animation when flipping cameras
 7. when user defines layout configuration without camera - image picker still initializes capture session wich asks for permissions, crashes if no privacy key in info.plist is set and this is all not necessary 

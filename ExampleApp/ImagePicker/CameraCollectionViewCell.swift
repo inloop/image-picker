@@ -25,7 +25,7 @@ open class CameraCollectionViewCell : UICollectionViewCell {
     }
     
     /// contains video preview layer
-    internal var previewView = AVPreviewView(frame: .zero)
+    var previewView = AVPreviewView(frame: .zero)
     
     ///
     /// holds static image that is above blur view to achieve nicer presentation
@@ -37,6 +37,8 @@ open class CameraCollectionViewCell : UICollectionViewCell {
         view.contentMode = .scaleAspectFill
         return view
     }()
+    
+    var view = UIView(frame: .zero)
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
@@ -102,6 +104,16 @@ open class CameraCollectionViewCell : UICollectionViewCell {
             })
         }
     }
+    
+    func touchIsCaptureEffective(point: CGPoint) -> Bool {
+        // find the topmost view that detected the touch at point and check if it's not any button or anything other than contentView
+        if bounds.contains(point), let testedView = hitTest(point, with: nil), testedView === contentView {
+            return true
+        }
+        return false
+    }
+    
+    // MARK: Private Methods
     
     open func updateLivePhotoStatus(isProcessing: Bool, shouldAnimate: Bool) {
         

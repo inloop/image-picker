@@ -226,6 +226,11 @@ public final class ImagePickerController : UIViewController {
         case .vertical: collectionView.alwaysBounceVertical = true
         }
 
+        //gesture recognizer to detect taps on a camera cell (selection is disabled)
+        let recognizer = UITapGestureRecognizer(target: self, action: #selector(tapGestureRecognized(sender:)))
+        recognizer.cancelsTouchesInView = false
+        view.addGestureRecognizer(recognizer)
+        
         //apply cell registrator to collection view
         guard let cellRegistrator = self.cellRegistrator else { fatalError("at the time of viewDidLoad a cell registrator must be set") }
         collectionView.apply(registrator: cellRegistrator)
@@ -250,13 +255,6 @@ public final class ImagePickerController : UIViewController {
         captureSession.videoRecordingDelegate = self
         captureSession.photoCapturingDelegate = self
         captureSession.prepare()
-        
-        let notification = Notification.Name.UIApplicationDidEnterBackground
-        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground(_:)), name: notification, object: nil)
-    }
-    
-    @objc private dynamic func applicationDidEnterBackground(_ notification: Notification) {
-        blurCellIfNeeded(animated: false)
     }
     
     open override func viewWillAppear(_ animated: Bool) {
@@ -299,6 +297,26 @@ public final class ImagePickerController : UIViewController {
             
         }
         super.viewWillTransition(to: size, with: coordinator)
+    }
+    
+    // MARK: Private Methods
+    
+    @objc private func tapGestureRecognized(sender: UIGestureRecognizer) {
+        guard sender.state == .ended else {
+            return
+        }
+        
+        //TODO: path is hardcoded, should be returned by layout configuration
+        let cameraIndexPath = IndexPath(item: 0, section: 1)
+        guard let cameraCell = collectionView.cellForItem(at: cameraIndexPath) as? CameraCollectionViewCell else {
+            return
+        }
+        
+        let point = sender.location(in: cameraCell)
+        if cameraCell.touchIsCaptureEffective(point: point) {
+            takePicture()
+        }
+        
     }
     
 }
