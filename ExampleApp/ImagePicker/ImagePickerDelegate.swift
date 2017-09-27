@@ -27,19 +27,14 @@ protocol ImagePickerDelegateDelegate : class {
     func imagePicker(delegate: ImagePickerDelegate, didEndDisplayingCameraCell cell: CameraCollectionViewCell)
     
     func imagePicker(delegate: ImagePickerDelegate, willDisplayAssetCell cell: ImagePickerAssetCell, at index: Int)
+    
     //func imagePicker(delegate: ImagePickerDelegate, didEndDisplayingAssetCell cell: ImagePickerAssetCell)
 }
 
-//TODO:
-//- [ok] remove all !
-//- remove explicit knowledge of what sectionas are at awhat indexes, this should be hardcoded only 
-//  at one place and that is LayoutModel, delegate shold not have this duplicit logic
 final class ImagePickerDelegate : NSObject, UICollectionViewDelegateFlowLayout {
     
     deinit {
-        #if DEBUG
-            print("deinit: \(String(describing: self))")
-        #endif
+        log("deinit: \(String(describing: self))")
     }
     
     var layout: ImagePickerLayout?
@@ -56,38 +51,46 @@ final class ImagePickerDelegate : NSObject, UICollectionViewDelegateFlowLayout {
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if indexPath.section == 2 {
+        if indexPath.section == layout?.configuration.sectionIndexForAssets {
             delegate?.imagePicker(delegate: self, didSelectAssetItemAt: indexPath.row)
         }
     }
     
     func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
-        return selectionPolicy.shouldSelectItem(atSection: indexPath.section)
+        guard let configuration = layout?.configuration else { return false }
+        return selectionPolicy.shouldSelectItem(atSection: indexPath.section, layoutConfiguration: configuration)
     }
     
     func collectionView(_ collectionView: UICollectionView, shouldHighlightItemAt indexPath: IndexPath) -> Bool {
-        return selectionPolicy.shouldHighlightItem(atSection: indexPath.section)
+        guard let configuration = layout?.configuration else { return false }
+        return selectionPolicy.shouldHighlightItem(atSection: indexPath.section, layoutConfiguration: configuration)
     }
     
     func collectionView(_ collectionView: UICollectionView, didHighlightItemAt indexPath: IndexPath) {
-        if indexPath.section == 0 {
+        if indexPath.section == layout?.configuration.sectionIndexForActions {
             delegate?.imagePicker(delegate: self, didSelectActionItemAt: indexPath.row)
         }
     }
     
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        
+        guard let configuration = layout?.configuration else { return }
+        
         switch indexPath.section {
-        case 0: delegate?.imagePicker(delegate: self, willDisplayActionCell: cell, at: indexPath.row)
-        case 1: delegate?.imagePicker(delegate: self, willDisplayCameraCell: cell as! CameraCollectionViewCell)
-        case 2: delegate?.imagePicker(delegate: self, willDisplayAssetCell: cell as! ImagePickerAssetCell, at: indexPath.row)
+        case configuration.sectionIndexForActions: delegate?.imagePicker(delegate: self, willDisplayActionCell: cell, at: indexPath.row)
+        case configuration.sectionIndexForCamera: delegate?.imagePicker(delegate: self, willDisplayCameraCell: cell as! CameraCollectionViewCell)
+        case configuration.sectionIndexForAssets: delegate?.imagePicker(delegate: self, willDisplayAssetCell: cell as! ImagePickerAssetCell, at: indexPath.row)
         default: fatalError("index path not supported")
         }
     }
  
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        
+        guard let configuration = layout?.configuration else { return }
+        
         switch indexPath.section {
-        case 1: delegate?.imagePicker(delegate: self, didEndDisplayingCameraCell: cell as! CameraCollectionViewCell)
-        case 0,2: break
+        case configuration.sectionIndexForCamera: delegate?.imagePicker(delegate: self, didEndDisplayingCameraCell: cell as! CameraCollectionViewCell)
+        case configuration.sectionIndexForActions, configuration.sectionIndexForAssets: break
         default: fatalError("index path not supported")
         }
     }

@@ -20,9 +20,7 @@ import Photos
 public final class CellRegistrator {
     
     deinit {
-        #if DEBUG
-            print("deinit: \(String(describing: self))")
-        #endif
+        log("deinit: \(String(describing: self))")
     }
     
     // MARK: Private Methods

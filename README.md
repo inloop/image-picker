@@ -53,7 +53,7 @@ Please note that UIKit's appearance proxy is not currently supported.
     1. adding UIVisualEffectsView as subview of camera output but it's flickering when camera goes black on a while
     2. taking screenshot of AVVideoPreviewLayer is not possible - it returns transparent empty image
     used solution: use image buffer from AVVideoCaptureOutupt, blur it and add it as subview to the cell
-    TODO: need to transform image from front camera horizontally - it's mirrored so the blurring effect is not 100% nice when flipping camera
+    [fixed] need to transform image from front camera horizontally - it's mirrored so the blurring effect is not 100% nice when flipping camera
 4. when camera cell will be blurred first time it lags - need to use instruments to find out why it's lagging
     reproduce: simple scroll camera cell so it's not visible, you will notice a lag (iPhone SE), this lag might be caused by Photos framework when loading first buch of images
 5. when rotating device, there is a little lag in video when changing orientation of outputs - it should be smooth though

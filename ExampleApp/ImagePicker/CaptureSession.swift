@@ -118,6 +118,7 @@ final class CaptureSession : NSObject {
         
         //TODO: we have to update orientation of video data output but it's blinking a bit which is
         //uggly, I have no idea how to fix this
+        //note: when I added these 2 updates into a configuration block the lag was even worse
         sessionQueue.async {
             //when device is disconnected also video data output connection orientation is reset, so we need to set to new proper value
             self.videoDataOutput?.connection(with: AVMediaType.video)?.videoOrientation = new
@@ -173,7 +174,6 @@ final class CaptureSession : NSObject {
          access is optional. If audio access is denied, audio is not recorded
          during movie recording.
          */
-        //TODO: support also media type audio later!
         let mediaType = AVMediaType.video
         switch AVCaptureDevice.authorizationStatus(for: mediaType) {
         case .authorized:

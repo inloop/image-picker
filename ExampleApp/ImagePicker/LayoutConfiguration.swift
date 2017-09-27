@@ -57,6 +57,27 @@ extension LayoutConfiguration {
         return showsFirstActionItem || showsSecondActionItem
     }
     
+    var sectionIndexForActions: Int {
+        return 0
+    }
+    
+    var sectionIndexForCamera: Int {
+        return 1
+    }
+    
+    var sectionIndexForAssets: Int {
+        return 2
+    }
+    
     public static var `default` = LayoutConfiguration()
+    
+}
+
+extension UICollectionView {
+    
+    /// Helper method for convenienet access to camera cell
+    func cameraCell(layout: LayoutConfiguration) -> CameraCollectionViewCell? {
+        return cellForItem(at: IndexPath(row: 0, section: layout.sectionIndexForCamera)) as? CameraCollectionViewCell
+    }
     
 }

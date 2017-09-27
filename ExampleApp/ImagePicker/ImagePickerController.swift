@@ -306,9 +306,7 @@ public final class ImagePickerController : UIViewController {
             return
         }
         
-        //TODO: path is hardcoded, should be returned by layout configuration
-        let cameraIndexPath = IndexPath(item: 0, section: 1)
-        guard let cameraCell = collectionView.cellForItem(at: cameraIndexPath) as? CameraCollectionViewCell else {
+        guard let cameraCell = collectionView.cameraCell(layout: layoutConfiguration) else {
             return
         }
         
@@ -316,7 +314,6 @@ public final class ImagePickerController : UIViewController {
         if cameraCell.touchIsCaptureEffective(point: point) {
             takePicture()
         }
-        
     }
     
 }
@@ -345,8 +342,7 @@ extension ImagePickerController: PHPhotoLibraryChangeObserver {
             
             if changes.hasIncrementalChanges {
                 
-                //TODO: this must be access from layout model, not hardcoded
-                let assetItemsSection: Int = 2
+                let assetItemsSection = layoutConfiguration.sectionIndexForAssets
                 
                 // If we have incremental diffs, animate them in the collection view
                 self.collectionView.performBatchUpdates({
@@ -432,9 +428,7 @@ extension ImagePickerController : CaptureSessionDelegate {
     
     func blurCellIfNeeded(animated: Bool) {
         
-        //TODO: path is hardcoded, should be returned by layout configuration
-        let cameraIndexPath = IndexPath(item: 0, section: 1)
-        guard let cameraCell = collectionView.cellForItem(at: cameraIndexPath) as? CameraCollectionViewCell else {
+        guard let cameraCell = collectionView.cameraCell(layout: layoutConfiguration) else {
             return
         }
         
@@ -443,9 +437,7 @@ extension ImagePickerController : CaptureSessionDelegate {
     
     func unblurCellIfNeeded(animated: Bool) {
         
-        //TODO: path is hardcoded, should be returned by layout configuration
-        let cameraIndexPath = IndexPath(item: 0, section: 1)
-        guard let cameraCell = collectionView.cellForItem(at: cameraIndexPath) as? CameraCollectionViewCell else {
+        guard let cameraCell = collectionView.cameraCell(layout: layoutConfiguration) else {
             return
         }
         
@@ -501,9 +493,7 @@ extension ImagePickerController : CaptureSessionPhotoCapturingDelegate {
     
     func captureSessionDidChangeNumberOfProcessingLivePhotos(_ session: CaptureSession) {
         
-        //TODO: path is hardcoded, should be returned by layout configuration
-        let cameraIndexPath = IndexPath(item: 0, section: 1)
-        guard let cameraCell = collectionView.cellForItem(at: cameraIndexPath) as? CameraCollectionViewCell else {
+        guard let cameraCell = collectionView.cameraCell(layout: layoutConfiguration) else {
             return
         }
         
@@ -548,9 +538,7 @@ extension ImagePickerController: CameraCollectionViewCellDelegate {
     
     func flipCamera(_ completion: (() -> Void)? = nil) {
         
-        //TODO: path is hardcoded, should be returned by layout configuration
-        let cameraIndexPath = IndexPath(item: 0, section: 1)
-        guard let cameraCell = collectionView.cellForItem(at: cameraIndexPath) as? CameraCollectionViewCell else {
+        guard let cameraCell = collectionView.cameraCell(layout: layoutConfiguration) else {
             return captureSession.changeCamera(completion: completion)
         }
         

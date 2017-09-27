@@ -15,9 +15,7 @@ import Photos
 final class ImagePickerAssetModel {
     
     deinit {
-        #if DEBUG
-            print("deinit: \(String(describing: self))")
-        #endif
+        log("deinit: \(String(describing: self))")
     }
     
     var fetchResult: PHFetchResult<PHAsset>! {
