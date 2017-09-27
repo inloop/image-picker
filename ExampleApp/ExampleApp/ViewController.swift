@@ -48,7 +48,7 @@ class ViewController: UITableViewController {
         
         let vc = ImagePickerController()
         vc.layoutConfiguration.scrollDirection = .vertical
-        vc.layoutConfiguration.showsCameraActionItem = false
+        vc.layoutConfiguration.showsCameraItem = false
         vc.layoutConfiguration.numberOfAssetItemsInRow = 3
         vc.cellRegistrator = registrator
         
@@ -65,7 +65,7 @@ class ViewController: UITableViewController {
         
         let vc = ImagePickerController()
         vc.layoutConfiguration.scrollDirection = .vertical
-        vc.layoutConfiguration.showsCameraActionItem = false
+        vc.layoutConfiguration.showsCameraItem = false
         vc.layoutConfiguration.showsFirstActionItem = false
         vc.layoutConfiguration.showsSecondActionItem = false
         vc.cellRegistrator = registrator

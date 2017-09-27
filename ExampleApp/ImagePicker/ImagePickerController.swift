@@ -257,7 +257,7 @@ public final class ImagePickerController : UIViewController {
         reloadData(basedOnAuthorizationStatus: PHPhotoLibrary.authorizationStatus())
         
         //configure capture session
-        if layoutConfiguration.showsCameraActionItem {
+        if layoutConfiguration.showsCameraItem {
             let session = CaptureSession()
             captureSession = session
             session.presetConfiguration = captureSettings.cameraMode.captureSessionPresetConfiguration
