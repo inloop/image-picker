@@ -250,6 +250,7 @@ public final class ImagePickerController : UIViewController {
         collectionViewDelegate.layout = ImagePickerLayout(configuration: layoutConfiguration)
 
         //register for photo library updates - this is needed when changing permissions to photo library
+        //TODO: this is expensive (loading library for the first time)
         PHPhotoLibrary.shared().register(self)
         
         //determine auth satus and based on that reload UI

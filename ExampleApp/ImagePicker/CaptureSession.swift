@@ -133,7 +133,7 @@ final class CaptureSession : NSObject {
     fileprivate let sessionQueue = DispatchQueue(label: "session queue", attributes: [], target: nil)
     fileprivate var setupResult: SessionSetupResult = .success
     fileprivate var videoDeviceInput: AVCaptureDeviceInput!
-    fileprivate let videoDeviceDiscoverySession = AVCaptureDevice.DiscoverySession(deviceTypes: [AVCaptureDevice.DeviceType.builtInWideAngleCamera, AVCaptureDevice.DeviceType.builtInDuoCamera], mediaType: AVMediaType.video, position: .unspecified)
+    fileprivate lazy var videoDeviceDiscoverySession = AVCaptureDevice.DiscoverySession(deviceTypes: [AVCaptureDevice.DeviceType.builtInWideAngleCamera, AVCaptureDevice.DeviceType.builtInDuoCamera], mediaType: AVMediaType.video, position: .unspecified)
     fileprivate var videoDataOutput: AVCaptureVideoDataOutput?
     fileprivate let videoOutpuSampleBufferDelegate = VideoOutputSampleBufferDelegate()
     
