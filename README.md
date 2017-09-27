@@ -40,7 +40,7 @@ Please note that UIKit's appearance proxy is not currently supported.
 5. add public API for recording videos
 6. [ok] add public API for enabling/disabling live photos
 7. [ok] add public API for setting if taken pictures should be saved in camera roll or just directly provided through delegate
-8. when user denies access to camera, don't show camera cell or show that access is denied
+8. when user denies access to camera,  show that access is denied
 9. implement image pre-caching based on visible rectangle bounds
 10. [ok] add default features for base CameraCollectionViewCell - tap to take photo
 11. [ok] support styling through appearance

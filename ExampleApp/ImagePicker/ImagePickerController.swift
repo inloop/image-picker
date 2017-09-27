@@ -173,6 +173,7 @@ public final class ImagePickerController : UIViewController {
     /// view hierarchy. For example when there is no permissions to photo library.
     private var overlayView: UIView?
     
+    /// Reload collection view layout/data based on authorization status of photo library
     private func reloadData(basedOnAuthorizationStatus status: PHAuthorizationStatus) {
         switch status {
         case .authorized:
@@ -191,6 +192,14 @@ public final class ImagePickerController : UIViewController {
                 }
             })
         }
+    }
+    
+    /// Reload camera cell based on authorization status of camera input device (video)
+    fileprivate func reloadCameraCell(basedOnAuthorizationStatus status: AVAuthorizationStatus) {
+        guard let cameraCell = collectionView.cameraCell(layout: layoutConfiguration) else {
+            return
+        }
+        cameraCell.authorizationStatus = status
     }
     
     ///appearance object for global instances
@@ -398,14 +407,22 @@ extension ImagePickerController : ImagePickerDelegateDelegate {
     
     func imagePicker(delegate: ImagePickerDelegate, willDisplayCameraCell cell: CameraCollectionViewCell) {
         
+        //setup cell if needed
         if cell.delegate == nil {
             cell.delegate = self
             cell.previewView.session = captureSession.session
             captureSession.previewLayer = cell.previewView.previewLayer
         }
         
+        //update live photos
         let inProgressLivePhotos = captureSession.inProgressLivePhotoCapturesCount
         cell.updateLivePhotoStatus(isProcessing: inProgressLivePhotos > 0, shouldAnimate: false)
+        
+        //update authorization status if it's changed
+        let status = AVCaptureDevice.authorizationStatus(for: .video)
+        if cell.authorizationStatus != status {
+            cell.authorizationStatus = status
+        }
         
         captureSession.resume()
     }
@@ -463,7 +480,13 @@ extension ImagePickerController : CaptureSessionDelegate {
     }
     
     func captureSession(_ session: CaptureSession, authorizationStatusFailed status: AVAuthorizationStatus) {
-        log("did fail authorization")
+        log("did fail authorization to camera")
+        reloadCameraCell(basedOnAuthorizationStatus: status)
+    }
+    
+    func captureSession(_ session: CaptureSession, authorizationStatusGranted status: AVAuthorizationStatus) {
+        log("did grant authorization to camera")
+        reloadCameraCell(basedOnAuthorizationStatus: status)
     }
     
     func captureSession(_ session: CaptureSession, wasInterrupted reason: AVCaptureSession.InterruptionReason) {

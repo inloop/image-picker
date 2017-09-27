@@ -56,8 +56,11 @@ protocol CaptureSessionDelegate : class {
     ///called when creating and configuring session but something failed (e.g. input or output could not be added, etc
     func captureSessionDidFailConfiguringSession(_ session: CaptureSession)
     
-    ///called when user did not authorize using audio or video
+    ///called when user denied access to video device when prompte
     func captureSession(_ session: CaptureSession, authorizationStatusFailed status: AVAuthorizationStatus)
+    
+    ///Called when user grants access to video device when prompted
+    func captureSession(_ session: CaptureSession, authorizationStatusGranted status: AVAuthorizationStatus)
     
     ///called when session is interrupted due to various reasons, for example when a phone call or user starts an audio using control center, etc.
     func captureSession(_ session: CaptureSession, wasInterrupted reason: AVCaptureSession.InterruptionReason)
@@ -75,7 +78,7 @@ final class CaptureSession : NSObject {
         log("deinit: \(String(describing: self))")
     }
     
-    private enum SessionSetupResult {
+    fileprivate enum SessionSetupResult {
         case success
         case notAuthorized
         case configurationFailed
@@ -128,7 +131,7 @@ final class CaptureSession : NSObject {
     
     /// Communicate with the session and other session objects on this queue.
     fileprivate let sessionQueue = DispatchQueue(label: "session queue", attributes: [], target: nil)
-    private var setupResult: SessionSetupResult = .success
+    fileprivate var setupResult: SessionSetupResult = .success
     fileprivate var videoDeviceInput: AVCaptureDeviceInput!
     fileprivate let videoDeviceDiscoverySession = AVCaptureDevice.DiscoverySession(deviceTypes: [AVCaptureDevice.DeviceType.builtInWideAngleCamera, AVCaptureDevice.DeviceType.builtInDuoCamera], mediaType: AVMediaType.video, position: .unspecified)
     fileprivate var videoDataOutput: AVCaptureVideoDataOutput?
@@ -191,7 +194,12 @@ final class CaptureSession : NSObject {
              */
             sessionQueue.suspend()
             AVCaptureDevice.requestAccess(for: AVMediaType.video, completionHandler: { [capturedSelf = self] granted in
-                if !granted {
+                if granted {
+                    DispatchQueue.main.async {
+                        capturedSelf.delegate?.captureSession(capturedSelf, authorizationStatusGranted: .authorized)
+                    }
+                }
+                else {
                     capturedSelf.setupResult = .notAuthorized
                 }
                 capturedSelf.sessionQueue.resume()
@@ -235,8 +243,6 @@ final class CaptureSession : NSObject {
                 
             case .notAuthorized:
                 log("capture session: not authorized")
-                
-                //TODO: be carefull, here we explicitly add media type video!
                 DispatchQueue.main.async { [weak self] in
                     let status = AVCaptureDevice.authorizationStatus(for: AVMediaType.video)
                     self?.delegate?.captureSession(self!, authorizationStatusFailed: status)
@@ -358,7 +364,7 @@ final class CaptureSession : NSObject {
         // If your capture session includes an AVCaptureMovieFileOutput object, the
         // isLivePhotoCaptureSupported property becomes false.
         
-        // Add video output.
+        // Add video file output.
 //        let movieFileOutput = AVCaptureMovieFileOutput()
 //        if self.session.canAddOutput(movieFileOutput) {
 //            self.session.addOutput(movieFileOutput)
@@ -569,6 +575,10 @@ extension CaptureSession {
     
     func changeCamera(completion: (() -> Void)?) {
         
+        guard setupResult == .success else {
+            return log("capture session: warning - trying to change camera but capture session setup failed")
+        }
+        
         sessionQueue.async { [unowned self] in
             let currentVideoDevice = self.videoDeviceInput.device
             let currentPosition = currentVideoDevice.position
@@ -663,7 +673,7 @@ extension CaptureSession {
          the main thread and session configuration is done on the session queue.
          */
         guard let videoPreviewLayerOrientation = previewLayer?.connection?.videoOrientation else {
-            return log("capture session: trying to capture a photo but no preview layer is set")
+            return log("capture session: warning - trying to capture a photo but no preview layer is set")
         }
         
         sessionQueue.async {

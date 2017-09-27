@@ -10,11 +10,17 @@ import Foundation
 import UIKit
 import ImagePicker
 
+class StateView : UIView {
+    @IBOutlet weak var titleLabel: UILabel!
+    @IBOutlet weak var subtitleLabel: UILabel!
+}
+
 class LivePhotoCameraCell : CameraCollectionViewCell {
     
     @IBOutlet weak var snapButton: UIButton!
     @IBOutlet weak var enableLivePhotosButton: StationaryButton!
     @IBOutlet weak var liveIndicator: UILabel!
+    @IBOutlet weak var stateView: StateView!
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -43,6 +49,25 @@ class LivePhotoCameraCell : CameraCollectionViewCell {
         }
         
         shouldAnimate ? UIView.animate(withDuration: 0.25, animations: updates) : updates()
+    }
+    
+    override func updateCameraAuthorizationStatus() {
+        switch authorizationStatus! {
+        case .authorized:
+            stateView.isHidden = true
+        case .denied:
+            stateView.isHidden = false
+            stateView.titleLabel.text = "Denied"
+            stateView.subtitleLabel.text = ""
+        case .restricted:
+            stateView.isHidden = false
+            stateView.titleLabel.text = "Restricted"
+            stateView.subtitleLabel.text = ""
+        case .notDetermined:
+            stateView.isHidden = false
+            stateView.titleLabel.text = "Grant Access"
+            stateView.subtitleLabel.text = ""
+        }
     }
 }
 

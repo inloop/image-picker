@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import AVFoundation
 
 protocol CameraCollectionViewCellDelegate : class {
     func takePicture()
@@ -32,13 +33,15 @@ open class CameraCollectionViewCell : UICollectionViewCell {
     /// - note: when capture session is interrupted, there is no input stream so
     /// output is black, adding image here will nicely hide this black background
     ///
-    internal var imageView: UIImageView = {
+    var imageView: UIImageView = {
         let view = UIImageView(frame: .zero)
         view.contentMode = .scaleAspectFill
         return view
     }()
     
-    var view = UIView(frame: .zero)
+    weak var delegate: CameraCollectionViewCellDelegate?
+    
+    // MARK: View Lifecycle Methods
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
@@ -55,6 +58,33 @@ open class CameraCollectionViewCell : UICollectionViewCell {
     open override func layoutSubviews() {
         super.layoutSubviews()
         imageView.frame = previewView.bounds
+    }
+    
+    // MARK: Public Methods
+    
+    /// The cell can have multiple visual states based on autorization status
+    public internal(set) var authorizationStatus: AVAuthorizationStatus? {
+        didSet { updateCameraAuthorizationStatus() }
+    }
+    
+    open func updateCameraAuthorizationStatus() {
+        
+    }
+    
+    open func updateLivePhotoStatus(isProcessing: Bool, shouldAnimate: Bool) {
+        
+    }
+    
+    public func flipCamera(_ completion: (() -> Void)?) {
+        delegate?.flipCamera(completion)
+    }
+    
+    public func takePicture() {
+        delegate?.takePicture()
+    }
+    
+    public func takeLivePhoto() {
+        delegate?.takeLivePhoto()
     }
     
     // MARK: Internal Methods
@@ -112,27 +142,6 @@ open class CameraCollectionViewCell : UICollectionViewCell {
         }
         return false
     }
-    
-    // MARK: Private Methods
-    
-    open func updateLivePhotoStatus(isProcessing: Bool, shouldAnimate: Bool) {
-        
-    }
-    
-    // MARK: Camera API
-    
-    internal weak var delegate: CameraCollectionViewCellDelegate?
  
-    public func flipCamera(_ completion: (() -> Void)?) {
-        delegate?.flipCamera(completion)
-    }
-    
-    public func takePicture() {
-        delegate?.takePicture()
-    }
-    
-    public func takeLivePhoto() {
-        delegate?.takeLivePhoto()
-    }
     
 }
