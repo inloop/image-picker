@@ -16,6 +16,8 @@ public struct LayoutConfiguration {
     
     public var showsFirstActionItem = true
     public var showsSecondActionItem = true
+    
+    //TODO: rename to showsCameraItem 
     public var showsCameraActionItem = true
     
     let showsAssetItems = true

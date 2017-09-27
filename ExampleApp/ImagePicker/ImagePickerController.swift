@@ -68,7 +68,7 @@ public final class ImagePickerController : UIViewController {
    
     deinit {
         PHPhotoLibrary.shared().unregisterChangeObserver(self)
-        captureSession.suspend()
+        captureSession?.suspend()
         log("deinit: \(String(describing: self))")
     }
     
@@ -153,7 +153,7 @@ public final class ImagePickerController : UIViewController {
         return view
     }()
     
-    fileprivate let captureSession = CaptureSession()
+    fileprivate var captureSession: CaptureSession?
     
     private func updateItemSize() {
         
@@ -255,15 +255,19 @@ public final class ImagePickerController : UIViewController {
         //determine auth satus and based on that reload UI
         reloadData(basedOnAuthorizationStatus: PHPhotoLibrary.authorizationStatus())
         
-        //TODO: use capture session only if camera is enabled
         //configure capture session
-        captureSession.presetConfiguration = captureSettings.cameraMode.captureSessionPresetConfiguration
-        captureSession.saveCapturedAssetsToPhotoLibrary = captureSettings.savesCapturedAssetToPhotoLibrary
-        captureSession.videoOrientation = UIApplication.shared.statusBarOrientation.captureVideoOrientation
-        captureSession.delegate = self
-        captureSession.videoRecordingDelegate = self
-        captureSession.photoCapturingDelegate = self
-        captureSession.prepare()
+        if layoutConfiguration.showsCameraActionItem {
+            let session = CaptureSession()
+            captureSession = session
+            session.presetConfiguration = captureSettings.cameraMode.captureSessionPresetConfiguration
+            session.saveCapturedAssetsToPhotoLibrary = captureSettings.savesCapturedAssetToPhotoLibrary
+            session.videoOrientation = UIApplication.shared.statusBarOrientation.captureVideoOrientation
+            session.delegate = self
+            session.videoRecordingDelegate = self
+            session.photoCapturingDelegate = self
+            session.prepare()
+        }
+        
     }
     
     open override func viewWillAppear(_ animated: Bool) {
@@ -291,7 +295,7 @@ public final class ImagePickerController : UIViewController {
     open override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         
         //update capture session with new interface orientation
-        captureSession.updateVideoOrientation(new: UIApplication.shared.statusBarOrientation.captureVideoOrientation)
+        captureSession?.updateVideoOrientation(new: UIApplication.shared.statusBarOrientation.captureVideoOrientation)
         
         //TODO: add support for upadating safe area and content inset when rotating, this is
         //problem because at this point of execution safe are does not have new values
@@ -410,12 +414,12 @@ extension ImagePickerController : ImagePickerDelegateDelegate {
         //setup cell if needed
         if cell.delegate == nil {
             cell.delegate = self
-            cell.previewView.session = captureSession.session
-            captureSession.previewLayer = cell.previewView.previewLayer
+            cell.previewView.session = captureSession?.session
+            captureSession?.previewLayer = cell.previewView.previewLayer
         }
         
         //update live photos
-        let inProgressLivePhotos = captureSession.inProgressLivePhotoCapturesCount
+        let inProgressLivePhotos = captureSession?.inProgressLivePhotoCapturesCount ?? 0
         cell.updateLivePhotoStatus(isProcessing: inProgressLivePhotos > 0, shouldAnimate: false)
         
         //update authorization status if it's changed
@@ -424,30 +428,28 @@ extension ImagePickerController : ImagePickerDelegateDelegate {
             cell.authorizationStatus = status
         }
         
-        captureSession.resume()
+        captureSession?.resume()
     }
     
     func imagePicker(delegate: ImagePickerDelegate, didEndDisplayingCameraCell cell: CameraCollectionViewCell) {
-        captureSession.suspend()
+        captureSession?.suspend()
         // blur cell asap
         DispatchQueue.global(qos: .userInteractive).async {
-            if let image = self.captureSession.latestVideoBufferImage?.applyLightEffectWithExtraSaturation() {
+            if let image = self.captureSession?.latestVideoBufferImage?.applyLightEffectWithExtraSaturation() {
                 DispatchQueue.main.async {
                     cell.blurIfNeeded(blurImage: image, animated: false, completion: nil)
                 }
             }
         }
     }
-    
 }
 
 extension ImagePickerController : CaptureSessionDelegate {
     
     func blurCellIfNeeded(animated: Bool) {
         
-        guard let cameraCell = collectionView.cameraCell(layout: layoutConfiguration) else {
-            return
-        }
+        guard let cameraCell = collectionView.cameraCell(layout: layoutConfiguration) else { return }
+        guard let captureSession = captureSession else { return }
         
         cameraCell.blurIfNeeded(blurImage: captureSession.latestVideoBufferImage, animated: animated, completion: nil)
     }
@@ -552,14 +554,16 @@ extension ImagePickerController : CaptureSessionVideoRecordingDelegate {
 extension ImagePickerController: CameraCollectionViewCellDelegate {
     
     func takePicture() {
-        captureSession.capturePhoto(livePhotoMode: .off)
+        captureSession?.capturePhoto(livePhotoMode: .off)
     }
     
     func takeLivePhoto() {
-        captureSession.capturePhoto(livePhotoMode: .on)
+        captureSession?.capturePhoto(livePhotoMode: .on)
     }
     
     func flipCamera(_ completion: (() -> Void)? = nil) {
+        
+        guard let captureSession = captureSession else { return  }
         
         guard let cameraCell = collectionView.cameraCell(layout: layoutConfiguration) else {
             return captureSession.changeCamera(completion: completion)
@@ -570,13 +574,13 @@ extension ImagePickerController: CameraCollectionViewCellDelegate {
         cameraCell.blurIfNeeded(blurImage: image, animated: true) { _ in
             
             // 2. flip camera
-            self.captureSession.changeCamera(completion: {
+            captureSession.changeCamera(completion: {
                 
                 // 3. flip animation
                 UIView.transition(with: cameraCell.previewView, duration: 0.3, options: [.transitionFlipFromLeft, .allowAnimatedContent], animations: nil) { (finished) in
                     
                     //set new image from buffer
-                    let image = self.captureSession.latestVideoBufferImage?.applyLightEffectWithExtraSaturation()
+                    let image = captureSession.latestVideoBufferImage?.applyLightEffectWithExtraSaturation()
                     
                     // 4. unblur
                     cameraCell.unblurIfNeeded(unblurImage: image, animated: true, completion: { _ in
