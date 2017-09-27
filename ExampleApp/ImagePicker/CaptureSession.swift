@@ -436,6 +436,7 @@ final class CaptureSession : NSObject {
             
             if let connection = videoDataOutput!.connection(with: AVMediaType.video) {
                 connection.videoOrientation = self.videoOrientation
+                connection.automaticallyAdjustsVideoMirroring = false
             }
         }
         else {
@@ -646,7 +647,13 @@ extension CaptureSession {
                     // - video mirroring is set to true if camera is front, make sure we use no mirroring
                     if let videoDataOutputConnection = self.videoDataOutput?.connection(with: AVMediaType.video) {
                         videoDataOutputConnection.videoOrientation = self.videoOrientation
-                        videoDataOutputConnection.isVideoMirrored = false
+                        if videoDataOutputConnection.isVideoMirroringSupported {
+                            videoDataOutputConnection.isVideoMirrored = true
+                        }
+                        else {
+                            log("capture session: warning - video mirroring on video data output is not supported")
+                        }
+                        
                     }
                     
                     self.session.commitConfiguration()

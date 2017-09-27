@@ -435,9 +435,10 @@ extension ImagePickerController : ImagePickerDelegateDelegate {
         captureSession?.suspend()
         // blur cell asap
         DispatchQueue.global(qos: .userInteractive).async {
-            if let image = self.captureSession?.latestVideoBufferImage?.applyLightEffectWithExtraSaturation() {
+            if let image = self.captureSession?.latestVideoBufferImage {
+                let blurred = UIImageEffects.imageByApplyingLightEffect(to: image)
                 DispatchQueue.main.async {
-                    cell.blurIfNeeded(blurImage: image, animated: false, completion: nil)
+                    cell.blurIfNeeded(blurImage: blurred, animated: false, completion: nil)
                 }
             }
         }
@@ -569,7 +570,8 @@ extension ImagePickerController: CameraCollectionViewCellDelegate {
             return captureSession.changeCamera(completion: completion)
         }
         
-        let image = captureSession.latestVideoBufferImage?.applyLightEffectWithExtraSaturation()
+        var image = captureSession.latestVideoBufferImage
+        image = UIImageEffects.imageByApplyingLightEffect(to: image)
         
         cameraCell.blurIfNeeded(blurImage: image, animated: true) { _ in
             
@@ -577,10 +579,11 @@ extension ImagePickerController: CameraCollectionViewCellDelegate {
             captureSession.changeCamera(completion: {
                 
                 // 3. flip animation
-                UIView.transition(with: cameraCell.previewView, duration: 0.3, options: [.transitionFlipFromLeft, .allowAnimatedContent], animations: nil) { (finished) in
+                UIView.transition(with: cameraCell.previewView, duration: 0.25, options: [.transitionFlipFromLeft, .allowAnimatedContent], animations: nil) { (finished) in
                     
                     //set new image from buffer
-                    let image = captureSession.latestVideoBufferImage?.applyLightEffectWithExtraSaturation()
+                    var image = captureSession.latestVideoBufferImage
+                    image = UIImageEffects.imageByApplyingLightEffect(to: image)
                     
                     // 4. unblur
                     cameraCell.unblurIfNeeded(unblurImage: image, animated: true, completion: { _ in
