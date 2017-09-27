@@ -82,7 +82,7 @@ public final class ImagePickerController : UIViewController {
     ///
     /// Use this to register a cell classes or nibs for each item types
     ///
-    public var cellRegistrator: CellRegistrator?
+    public lazy var cellRegistrator = CellRegistrator()
     
     ///
     /// Use these settings to configure how the capturing should behave
@@ -241,7 +241,6 @@ public final class ImagePickerController : UIViewController {
         view.addGestureRecognizer(recognizer)
         
         //apply cell registrator to collection view
-        guard let cellRegistrator = self.cellRegistrator else { fatalError("at the time of viewDidLoad a cell registrator must be set") }
         collectionView.apply(registrator: cellRegistrator)
         
         //connect all remaining objects as needed

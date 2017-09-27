@@ -13,6 +13,7 @@ import Foundation
 ///
 public protocol ImagePickerAssetCell : class {
     
+    //TODO: why is this also set? do we need set?
     /// This image view will be used when setting an asset's image
     var imageView: UIImageView! { get set }
     

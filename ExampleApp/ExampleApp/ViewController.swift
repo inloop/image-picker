@@ -102,15 +102,10 @@ class ViewController: UITableViewController {
     @objc func presentPickerAsInputView() {
         print("presenting as input view")
         
-        let registrator = CellRegistrator()
         let actionNib = UINib(nibName: "IconWithTextCell", bundle: nil)
-        let assetNib = UINib(nibName: "ImageCell", bundle: nil)
-        
-        registrator.registerNibForActionItems(actionNib)
-        registrator.registerNibForAssetItems(assetNib)
         
         let vc = ImagePickerController()
-        vc.cellRegistrator = registrator
+        vc.cellRegistrator.registerNibForActionItems(actionNib)
         vc.layoutConfiguration.showsSecondActionItem = true
         
         presentPickerAsInputView(vc)
