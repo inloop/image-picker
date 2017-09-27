@@ -59,7 +59,8 @@ Please note that UIKit's appearance proxy is not currently supported.
     reproduce: simple scroll camera cell so it's not visible, you will notice a lag (iPhone SE), this lag might be caused by Photos framework when loading first buch of images
 5. when rotating device, there is a little lag in video when changing orientation of outputs - it should be smooth though
 6. [fixed] when flipping from front camera to back camera, latest sample buffer image that is used does not have proper transform, you can see that it is rotated horizontally so it creates unpleasant effect durring unblur animation when flipping cameras
-7. when user defines layout configuration without camera - image picker still initializes capture session wich asks for permissions, crashes if no privacy key in info.plist is set and this is all not necessary 
+7. [fixed] when user defines layout configuration without camera - image picker still initializes capture session wich asks for permissions, crashes if no privacy key in info.plist is set and this is all not necessary
+
 
 ## Technologies used
 
