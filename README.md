@@ -2,13 +2,22 @@
 
 An easy to use drop-in framework providing user interface for taking pictures and videos and pick assets from Photo Library. User interface is designed to support `inputView` "keyboard-like" presentation for conversation user interfaces. Project is written in Swift4.
 
-Features:
+**Features:**
 - presentation designed for chat apps as well as regular view controllers
 - taking photos, live photos, capturing videos (wip)
 - flip camera to front/rear
 - turn on/off live photos
 - save captured assets to Photo Library
 - highly customisable UI
+
+**Requirements**
+- iOS 10+
+- Xcode 9+
+- Swift 4
+
+**Installation**
+- [Carthage](https://github.com/Carthage/Carthage)
+- manually 
 
 ## Overview
 
