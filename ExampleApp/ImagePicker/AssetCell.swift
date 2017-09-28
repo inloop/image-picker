@@ -9,6 +9,19 @@
 import Foundation
 
 ///
+/// Each image picker asset cell must conform to this protocol.
+///
+public protocol ImagePickerAssetCell : class {
+    
+    //TODO: why is this also set? do we need set?
+    /// This image view will be used when setting an asset's image
+    var imageView: UIImageView! { get set }
+    
+    /// This is a helper identifier that is used when properly displaying cells asynchronously
+    var representedAssetIdentifier: String? { get set }
+}
+
+///
 /// A default implementation of `ImagePickerAssetCell`. If user does not register
 /// her custom cell, Image Picker will use this one.
 ///
