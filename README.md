@@ -44,7 +44,7 @@ Please note that UIKit's appearance proxy is not currently supported.
 9. implement image pre-caching based on visible rectangle bounds
 10. [ok] add default features for base CameraCollectionViewCell - tap to take photo
 11. [ok] support styling through appearance
-12. configuration-less default implementation
+12. [ok] configuration-less default implementation
 
 ## Known Issues
 

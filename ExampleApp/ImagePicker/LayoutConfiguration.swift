@@ -1,6 +1,6 @@
 //
 //  LayoutConfiguration.swift
-//  ExampleApp
+//  Image Picker
 //
 //  Created by Peter Stajger on 05/09/2017.
 //  Copyright © 2017 Inloop. All rights reserved.

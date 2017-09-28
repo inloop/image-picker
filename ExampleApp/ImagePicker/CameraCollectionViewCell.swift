@@ -1,6 +1,6 @@
 //
 //  CameraCollectionViewCell.swift
-//  ExampleApp
+//  Image Picker
 //
 //  Created by Peter Stajger on 08/09/2017.
 //  Copyright © 2017 Inloop. All rights reserved.

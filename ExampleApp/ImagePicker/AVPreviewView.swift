@@ -1,6 +1,6 @@
 //
 //  AVPreviewView.swift
-//  ExampleApp
+//  Image Picker
 //
 //  Created by Peter Stajger on 27/03/17.
 //  Copyright © 2017 Peter Stajger. All rights reserved.
