@@ -22,6 +22,8 @@ class ViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        view.window?.tintColor = UIColor.green
+        
         //configure global appearance. If you wish to specify appearance per
         //instance simple set appearance() on the instance itself. It will
         //have a precedense over global appearance
@@ -70,12 +72,11 @@ class ViewController: UITableViewController {
         vc.layoutConfiguration.showsSecondActionItem = false
         vc.cellRegistrator = registrator
         vc.assetsFetchResultBlock = {
-            guard let momentsCollection = PHAssetCollection.fetchMoments(with: nil).firstObject else {
-                //you can return nil if you did not find desired fetch result,
-                //default fetch result will be used.
+            guard let collection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumVideos, options: nil).firstObject else {
+                //you can return nil if you did not find desired fetch result, default fetch result will be used.
                 return nil
             }
-            return PHAsset.fetchAssets(in: momentsCollection, options: nil)
+            return PHAsset.fetchAssets(in: collection, options: nil)
         }
         
         presentPickerModally(vc)
@@ -124,13 +125,11 @@ class ViewController: UITableViewController {
     
     @objc func presentPickerAsInputViewLivePhotosConfiguration() {
         
-        let registrator = CellRegistrator()
-        registrator.registerNibForActionItems(UINib(nibName: "IconWithTextCell", bundle: nil))
-        registrator.registerNibForCameraItem(UINib(nibName: "LivePhotoCameraCell", bundle: nil))
-        registrator.registerNibForAssetItems(UINib(nibName: "ImageCell", bundle: nil))
-        registrator.register(cellClass: VideoCell.self, forAssetItemOf: .video)
         let vc = ImagePickerController()
-        vc.cellRegistrator = registrator
+        vc.cellRegistrator.registerNibForActionItems(UINib(nibName: "IconWithTextCell", bundle: nil))
+        vc.cellRegistrator.registerNibForCameraItem(UINib(nibName: "LivePhotoCameraCell", bundle: nil))
+        vc.cellRegistrator.register(nib: UINib(nibName: "VideoCell", bundle: nil), forAssetItemOf: .video)
+        vc.cellRegistrator.registerNibForAssetItems(UINib(nibName: "ImageCell", bundle: nil))
         vc.captureSettings.cameraMode = .photoAndLivePhoto
         vc.captureSettings.savesCapturedAssetToPhotoLibrary = true
         
@@ -146,7 +145,6 @@ class ViewController: UITableViewController {
         //to adopt natural keyboard height or just set an layout constraint height
         //for specific height.
         vc.view.autoresizingMask = .flexibleHeight
-        vc.view.frame.size.height = 100
         currentInputView = vc.view
         
         allowsFirstResponser = true

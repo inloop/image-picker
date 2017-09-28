@@ -47,7 +47,9 @@ Various kind of configuration is supported. All configuration should be done **b
 - to configure general visual appearance use `Appearance` class
 - to configure layout of action, camera and asset items use `LayoutConfiguration` class.
 - to use your custom views for action, camera and asset items use `CellRegistrator` class
-- don't forget to set your `delegate` and `dataSource` if needed.
+- don't forget to set your `delegate` and `dataSource` if needed
+- to define a source of photos that should be available to pick up use view controller's `assetsFetchResultBlock` block
+- //TODO: document rest of vc properties!
 
 ### Capture settings
 
@@ -66,6 +68,23 @@ imagePicker.captureSettings.savesCapturedAssetToPhotoLibrary = true
 ```
 
 Please refer to `CaptureSettings` public header for more information.
+
+### Providing your own photos fetch result
+
+By default Image Picker fetches from Photo Library 1000 recently added photos and videos. If you wish to provide your own fetch result please implement image picker controller's `assetsFetchResultBlock` block.
+
+For example to fetch only live photos you can use following code snippet:
+
+```
+let imagePicker = ImagePickerController()
+imagePicker.assetsFetchResultBlock = {
+    guard let livePhotosCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumLivePhotos, options: nil).firstObject else {
+        return nil //you can return nil if you did not find desired fetch result, default fetch result will be used.
+    }
+    return PHAsset.fetchAssets(in: livePhotosCollection, options: nil)
+}
+```
+For more information how to configure fetch results please refer to [Photos framework documentation](https://developer.apple.com/documentation/photos).
 
 ### Styling using Appearance
 

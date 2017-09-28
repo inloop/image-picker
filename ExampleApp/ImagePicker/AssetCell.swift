@@ -28,7 +28,7 @@ public protocol ImagePickerAssetCell : class {
 class AssetCell : UICollectionViewCell, ImagePickerAssetCell {
     
     var imageView: UIImageView! = UIImageView(frame: .zero)
-    let selectedImageView = UIImageView(frame: .zero)
+    fileprivate var selectedImageView = CheckView(frame: .zero)
     
     var representedAssetIdentifier: String?
     
@@ -40,8 +40,12 @@ class AssetCell : UICollectionViewCell, ImagePickerAssetCell {
         super.init(frame: frame)
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
-        selectedImageView.backgroundColor = UIColor.red //TODO: we need an default asset for selected image
         contentView.addSubview(imageView)
+        
+        selectedImageView.frame = CGRect(x: 0, y: 0, width: 31, height: 31)
+        selectedImageView.image = UIImage(named: "icon-check-background", in: Bundle(for: type(of: self)), compatibleWith: nil)
+        selectedImageView.foregroundImage = UIImage(named: "icon-check", in: Bundle(for: type(of: self)), compatibleWith: nil)
+        
         contentView.addSubview(selectedImageView)
         selectedImageView.isHidden = true
     }
@@ -58,7 +62,36 @@ class AssetCell : UICollectionViewCell, ImagePickerAssetCell {
     override func layoutSubviews() {
         super.layoutSubviews()
         imageView.frame = bounds
-        selectedImageView.frame = bounds
+        selectedImageView.frame.origin = CGPoint(
+            x: bounds.width - selectedImageView.frame.width - 5,
+            y: bounds.height - selectedImageView.frame.height - 5
+        )
     }
     
+}
+
+private final class CheckView : UIImageView {
+    
+    var foregroundImage: UIImage? {
+        get { return foregroundView.image }
+        set { foregroundView.image = newValue }
+    }
+    
+    private let foregroundView = UIImageView(frame: .zero)
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        addSubview(foregroundView)
+        contentMode = .center
+        foregroundView.contentMode = .center
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        foregroundView.frame = bounds
+    }
 }
