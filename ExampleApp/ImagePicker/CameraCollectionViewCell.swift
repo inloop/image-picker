@@ -62,27 +62,53 @@ open class CameraCollectionViewCell : UICollectionViewCell {
     
     // MARK: Public Methods
     
-    /// The cell can have multiple visual states based on autorization status
+    ///
+    /// The cell can have multiple visual states based on autorization status. Use
+    /// `updateCameraAuthorizationStatus()` func to udate UI.
+    ///
     public internal(set) var authorizationStatus: AVAuthorizationStatus? {
         didSet { updateCameraAuthorizationStatus() }
     }
     
+    ///
+    /// Called each time an authorization status to camera is changed. Update your
+    /// cell's UI based on current value of `authorizationStatus` property.
+    ///
     open func updateCameraAuthorizationStatus() {
         
     }
     
+    ///
+    /// If live photos are enabled this method is called each time user captures
+    /// a live photo. Override this method to update UI based on live view status.
+    ///
+    /// - parameter isProcessing: If there is at least 1 live photo being processed/captured
+    /// - parameter shouldAnimate: If the UI change should be animated or not.
+    ///
     open func updateLivePhotoStatus(isProcessing: Bool, shouldAnimate: Bool) {
         
     }
     
+    ///
+    /// Flips camera from front/rear or rear/front. Flip is always supplemented with
+    /// an flip animation.
+    ///
+    /// - parameter completion: A block is called as soon as camera is changed.
+    ///
     public func flipCamera(_ completion: (() -> Void)?) {
         delegate?.flipCamera(completion)
     }
     
+    ///
+    /// Takes a picture
+    ///
     public func takePicture() {
         delegate?.takePicture()
     }
     
+    ///
+    /// Takes a live photo. Please note that live photos must be enabled when configuring Image Picker.
+    ///
     public func takeLivePhoto() {
         delegate?.takeLivePhoto()
     }
@@ -135,6 +161,11 @@ open class CameraCollectionViewCell : UICollectionViewCell {
         }
     }
     
+    ///
+    /// When user taps a camera cell this method is called and the result is
+    /// used when determining whether the tap should take a photo or not. This
+    /// is used when user taps on a button so the button is triggered not the touch.
+    ///
     func touchIsCaptureEffective(point: CGPoint) -> Bool {
         // find the topmost view that detected the touch at point and check if it's not any button or anything other than contentView
         if bounds.contains(point), let testedView = hitTest(point, with: nil), testedView === contentView {

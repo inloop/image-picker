@@ -128,7 +128,7 @@ class ViewController: UITableViewController {
         registrator.registerNibForActionItems(UINib(nibName: "IconWithTextCell", bundle: nil))
         registrator.registerNibForCameraItem(UINib(nibName: "LivePhotoCameraCell", bundle: nil))
         registrator.registerNibForAssetItems(UINib(nibName: "ImageCell", bundle: nil))
-        
+        registrator.register(cellClass: VideoCell.self, forAssetItemOf: .video)
         let vc = ImagePickerController()
         vc.cellRegistrator = registrator
         vc.captureSettings.cameraMode = .photoAndLivePhoto
@@ -146,6 +146,7 @@ class ViewController: UITableViewController {
         //to adopt natural keyboard height or just set an layout constraint height
         //for specific height.
         vc.view.autoresizingMask = .flexibleHeight
+        vc.view.frame.size.height = 100
         currentInputView = vc.view
         
         allowsFirstResponser = true

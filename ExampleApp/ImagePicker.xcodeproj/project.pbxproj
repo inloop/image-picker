@@ -25,7 +25,6 @@
 		421442631F6014B3006BA45A /* CellRegistrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 421442621F6014B3006BA45A /* CellRegistrator.swift */; };
 		421442691F6029D6006BA45A /* IconWithTextCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 421442681F6029D6006BA45A /* IconWithTextCell.xib */; };
 		4214426B1F602C68006BA45A /* ImageCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4214426A1F602C68006BA45A /* ImageCell.xib */; };
-		4214426D1F603612006BA45A /* GreenCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4214426C1F603612006BA45A /* GreenCell.swift */; };
 		4214426F1F604498006BA45A /* ImagePickerSelectionPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4214426E1F604498006BA45A /* ImagePickerSelectionPolicy.swift */; };
 		421442711F604993006BA45A /* IconWithTextCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 421442701F604993006BA45A /* IconWithTextCell.swift */; };
 		4217080C1F62C30B000DA508 /* CameraCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4217080B1F62C30B000DA508 /* CameraCell.xib */; };
@@ -97,7 +96,6 @@
 		421442621F6014B3006BA45A /* CellRegistrator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CellRegistrator.swift; sourceTree = "<group>"; };
 		421442681F6029D6006BA45A /* IconWithTextCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = IconWithTextCell.xib; sourceTree = "<group>"; };
 		4214426A1F602C68006BA45A /* ImageCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ImageCell.xib; sourceTree = "<group>"; };
-		4214426C1F603612006BA45A /* GreenCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GreenCell.swift; sourceTree = "<group>"; };
 		4214426E1F604498006BA45A /* ImagePickerSelectionPolicy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImagePickerSelectionPolicy.swift; sourceTree = "<group>"; };
 		421442701F604993006BA45A /* IconWithTextCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IconWithTextCell.swift; sourceTree = "<group>"; };
 		4217080B1F62C30B000DA508 /* CameraCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CameraCell.xib; sourceTree = "<group>"; };
@@ -179,6 +177,8 @@
 				42D703701F790A3F0057D557 /* Media */,
 				420C24351F5ED4AA008935D4 /* ImagePickerLayout.swift */,
 				429BFDA91F68161D00029440 /* ImagePickerAssetModel.swift */,
+				420C24271F5D925A008935D4 /* ImagePickerDataSource.swift */,
+				420C24331F5DA022008935D4 /* ImagePickerDelegate.swift */,
 				420C243E1F5EEA19008935D4 /* LayoutModel.swift */,
 				4214426E1F604498006BA45A /* ImagePickerSelectionPolicy.swift */,
 				42EDD4151F712B2A00EAD2F5 /* Miscellaneous.swift */,
@@ -198,7 +198,6 @@
 				420BCC3A1F66C53A006E8806 /* VideoCell.swift */,
 				421442681F6029D6006BA45A /* IconWithTextCell.xib */,
 				421442701F604993006BA45A /* IconWithTextCell.swift */,
-				4214426C1F603612006BA45A /* GreenCell.swift */,
 				4217080B1F62C30B000DA508 /* CameraCell.xib */,
 				4275FFC61F62C2830077A2CD /* CameraCell.swift */,
 				42F7D7F11F7932F7009D378A /* LivePhotoCameraCell.xib */,
@@ -216,8 +215,6 @@
 				421442621F6014B3006BA45A /* CellRegistrator.swift */,
 				420BCC361F66AEC5006E8806 /* ImagePickerAssetCellProtocol.swift */,
 				420C24251F5D8393008935D4 /* ImagePickerController.swift */,
-				420C24271F5D925A008935D4 /* ImagePickerDataSource.swift */,
-				420C24331F5DA022008935D4 /* ImagePickerDelegate.swift */,
 				420C24401F5EEA3C008935D4 /* LayoutConfiguration.swift */,
 				42D0979B1F7BF6B300A66E33 /* AssetCell.swift */,
 			);
@@ -362,7 +359,6 @@
 			files = (
 				420C24021F5D82C6008935D4 /* ViewController.swift in Sources */,
 				420BCC3C1F66C53A006E8806 /* VideoCell.swift in Sources */,
-				4214426D1F603612006BA45A /* GreenCell.swift in Sources */,
 				420C24001F5D82C6008935D4 /* AppDelegate.swift in Sources */,
 				4275FFC71F62C2830077A2CD /* CameraCell.swift in Sources */,
 				421442711F604993006BA45A /* IconWithTextCell.swift in Sources */,

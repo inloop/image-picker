@@ -15,7 +15,7 @@ public struct CaptureSettings {
     
     public enum CameraMode {
         ///
-        /// If you support only photos use this preset.
+        /// If you support only photos use this preset. Default value.
         ///
         case photo
         ///
@@ -37,7 +37,7 @@ public struct CaptureSettings {
     
     ///
     /// Return true if captured assets will be saved to photo library. Image picker
-    /// will prompt user with request for permisssions when needed.
+    /// will prompt user with request for permisssions when needed. Default value is false.
     ///
     public var savesCapturedAssetToPhotoLibrary: Bool
     
