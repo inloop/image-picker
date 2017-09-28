@@ -14,8 +14,8 @@ import Foundation
 ///
 public struct LayoutConfiguration {
     
-    public var showsFirstActionItem = true
-    public var showsSecondActionItem = true
+    public var showsFirstActionItem = false
+    public var showsSecondActionItem = false
  
     public var showsCameraItem = true
     

@@ -8,7 +8,10 @@
 
 import Foundation
 
-//TODO: perhaps this does not need to be public
+///
+/// A default implementation of `ImagePickerAssetCell`. If user does not register
+/// her custom cell, Image Picker will use this one.
+///
 class AssetCell : UICollectionViewCell, ImagePickerAssetCell {
     
     var imageView: UIImageView! = UIImageView(frame: .zero)
