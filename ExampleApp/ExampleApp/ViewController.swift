@@ -36,23 +36,21 @@ class ViewController: UITableViewController {
     @objc func presentPickerModally() {
         print("presenting modally")
         
-        let registrator = CellRegistrator()
+        let vc = ImagePickerController()
+        
         let actionNib = UINib(nibName: "IconWithTextCell", bundle: nil)
-        registrator.register(nib: actionNib, forActionItemAt: 0)
-        registrator.register(nib: actionNib, forActionItemAt: 1)
+        vc.cellRegistrator.register(nib: actionNib, forActionItemAt: 0)
+        vc.cellRegistrator.register(nib: actionNib, forActionItemAt: 1)
         
         let imageNib = UINib(nibName: "ImageCell", bundle: nil)
-        registrator.registerNibForAssetItems(imageNib)
+        vc.cellRegistrator.registerNibForAssetItems(imageNib)
         
         let videoNib = UINib(nibName: "VideoCell", bundle: nil)
-        registrator.register(nib: videoNib, forAssetItemOf: .video)
-//        registrator.registerCellClassForAssetItems(ImageCell.self)
+        vc.cellRegistrator.register(nib: videoNib, forAssetItemOf: .video)
         
-        let vc = ImagePickerController()
         vc.layoutConfiguration.scrollDirection = .vertical
         vc.layoutConfiguration.showsCameraItem = false
         vc.layoutConfiguration.numberOfAssetItemsInRow = 3
-        vc.cellRegistrator = registrator
         
         presentPickerModally(vc)
     }
@@ -60,17 +58,12 @@ class ViewController: UITableViewController {
     @objc func presentPickerModallyCustomFetch() {
         print("presenting modally")
         
-        let registrator = CellRegistrator()
-        
-        let imageNib = UINib(nibName: "ImageCell", bundle: nil)
-        registrator.registerNibForAssetItems(imageNib)
-        
         let vc = ImagePickerController()
         vc.layoutConfiguration.scrollDirection = .vertical
         vc.layoutConfiguration.showsCameraItem = false
         vc.layoutConfiguration.showsFirstActionItem = false
         vc.layoutConfiguration.showsSecondActionItem = false
-        vc.cellRegistrator = registrator
+        vc.cellRegistrator.registerNibForAssetItems(UINib(nibName: "ImageCell", bundle: nil))
         vc.assetsFetchResultBlock = {
             guard let collection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumVideos, options: nil).firstObject else {
                 //you can return nil if you did not find desired fetch result, default fetch result will be used.
@@ -85,16 +78,9 @@ class ViewController: UITableViewController {
     @objc func presentPickerAsInputViewPhotosAs1Col() {
         print("presenting as input view")
         
-        let registrator = CellRegistrator()
-        
-        let actionNib = UINib(nibName: "IconWithTextCell", bundle: nil)
-        registrator.registerNibForActionItems(actionNib)
-        
-        let assetNib = UINib(nibName: "ImageCell", bundle: nil)
-        registrator.registerNibForAssetItems(assetNib)
-        
         let vc = ImagePickerController()
-        vc.cellRegistrator = registrator
+        vc.cellRegistrator.registerNibForActionItems(UINib(nibName: "IconWithTextCell", bundle: nil))
+        vc.cellRegistrator.registerNibForAssetItems(UINib(nibName: "ImageCell", bundle: nil))
         vc.layoutConfiguration.numberOfAssetItemsInRow = 1
         
         presentPickerAsInputView(vc)
@@ -108,16 +94,10 @@ class ViewController: UITableViewController {
     
     @objc func presentPickerAsInputViewPhotosConfiguration() {
         
-        let registrator = CellRegistrator()
-        let actionNib = UINib(nibName: "IconWithTextCell", bundle: nil)
-        let assetNib = UINib(nibName: "ImageCell", bundle: nil)
-        let cameraNib = UINib(nibName: "CameraCell", bundle: nil)
-        registrator.registerNibForActionItems(actionNib)
-        registrator.registerNibForCameraItem(cameraNib)
-        registrator.registerNibForAssetItems(assetNib)
-        
         let vc = ImagePickerController()
-        vc.cellRegistrator = registrator
+        vc.cellRegistrator.registerNibForActionItems(UINib(nibName: "IconWithTextCell", bundle: nil))
+        vc.cellRegistrator.registerNibForCameraItem(UINib(nibName: "CameraCell", bundle: nil))
+        vc.cellRegistrator.registerNibForAssetItems(UINib(nibName: "ImageCell", bundle: nil))
         vc.captureSettings.cameraMode = .photo
         
         presentPickerAsInputView(vc)

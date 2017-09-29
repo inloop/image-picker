@@ -11,11 +11,13 @@ import UIKit
 import Photos
 
 ///
-/// Use this class to register various cell nibs or classes for each item type.
+/// Convenient API to register custom cell classes or nibs for each item type.
 ///
 /// Supported item types:
-/// 1. action item - there can be multiple action items
-/// 2. asset item - each asset can have multiple types (image, video, burst, etc..)
+/// 1. action item - register a cell for all items or a different cell for each index.
+/// 2. camera item - register a subclass of `CameraCollectionViewCell` to provide a
+/// 3. asset item - each asset media type (image, video) can have it's own cell
+/// custom camera cell implementation.
 ///
 public final class CellRegistrator {
     
@@ -70,38 +72,43 @@ public final class CellRegistrator {
     }
     
     // MARK: Public Methods
-    
-    public init() {
         
-    }
-    
+    ///
+    /// Register a cell class for camera item.
+    ///
     public func registerCellClassForCameraItem(_ cellClass: CameraCollectionViewCell.Type) {
         cameraItemClass = cellClass
     }
     
+    ///
+    /// Register a cell nib for camera item.
+    ///
+    /// - note: A cell class must subclass `CameraCollectionViewCell` or an exception
+    /// will be thrown.
+    ///
     public func registerNibForCameraItem(_ nib: UINib) {
         cameraItemNib = nib
     }
     
     ///
-    /// Registers a nib for all action items. Use this method if all action items
-    /// have the same nib.
+    /// Register a cell nib for all action items. Use this method if all action items
+    /// have the same cell class.
     ///
     public func registerNibForActionItems(_ nib: UINib) {
         register(nib: nib, forActionItemAt: Int.max)
     }
     
     ///
-    /// Registers a cell class for all action items. Use this method if all action items
-    /// have the same nib.
+    /// Register a cell class for all action items. Use this method if all action items
+    /// have the same cell class.
     ///
     public func registerCellClassForActionItems(_ cellClass: UICollectionViewCell.Type) {
         register(cellClass: cellClass, forActionItemAt: Int.max)
     }
     
     ///
-    /// Registers a nib for an action item at particular index. Use this method if
-    /// you wish to use different cells.
+    /// Register a cell nib for an action item at particular index. Use this method if
+    /// you wish to use different cells at each index.
     ///
     public func register(nib: UINib, forActionItemAt index: Int) {
         if actionItemNibsData == nil {
@@ -111,6 +118,10 @@ public final class CellRegistrator {
         actionItemNibsData?[index] = (nib, cellIdentifier)
     }
     
+    ///
+    /// Register a cell class for an action item at particular index. Use this method if
+    /// you wish to use different cells at each index.
+    ///
     public func register(cellClass: UICollectionViewCell.Type, forActionItemAt index: Int) {
         if actionItemClassesData == nil {
             actionItemClassesData = [:]
@@ -119,6 +130,13 @@ public final class CellRegistrator {
         actionItemClassesData?[index] = (cellClass, cellIdentifier)
     }
     
+    ///
+    /// Register a cell nib for asset items of specific type (image or video).
+    ///
+    /// - note: Please note, that if you register cell for specific type and your collection view displays
+    /// also other types that you did not register an exception will be thrown. Always register cells
+    /// for all media types you support.
+    ///
     public func register(nib: UINib, forAssetItemOf type: PHAssetMediaType) {
         if assetItemNibsData == nil {
             assetItemNibsData = [:]
@@ -128,9 +146,13 @@ public final class CellRegistrator {
     }
     
     ///
-    /// Please note that cellClass must conform to `ImagePickerAssetCell` protocol.
+    /// Register a cell class for asset items of specific type (image or video).
     ///
-    public func register(cellClass: UICollectionViewCell.Type, forAssetItemOf type: PHAssetMediaType) {
+    /// - note: Please note, that if you register cell for specific type and your collection view displays
+    /// also other types that you did not register an exception will be thrown. Always register cells
+    /// for all media types you support.
+    ///
+    public func register<T: UICollectionViewCell>(cellClass: T.Type, forAssetItemOf type: PHAssetMediaType) where T: ImagePickerAssetCell {
         if assetItemClassesData == nil {
             assetItemClassesData = [:]
         }
@@ -138,10 +160,18 @@ public final class CellRegistrator {
         assetItemClassesData?[type] = (cellClass, cellIdentifier)
     }
     
+    ///
+    /// Register a cell class for all asset items types (image and video).
+    ///
     public func registerCellClassForAssetItems<T: UICollectionViewCell>(_ cellClass: T.Type) where T: ImagePickerAssetCell {
         assetItemClass = cellClass
     }
     
+    ///
+    /// Register a cell nib for all asset items types (image and video).
+    ///
+    /// Please note that cell's class must conform to `ImagePickerAssetCell` protocol, otherwise an exception will be thrown.
+    ///
     public func registerNibForAssetItems(_ nib: UINib) {
         assetItemNib = nib
     }
