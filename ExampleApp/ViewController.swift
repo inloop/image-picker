@@ -15,24 +15,67 @@ import Photos
 /// This is an example view controller that shows how Image Picker can be used
 ///
 class ViewController: UITableViewController {
-
-    private var allowsFirstResponser = false
-    private var currentInputView: UIView?
+    
+    var allowsFirstResponser = false
+    var currentInputView: UIView?
+    var presentsModally = true
+    var presentButton: UIButton = {
+        let button = UIButton(type: .custom)
+        button.frame.size = CGSize(width: 0, height: 44)
+        button.backgroundColor = UIColor.red
+        button.setTitle("Present", for: .normal)
+        button.setTitle("Dismiss", for: .selected)
+        button.addTarget(self, action: #selector(presentButtonTapped(sender:)), for: .touchUpInside)
+        return button
+    }()
+    
+    @objc func presentButtonTapped(sender: UIButton) {
+        sender.isSelected = !sender.isSelected
+        
+        if sender.isSelected {
+            let imagePicker = ImagePickerController()
+        
+            if presentsModally {
+                imagePicker.layoutConfiguration.scrollDirection = .vertical
+                presentPickerModally(imagePicker)
+            }
+            else {
+                imagePicker.layoutConfiguration.scrollDirection = .horizontal
+                presentPickerAsInputView(imagePicker)
+            }
+            
+        }
+        else {
+            navigationController?.visibleViewController?.dismiss(animated: true, completion: nil)
+        }
+        
+        print("tapped")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        view.window?.tintColor = UIColor.green
         
         //configure global appearance. If you wish to specify appearance per
         //instance simple set appearance() on the instance itself. It will
         //have a precedense over global appearance
         ImagePickerController.appearance().backgroundColor = UIColor.black
         
+        navigationItem.title = "Image Picker"
+        
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cellId")
         tableView.keyboardDismissMode = .onDrag
     }
 
+    @objc func togglePresentationMode(indexPath: IndexPath) {
+        presentsModally = !presentsModally
+        
+        //deselect all in section
+        for path in tableView.indexPathsForVisibleRows ?? [] where path.section == indexPath.section {
+            let cell = tableView.cellForRow(at: path)!
+            cell.accessoryType = path == indexPath ? .checkmark : .none
+        }
+    }
+    
     @objc func presentPickerModally() {
         print("presenting modally")
         
@@ -129,6 +172,7 @@ class ViewController: UITableViewController {
         
         allowsFirstResponser = true
         becomeFirstResponder()
+        reloadInputViews()
     }
     
     private func presentPickerModally(_ vc: ImagePickerController) {
@@ -146,7 +190,7 @@ class ViewController: UITableViewController {
     }
     
     override var canBecomeFirstResponder: Bool {
-        return allowsFirstResponser
+        return true
     }
     
     override func resignFirstResponder() -> Bool {
@@ -159,6 +203,10 @@ class ViewController: UITableViewController {
     
     override var inputView: UIView? {
         return currentInputView
+    }
+    
+    override var inputAccessoryView: UIView? {
+        return presentButton
     }
     
 }
@@ -245,38 +293,64 @@ extension ViewController: ImagePickerControllerDataSource {
     
 }
 
-let data = [
+enum SelectorArgument {
+    case indexPath
+    case none
+}
+
+typealias CellConfigurationBlock = ((UITableViewCell, Bool) -> Void)?
+
+let cellsData: [[(String, Selector, SelectorArgument, CellConfigurationBlock)]] = [
     [
-        ("Modally - no camera", #selector(ViewController.presentPickerModally)),
-        ("Modally - only photos", #selector(ViewController.presentPickerModallyCustomFetch))],
+        ("Presents modally", #selector(ViewController.togglePresentationMode(indexPath:)), SelectorArgument.indexPath, { cell, presentsModally in cell.accessoryType = presentsModally ? .checkmark : .none }),
+        ("Presents as input view", #selector(ViewController.togglePresentationMode(indexPath:)), SelectorArgument.indexPath, { cell, presentsModally in cell.accessoryType = presentsModally ? .none : .checkmark })],
     [
-        ("Input view - default", #selector(ViewController.presentPickerAsInputView)),
-        ("Input view - 1 photo cols", #selector(ViewController.presentPickerAsInputViewPhotosAs1Col)),
-        ("Input view - photos configuration", #selector(ViewController.presentPickerAsInputViewPhotosConfiguration)),
-        ("Input view - live photos configuration", #selector(ViewController.presentPickerAsInputViewLivePhotosConfiguration))]
+        ("Modally - no camera", #selector(ViewController.presentPickerModally), SelectorArgument.none, nil),
+        ("Modally - only photos", #selector(ViewController.presentPickerModallyCustomFetch), SelectorArgument.none, nil)],
+    [
+        ("Input view - default", #selector(ViewController.presentPickerAsInputView), SelectorArgument.none, nil),
+        ("Input view - 1 photo cols", #selector(ViewController.presentPickerAsInputViewPhotosAs1Col), SelectorArgument.none, nil),
+        ("Input view - photos configuration", #selector(ViewController.presentPickerAsInputViewPhotosConfiguration), SelectorArgument.none, nil),
+        ("Input view - live photos configuration", #selector(ViewController.presentPickerAsInputViewLivePhotosConfiguration), SelectorArgument.none, nil)]
 ]
-let selectors = [#selector(ViewController.presentPickerAsInputView)]
+
+let sectionTitles: [String?] = [
+    "Presentation",
+    nil,
+    nil
+]
 
 extension ViewController {
     
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return data.count
+        return cellsData.count
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return data[section].count
+        return cellsData[section].count
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cellId", for: indexPath)
-        cell.textLabel?.text = data[indexPath.section][indexPath.row].0
-        
+        cell.textLabel?.text = cellsData[indexPath.section][indexPath.row].0
+        if let configBlock = cellsData[indexPath.section][indexPath.row].3 {
+            configBlock(cell, presentsModally)
+        }
         return cell
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        perform(data[indexPath.section][indexPath.row].1)
+        let selector = cellsData[indexPath.section][indexPath.row].1
+        let argumentType = cellsData[indexPath.section][indexPath.row].2
+        switch argumentType {
+        case .indexPath: perform(selector, with: indexPath)
+        default: perform(selector)
+        }
+    }
+    
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return sectionTitles[section]
     }
     
 }
