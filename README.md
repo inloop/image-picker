@@ -17,7 +17,7 @@ An easy to use drop-in framework providing user interface for taking pictures an
 
 **Installation**
 - [Carthage](https://github.com/Carthage/Carthage)
-- manually 
+- manually
 
 ## Overview
 
@@ -97,7 +97,7 @@ For more information how to configure fetch results please refer to [Photos fram
 
 ### Styling using Appearance
 
-Image picker view hierarchy contains of `UICollectionView` to show action, camera and asset items and an overlay view to show permissions status. When custom cells are provided via `CellsRegistrator` it is your responsibility to do the styling as well styling custom overlay view for permissions status. However, few style attributes are supported such as background color. Please use custom appearance mechanism to achieve desired styling.
+Image picker view hierarchy contains of `UICollectionView` to show action, camera and asset items and an overlay view to show permissions status. When custom cells are provided via `CellRegistrator` it is your responsibility to do the styling as well styling custom overlay view for permissions status. However, few style attributes are supported such as background color. Please use custom appearance mechanism to achieve desired styling.
 
 1. to style all image pickers globally use global appearance proxy object:
 ```
@@ -149,16 +149,16 @@ imagePicker.layoutConfiguration.numberOfAssetItemsInRow = 1
 
 All views used by Image Picker can be provided by you to achieve highly customisable UI that fits your app the best. As mentioned earlier, whole UI consists of a collection view and an overlay view.
 
-- **collection view** displays cells to display action, camera and asset items. To register custom cells use `CellsRegistrator`. It contains API to register both nibs and classes for each section type. For example to register custom cells for action items section use following code:
+- **collection view** displays cells to display action, camera and asset items. To register custom cells use `CellRegistrator`. It contains API to register both nibs and classes for each section type. For example to register custom cells for action items section use following code:
 ```
 let imagePicker = ImagePickerController()
-imagePicker.cellsRegistrator.registerNibForActionItems(UINib(nibName: "IconWithTextCell", bundle: nil))
+imagePicker.cellRegistrator.registerNibForActionItems(UINib(nibName: "IconWithTextCell", bundle: nil))
 ```
 Same principle is applied to registering custom camera and asset items. You can also set specific cells for each asset media types such photos and videos. For example to use specific cell for video  assets use:
 ```
 let imagePicker = ImagePickerController()
-imagePicker.cellsRegistrator.register(cellClass: VideoCell.self, forAssetItemOf: .video)
-imagePicker.cellsRegistrator.register(cellClass: ImageCell.self, forAssetItemOf: .image)
+imagePicker.cellRegistrator.register(cellClass: VideoCell.self, forAssetItemOf: .video)
+imagePicker.cellRegistrator.register(cellClass: ImageCell.self, forAssetItemOf: .image)
 ```
 > *Note:* Please make sure that if you use custom cells you register cells for all media types (audio, video) otherwise Image Picker will throw an exception. Please don't forget that camera item cells **must** subclass CameraCollectionViewCell and asset items cells **must** conform to `ImagePickerAssetCell` protocol. You can also fine-tune your asset cells to a specific asset types such us live photos, panorama photos, etc. using the delegate. Please see our ExampleApp for implementation details.
 
@@ -173,6 +173,46 @@ extension ViewController: ImagePickerControllerDataSource {
 }
 ```
 
+### Implementing custom action cell
+
+You can enable action cells on `LayoutConfiguration` so Image Picker will show action buttons in first section. In this case you **must** register your cell classes or nibs on `CellRegistrator`. After that implement corresponding `ImagePickerControllerDelegate` method to configure cell before it's displayed.
+
+1. enable action cells (one or two) on layout configuration, for example
+```
+let imagePicker = ImagePickerController()
+imagePicker.layoutConfiguration.showsFirstActionItem = true
+imagePicker.layoutConfiguration.showsSecondActionItem = true
+```
+2. register your action cells on cell registrator, for example
+```
+imagePicker.registerCellClassForActionItems(IconWithTextCell.self)
+```
+3. configure cell by implementing delegate method, for example
+```
+func imagePicker(controller: ImagePickerController, willDisplayActionItem cell: UICollectionViewCell, at index: Int) {
+    switch cell {
+    case let iconWithTextCell as IconWithTextCell:
+        switch index {
+        case 0:
+            iconWithTextCell.titleLabel.text = "Camera"
+            iconWithTextCell.imageView.image = #imageLiteral(resourceName: "ic-camera")
+        case 1:
+            iconWithTextCell.titleLabel.text = "Photo Library"
+            iconWithTextCell.imageView.image = #imageLiteral(resourceName: "ic-photo")
+        default: break
+        }
+    default:
+        break
+    }
+}
+```
+4. handle actions by implementing delegate method
+```
+func imagePicker(controller: ImagePickerController, didSelectActionItemAt index: Int) {
+    print("did select action \(index)")
+}
+```
+
 ### Implementing custom camera cell
 
 Image picker provides a default camera cell that just shows a camera output and captures a photo when user taps it. 
@@ -183,29 +223,37 @@ To see an example of custom implementation that supports all mentioned features 
 
 ### Implementing custom assets cell
 
-Image picker provides a default assets cell that shows an image thumbnail and selected state. If you wish to provide custom asset cell, that could show for example asset's media subtype (live photo, panorama, HDR, screenshot, streamed video, etc.) simply provide your own asset cell class that conforms to `ImagePickerAssetCell` and in implement image picker delegate's `func imagePicker(controller: ImagePickerController, willDisplayAssetItem cell: ImagePickerAssetCell, asset: PHAsset)` method. Possible example implementation could be:
+Image picker provides a default assets cell that shows an image thumbnail and selected state. If you wish to provide custom asset cell, that could show for example asset's media subtype (live photo, panorama, HDR, screenshot, streamed video, etc.) simply register your own asset cells on `CellRegistrator` that conforms to `ImagePickerAssetCell` and in implement image picker delegate's `func imagePicker(controller: ImagePickerController, willDisplayAssetItem cell: ImagePickerAssetCell, asset: PHAsset)` method. Possible example implementation could be:
 
+1. register cell classes for each asset media type, for example
+```
+let imagePicker = ImagePickerController()
+imagePicker.register(cellClass: ImageCell.self, forAssetItemOf: .image)
+imagePicker.register(cellClass: VideoCell.self, forAssetItemOf: .video)
+```
+> Please note, that `CellRegistrator` provides a method to register 1 cell or nib for any asset media type.
+2. implement delegate method to configure your asset cells, for example
 ```
 func imagePicker(controller: ImagePickerController, willDisplayAssetItem cell: ImagePickerAssetCell, asset: PHAsset) {
-        switch cell {
+    switch cell {
         
-        case let videoCell as VideoCell:
-            videoCell.label.text = ViewController.durationFormatter.string(from: asset.duration)
+    case let videoCell as VideoCell:
+        videoCell.label.text = ViewController.durationFormatter.string(from: asset.duration)
         
-        case let imageCell as ImageCell:
-            if asset.mediaSubtypes.contains(.photoLive) {
-                imageCell.subtypeImageView.image = #imageLiteral(resourceName: "icon-live")
-            }
-            else if asset.mediaSubtypes.contains(.photoPanorama) {
-                imageCell.subtypeImageView.image = #imageLiteral(resourceName: "icon-pano")
-            }
-            else if #available(iOS 10.2, *), asset.mediaSubtypes.contains(.photoDepthEffect) {
-                imageCell.subtypeImageView.image = #imageLiteral(resourceName: "icon-depth")
-            }
-        default:
-            break
+    case let imageCell as ImageCell:
+        if asset.mediaSubtypes.contains(.photoLive) {
+            imageCell.subtypeImageView.image = #imageLiteral(resourceName: "icon-live")
         }
+        else if asset.mediaSubtypes.contains(.photoPanorama) {
+            imageCell.subtypeImageView.image = #imageLiteral(resourceName: "icon-pano")
+        }
+        else if #available(iOS 10.2, *), asset.mediaSubtypes.contains(.photoDepthEffect) {
+            imageCell.subtypeImageView.image = #imageLiteral(resourceName: "icon-depth")
+        }
+    default:
+        break
     }
+}
 ```
 
 Please for more info and detailed implementation see our ExampleApp and ImageCell class and nib.
