@@ -160,7 +160,7 @@
 			children = (
 				420C23FF1F5D82C6008935D4 /* AppDelegate.swift */,
 				420C24011F5D82C6008935D4 /* ViewController.swift */,
-				4275FFC31F62C2290077A2CD /* Views */,
+				4275FFC31F62C2290077A2CD /* Custom Views */,
 				420C24031F5D82C6008935D4 /* Main.storyboard */,
 				420C24061F5D82C6008935D4 /* Assets.xcassets */,
 				420C24081F5D82C6008935D4 /* LaunchScreen.storyboard */,
@@ -190,7 +190,7 @@
 			path = ImagePicker;
 			sourceTree = "<group>";
 		};
-		4275FFC31F62C2290077A2CD /* Views */ = {
+		4275FFC31F62C2290077A2CD /* Custom Views */ = {
 			isa = PBXGroup;
 			children = (
 				4214426A1F602C68006BA45A /* ImageCell.xib */,
@@ -204,7 +204,7 @@
 				42F7D7F11F7932F7009D378A /* LivePhotoCameraCell.xib */,
 				42F7D7F31F793305009D378A /* LivePhotoCameraCell.swift */,
 			);
-			path = Views;
+			path = "Custom Views";
 			sourceTree = "<group>";
 		};
 		42D7036F1F7909100057D557 /* Public */ = {
