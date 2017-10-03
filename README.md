@@ -4,11 +4,16 @@ An easy to use drop-in framework providing user interface for taking pictures an
 
 **Features:**
 - [x] presentation designed for chat apps as well as regular view controllers
-- [x] taking photos, live photos, capturing videos (wip)
-- [x] flip camera to front/rear
-- [x] turn on/off live photos
-- [x] save captured assets to Photo Library
-- [x] highly customisable UI
+- [x] portrait and landscape modes
+- [x] capturing assets (photos, live photos)
+- [x] saving captured assets to Photo Library
+- [x] flipping camera to front/rear
+- [x] turning on/off live photos
+- [x] highly customisable layout and UI
+
+**Features to add:**
+- [] capturing videos (work in progress)
+- [] support for iPhone X
 
 **Requirements**
 - iOS 10+
