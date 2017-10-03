@@ -39,6 +39,7 @@
 		42D0979A1F7BD7C500A66E33 /* UIImageEffects.h in Headers */ = {isa = PBXBuildFile; fileRef = 42D097981F7BD6E100A66E33 /* UIImageEffects.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		42D0979C1F7BF6B300A66E33 /* AssetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42D0979B1F7BF6B300A66E33 /* AssetCell.swift */; };
 		42D7036B1F7908B10057D557 /* CaptureSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42D7036A1F7908B00057D557 /* CaptureSettings.swift */; };
+		42E736491F838DB80060E24D /* ViewController+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42E736481F838DB80060E24D /* ViewController+Helpers.swift */; };
 		42EDD4051F7125C700EAD2F5 /* CaptureSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 420CBBC21F712135002288C5 /* CaptureSession.swift */; };
 		42EDD4061F71261600EAD2F5 /* AVPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 420CBBC01F711E83002288C5 /* AVPreviewView.swift */; };
 		42EDD4161F712B2A00EAD2F5 /* Miscellaneous.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42EDD4151F712B2A00EAD2F5 /* Miscellaneous.swift */; };
@@ -109,6 +110,7 @@
 		42D097981F7BD6E100A66E33 /* UIImageEffects.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIImageEffects.h; sourceTree = "<group>"; };
 		42D0979B1F7BF6B300A66E33 /* AssetCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetCell.swift; sourceTree = "<group>"; };
 		42D7036A1F7908B00057D557 /* CaptureSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureSettings.swift; sourceTree = "<group>"; };
+		42E736481F838DB80060E24D /* ViewController+Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewController+Helpers.swift"; sourceTree = "<group>"; };
 		42EDD4151F712B2A00EAD2F5 /* Miscellaneous.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Miscellaneous.swift; sourceTree = "<group>"; };
 		42EDD4171F7164FB00EAD2F5 /* PhotoCaptureDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCaptureDelegate.swift; sourceTree = "<group>"; };
 		42EDD41B1F71727500EAD2F5 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -160,6 +162,7 @@
 			children = (
 				420C23FF1F5D82C6008935D4 /* AppDelegate.swift */,
 				420C24011F5D82C6008935D4 /* ViewController.swift */,
+				42E736481F838DB80060E24D /* ViewController+Helpers.swift */,
 				4275FFC31F62C2290077A2CD /* Custom Views */,
 				420C24031F5D82C6008935D4 /* Main.storyboard */,
 				420C24061F5D82C6008935D4 /* Assets.xcassets */,
@@ -360,6 +363,7 @@
 			files = (
 				420C24021F5D82C6008935D4 /* ViewController.swift in Sources */,
 				420BCC3C1F66C53A006E8806 /* VideoCell.swift in Sources */,
+				42E736491F838DB80060E24D /* ViewController+Helpers.swift in Sources */,
 				420C24001F5D82C6008935D4 /* AppDelegate.swift in Sources */,
 				4275FFC71F62C2830077A2CD /* CameraCell.swift in Sources */,
 				421442711F604993006BA45A /* IconWithTextCell.swift in Sources */,

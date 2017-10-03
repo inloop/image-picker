@@ -10,10 +10,66 @@ import UIKit
 import ImagePicker
 import Photos
 
+let cellsData: [[CellData]] = [
+    [
+        CellData("As input view", #selector(ViewController.togglePresentationMode(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.presentsModally ? .none : .checkmark }),
+        CellData("Modally", #selector(ViewController.togglePresentationMode(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.presentsModally ? .checkmark : .none })
+    ],
+    [
+        CellData("Two items", #selector(ViewController.setNumberOfActionItems(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.numberOfActionItems == 2 ? .checkmark : .none }),
+        CellData("One item", #selector(ViewController.setNumberOfActionItems(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.numberOfActionItems == 1 ? .checkmark : .none }),
+        CellData("Disabled (default)", #selector(ViewController.setNumberOfActionItems(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.numberOfActionItems == 0 ? .checkmark : .none }),
+        ],
+    [
+        CellData("Enabled (default)", #selector(ViewController.configCameraItem(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.cameraConfig == .enabled ? .checkmark : .none }),
+        CellData("Disabled", #selector(ViewController.configCameraItem(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.cameraConfig == .disabled ? .checkmark : .none })
+    ],
+    [
+        CellData("Recently added (default)", #selector(ViewController.configAssetsSource(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.assetsSource == .recentlyAdded ? .checkmark : .none }),
+        CellData("Only videos", #selector(ViewController.configAssetsSource(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.assetsSource == .onlyVideos ? .checkmark : .none }),
+        CellData("Only selfies", #selector(ViewController.configAssetsSource(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.assetsSource == .onlySelfies ? .checkmark : .none })
+    ],
+    [
+        CellData("One", #selector(ViewController.configAssetItemsInRow(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.assetItemsInRow == 1 ? .checkmark : .none }),
+        CellData("Two (default)", #selector(ViewController.configAssetItemsInRow(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.assetItemsInRow == 2 ? .checkmark : .none }),
+        CellData("Three", #selector(ViewController.configAssetItemsInRow(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.assetItemsInRow == 3 ? .checkmark : .none })
+    ],
+    [
+        CellData("Only Photos (default)", #selector(ViewController.configCaptureMode(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.captureMode == .photo ? .checkmark : .none }),
+        CellData("Photos and Live Photos", #selector(ViewController.configCaptureMode(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.captureMode == .photoAndLivePhoto ? .checkmark : .none }),
+        //CellData("Videos (not yet supported)", #selector(ViewController.configCaptureMode(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = /*controller.captureMode == .video ? .checkmark : */ .none })
+    ],
+    [
+        CellData("Don't save (default)", #selector(ViewController.configSavesCapturedAssets(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.savesCapturedAssets ? .none : .checkmark }),
+        CellData("Save", #selector(ViewController.configSavesCapturedAssets(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.savesCapturedAssets ? .checkmark : .none }),
+        ]
+]
+
+let sectionsData: [(String?, String?)] = [
+    ("Presentation", nil),
+    ("Action Items", nil),
+    ("Camera Item", nil),
+    ("Assets Source", nil),
+    ("Asset Items in a row", nil),
+    ("Capture mode", nil),
+    ("Save Assets", "Assets will be saved to Photo Library")
+]
+
 ///
 /// This is an example view controller that shows how Image Picker can be used
 ///
 class ViewController: UITableViewController {
+    
+    var currentInputView: UIView?
+    var presentButton: UIButton = {
+        let button = UIButton(type: .custom)
+        button.frame.size = CGSize(width: 0, height: 44)
+        button.backgroundColor = UIColor(red: 208/255, green: 2/255, blue: 27/255, alpha: 1)
+        button.setTitle("Present", for: .normal)
+        button.setTitle("Dismiss", for: .selected)
+        button.addTarget(self, action: #selector(presentButtonTapped(sender:)), for: .touchUpInside)
+        return button
+    }()
     
     enum CameraItemConfig: Int {
         case enabled
@@ -34,17 +90,6 @@ class ViewController: UITableViewController {
     var assetItemsInRow:Int = 3
     var captureMode: CaptureSettings.CameraMode = .photoAndLivePhoto
     var savesCapturedAssets: Bool = false
-    
-    var currentInputView: UIView?
-    var presentButton: UIButton = {
-        let button = UIButton(type: .custom)
-        button.frame.size = CGSize(width: 0, height: 44)
-        button.backgroundColor = UIColor(red: 208/255, green: 2/255, blue: 27/255, alpha: 1)
-        button.setTitle("Present", for: .normal)
-        button.setTitle("Dismiss", for: .selected)
-        button.addTarget(self, action: #selector(presentButtonTapped(sender:)), for: .touchUpInside)
-        return button
-    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -202,41 +247,6 @@ class ViewController: UITableViewController {
     
 }
 
-extension ViewController {
-    
-    override var canBecomeFirstResponder: Bool {
-        return true
-    }
-    
-    override func resignFirstResponder() -> Bool {
-        let result = super.resignFirstResponder()
-        if result == true {
-            currentInputView = nil
-        }
-        return result
-    }
-    
-    override var inputView: UIView? {
-        return currentInputView
-    }
-    
-    override var inputAccessoryView: UIView? {
-        return presentButton
-    }
-    
-}
-
-extension ViewController {
-    
-    func uncheckCellsInSection(except indexPath: IndexPath){
-        for path in tableView.indexPathsForVisibleRows ?? [] where path.section == indexPath.section {
-            let cell = tableView.cellForRow(at: path)!
-            cell.accessoryType = path == indexPath ? .checkmark : .none
-        }
-    }
-    
-}
-
 extension ViewController : ImagePickerControllerDelegate {
     
     public func imagePicker(controller: ImagePickerController, didSelectActionItemAt index: Int) {
@@ -318,116 +328,3 @@ extension ViewController: ImagePickerControllerDataSource {
     }
     
 }
-
-enum SelectorArgument {
-    case indexPath
-    case none
-}
-
-struct CellData {
-    var title: String
-    var selector: Selector
-    var selectorArgument: SelectorArgument
-    var configBlock: CellConfigurationBlock
-    
-    init(_ title: String, _ selector: Selector, _ selectorArgument: SelectorArgument, _ configBlock: CellConfigurationBlock) {
-        self.title = title
-        self.selector = selector
-        self.selectorArgument = selectorArgument
-        self.configBlock = configBlock
-    }
-}
-
-typealias CellConfigurationBlock = ((UITableViewCell, ViewController) -> Void)?
-
-let cellsData: [[CellData]] = [
-    [
-        CellData("As input view", #selector(ViewController.togglePresentationMode(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.presentsModally ? .none : .checkmark }),
-        CellData("Modally", #selector(ViewController.togglePresentationMode(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.presentsModally ? .checkmark : .none })
-    ],
-    [
-        CellData("Two items", #selector(ViewController.setNumberOfActionItems(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.numberOfActionItems == 2 ? .checkmark : .none }),
-        CellData("One item", #selector(ViewController.setNumberOfActionItems(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.numberOfActionItems == 1 ? .checkmark : .none }),
-        CellData("Disabled (default)", #selector(ViewController.setNumberOfActionItems(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.numberOfActionItems == 0 ? .checkmark : .none }),
-    ],
-    [
-        CellData("Enabled (default)", #selector(ViewController.configCameraItem(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.cameraConfig == .enabled ? .checkmark : .none }),
-        CellData("Disabled", #selector(ViewController.configCameraItem(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.cameraConfig == .disabled ? .checkmark : .none })
-    ],
-    [
-        CellData("Recently added (default)", #selector(ViewController.configAssetsSource(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.assetsSource == .recentlyAdded ? .checkmark : .none }),
-        CellData("Only videos", #selector(ViewController.configAssetsSource(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.assetsSource == .onlyVideos ? .checkmark : .none }),
-        CellData("Only selfies", #selector(ViewController.configAssetsSource(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.assetsSource == .onlySelfies ? .checkmark : .none })
-    ],
-    [
-        CellData("One", #selector(ViewController.configAssetItemsInRow(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.assetItemsInRow == 1 ? .checkmark : .none }),
-        CellData("Two (default)", #selector(ViewController.configAssetItemsInRow(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.assetItemsInRow == 2 ? .checkmark : .none }),
-        CellData("Three", #selector(ViewController.configAssetItemsInRow(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.assetItemsInRow == 3 ? .checkmark : .none })
-    ],
-    [
-        CellData("Only Photos (default)", #selector(ViewController.configCaptureMode(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.captureMode == .photo ? .checkmark : .none }),
-        CellData("Photos and Live Photos", #selector(ViewController.configCaptureMode(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.captureMode == .photoAndLivePhoto ? .checkmark : .none }),
-        //CellData("Videos (not yet supported)", #selector(ViewController.configCaptureMode(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = /*controller.captureMode == .video ? .checkmark : */ .none })
-    ],
-    [
-        CellData("Don't save (default)", #selector(ViewController.configSavesCapturedAssets(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.savesCapturedAssets ? .none : .checkmark }),
-        CellData("Save", #selector(ViewController.configSavesCapturedAssets(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.savesCapturedAssets ? .checkmark : .none }),
-    ]
-]
-
-let sectionsData: [(String?, String?)] = [
-    ("Presentation", nil),
-    ("Action Items", nil),
-    ("Camera Item", nil),
-    ("Assets Source", nil),
-    ("Asset Items in a row", nil),
-    ("Capture mode", nil),
-    ("Save Assets", "Assets will be saved to Photo Library")
-]
-
-extension ViewController {
-    
-    override func numberOfSections(in tableView: UITableView) -> Int {
-        return cellsData.count
-    }
-    
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return cellsData[section].count
-    }
-    
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cellId", for: indexPath)
-        cell.textLabel?.text = cellsData[indexPath.section][indexPath.row].title
-        if let configBlock = cellsData[indexPath.section][indexPath.row].configBlock {
-            configBlock(cell, self)
-        }
-        return cell
-    }
-    
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
-        // deselect
-        tableView.deselectRow(at: indexPath, animated: true)
-        
-        // perform selector
-        let selector = cellsData[indexPath.section][indexPath.row].selector
-        let argumentType = cellsData[indexPath.section][indexPath.row].selectorArgument
-        switch argumentType {
-        case .indexPath: perform(selector, with: indexPath)
-        default: perform(selector)
-        }
-        
-        // update checks in section
-        uncheckCellsInSection(except: indexPath)
-    }
-    
-    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return sectionsData[section].0
-    }
-    
-    override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-        return sectionsData[section].1
-    }
-    
-}
-
