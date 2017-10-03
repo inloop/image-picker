@@ -16,9 +16,8 @@ import Photos
 class ViewController: UITableViewController {
     
     enum CameraItemConfig: Int {
-        case `default`
-        case custom
-        case none
+        case enabled
+        case disabled
     }
     
     enum AssetsSource: Int {
@@ -27,10 +26,14 @@ class ViewController: UITableViewController {
         case onlySelfies
     }
     
+    //defaul configuration values
     var presentsModally: Bool = false
     var numberOfActionItems: Int = 2
-    var cameraConfig: CameraItemConfig = .default
+    var cameraConfig: CameraItemConfig = .enabled
     var assetsSource: AssetsSource = .recentlyAdded
+    var assetItemsInRow:Int = 3
+    var captureMode: CaptureSettings.CameraMode = .photoAndLivePhoto
+    var savesCapturedAssets: Bool = false
     
     var currentInputView: UIView?
     var presentButton: UIButton = {
@@ -73,88 +76,22 @@ class ViewController: UITableViewController {
         assetsSource = AssetsSource(rawValue: indexPath.row)!
     }
     
-//    @objc func presentPickerModallyy() {
-//        print("presenting modally")
-//
-//        let vc = ImagePickerController()
-//
-//        let actionNib = UINib(nibName: "IconWithTextCell", bundle: nil)
-//        vc.cellRegistrator.register(nib: actionNib, forActionItemAt: 0)
-//        vc.cellRegistrator.register(nib: actionNib, forActionItemAt: 1)
-//
-//        let imageNib = UINib(nibName: "ImageCell", bundle: nil)
-//        vc.cellRegistrator.registerNibForAssetItems(imageNib)
-//
-//        let videoNib = UINib(nibName: "VideoCell", bundle: nil)
-//        vc.cellRegistrator.register(nib: videoNib, forAssetItemOf: .video)
-//
-//        vc.layoutConfiguration.scrollDirection = .vertical
-//        vc.layoutConfiguration.showsCameraItem = false
-//        vc.layoutConfiguration.numberOfAssetItemsInRow = 3
-//
-//        presentPickerModally(vc)
-//    }
+    @objc func configAssetItemsInRow(indexPath: IndexPath) {
+        assetItemsInRow = indexPath.row + 1
+    }
     
-//    @objc func presentPickerModallyCustomFetch() {
-//        print("presenting modally")
-//
-//        let vc = ImagePickerController()
-//        vc.layoutConfiguration.scrollDirection = .vertical
-//        vc.layoutConfiguration.showsCameraItem = false
-//        vc.layoutConfiguration.showsFirstActionItem = false
-//        vc.layoutConfiguration.showsSecondActionItem = false
-//        vc.cellRegistrator.registerNibForAssetItems(UINib(nibName: "ImageCell", bundle: nil))
-//        vc.assetsFetchResultBlock = {
-//            guard let collection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumVideos, options: nil).firstObject else {
-//                //you can return nil if you did not find desired fetch result, default fetch result will be used.
-//                return nil
-//            }
-//            return PHAsset.fetchAssets(in: collection, options: nil)
-//        }
-//
-//        presentPickerModally(vc)
-//    }
+    @objc func configCaptureMode(indexPath: IndexPath) {
+        switch indexPath.row {
+        case 0: captureMode = .photo
+        case 1: captureMode = .photoAndLivePhoto
+        //TODO: support video
+        default: break
+        }
+    }
     
-//    @objc func presentPickerAsInputViewPhotosAs1Col() {
-//        print("presenting as input view")
-//
-//        let vc = ImagePickerController()
-//        vc.cellRegistrator.registerNibForActionItems(UINib(nibName: "IconWithTextCell", bundle: nil))
-//        vc.cellRegistrator.registerNibForAssetItems(UINib(nibName: "ImageCell", bundle: nil))
-//        vc.layoutConfiguration.numberOfAssetItemsInRow = 1
-//
-//        presentPickerAsInputView(vc)
-//    }
-    
-//    @objc func presentPickerAsInputVieww() {
-//        print("presenting as input view")
-//        let vc = ImagePickerController()
-//        presentPickerAsInputView(vc)
-//    }
-    
-//    @objc func presentPickerAsInputViewPhotosConfiguration() {
-//
-//        let vc = ImagePickerController()
-//        vc.cellRegistrator.registerNibForActionItems(UINib(nibName: "IconWithTextCell", bundle: nil))
-//        vc.cellRegistrator.registerNibForCameraItem(UINib(nibName: "CameraCell", bundle: nil))
-//        vc.cellRegistrator.registerNibForAssetItems(UINib(nibName: "ImageCell", bundle: nil))
-//        vc.captureSettings.cameraMode = .photo
-//
-//        presentPickerAsInputView(vc)
-//    }
-    
-//    @objc func presentPickerAsInputViewLivePhotosConfiguration() {
-//
-//        let vc = ImagePickerController()
-//        vc.cellRegistrator.registerNibForActionItems(UINib(nibName: "IconWithTextCell", bundle: nil))
-//        vc.cellRegistrator.registerNibForCameraItem(UINib(nibName: "LivePhotoCameraCell", bundle: nil))
-//        vc.cellRegistrator.register(nib: UINib(nibName: "VideoCell", bundle: nil), forAssetItemOf: .video)
-//        vc.cellRegistrator.registerNibForAssetItems(UINib(nibName: "ImageCell", bundle: nil))
-//        vc.captureSettings.cameraMode = .photoAndLivePhoto
-//        vc.captureSettings.savesCapturedAssetToPhotoLibrary = true
-//
-//        presentPickerAsInputView(vc)
-//    }
+    @objc func configSavesCapturedAssets(indexPath: IndexPath) {
+        savesCapturedAssets = indexPath.row == 1
+    }
     
     @objc func presentButtonTapped(sender: UIButton) {
         sender.isSelected = !sender.isSelected
@@ -181,17 +118,15 @@ class ViewController: UITableViewController {
                 break
             }
             
-            // set camera item
+            // set camera item enabled/disabled
             switch cameraConfig {
-            case .none:
+            case .enabled:
+                imagePicker.layoutConfiguration.showsCameraItem = true
+            case .disabled:
                 imagePicker.layoutConfiguration.showsCameraItem = false
-            case .custom:
-                imagePicker.cellRegistrator.registerNibForCameraItem(UINib(nibName: "LivePhotoCameraCell", bundle: nil))
-            case .default:
-                break
             }
             
-            // config assets item
+            // config assets source
             switch assetsSource {
             case .recentlyAdded:
                 break
@@ -212,6 +147,21 @@ class ViewController: UITableViewController {
                     return PHAsset.fetchAssets(in: collection, options: nil)
                 }
             }
+            
+            // number of items in a row (supported values > 0)
+            imagePicker.layoutConfiguration.numberOfAssetItemsInRow = assetItemsInRow
+            
+            // capture mode
+            switch captureMode {
+            case .photo:
+                imagePicker.captureSettings.cameraMode = .photo
+            case .photoAndLivePhoto:
+                imagePicker.captureSettings.cameraMode = .photoAndLivePhoto
+                imagePicker.cellRegistrator.registerNibForCameraItem(UINib(nibName: "LivePhotoCameraCell", bundle: nil))
+            }
+            
+            // save capture assets to photo library?
+            imagePicker.captureSettings.savesCapturedAssetToPhotoLibrary = savesCapturedAssets
             
             // presentation
             if presentsModally {
@@ -401,22 +351,38 @@ let cellsData: [[CellData]] = [
         CellData("Disabled (default)", #selector(ViewController.setNumberOfActionItems(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.numberOfActionItems == 0 ? .checkmark : .none }),
     ],
     [
-        CellData("Default", #selector(ViewController.configCameraItem(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.cameraConfig == .default ? .checkmark : .none }),
-        CellData("Custom", #selector(ViewController.configCameraItem(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.cameraConfig == .custom ? .checkmark : .none }),
-        CellData("Disabled", #selector(ViewController.configCameraItem(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.cameraConfig == .none ? .checkmark : .none })
+        CellData("Enabled (default)", #selector(ViewController.configCameraItem(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.cameraConfig == .enabled ? .checkmark : .none }),
+        CellData("Disabled", #selector(ViewController.configCameraItem(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.cameraConfig == .disabled ? .checkmark : .none })
     ],
     [
         CellData("Recently added (default)", #selector(ViewController.configAssetsSource(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.assetsSource == .recentlyAdded ? .checkmark : .none }),
         CellData("Only videos", #selector(ViewController.configAssetsSource(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.assetsSource == .onlyVideos ? .checkmark : .none }),
         CellData("Only selfies", #selector(ViewController.configAssetsSource(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.assetsSource == .onlySelfies ? .checkmark : .none })
+    ],
+    [
+        CellData("One", #selector(ViewController.configAssetItemsInRow(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.assetItemsInRow == 1 ? .checkmark : .none }),
+        CellData("Two (default)", #selector(ViewController.configAssetItemsInRow(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.assetItemsInRow == 2 ? .checkmark : .none }),
+        CellData("Three", #selector(ViewController.configAssetItemsInRow(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.assetItemsInRow == 3 ? .checkmark : .none })
+    ],
+    [
+        CellData("Only Photos (default)", #selector(ViewController.configCaptureMode(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.captureMode == .photo ? .checkmark : .none }),
+        CellData("Photos and Live Photos", #selector(ViewController.configCaptureMode(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.captureMode == .photoAndLivePhoto ? .checkmark : .none }),
+        //CellData("Videos (not yet supported)", #selector(ViewController.configCaptureMode(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = /*controller.captureMode == .video ? .checkmark : */ .none })
+    ],
+    [
+        CellData("Don't save (default)", #selector(ViewController.configSavesCapturedAssets(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.savesCapturedAssets ? .none : .checkmark }),
+        CellData("Save", #selector(ViewController.configSavesCapturedAssets(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.savesCapturedAssets ? .checkmark : .none }),
     ]
 ]
 
-let sectionTitles: [String?] = [
-    "Presentation",
-    "Action Items",
-    "Camera Item",
-    "Assets Source"
+let sectionsData: [(String?, String?)] = [
+    ("Presentation", nil),
+    ("Action Items", nil),
+    ("Camera Item", nil),
+    ("Assets Source", nil),
+    ("Asset Items in a row", nil),
+    ("Capture mode", nil),
+    ("Save Assets", "Assets will be saved to Photo Library")
 ]
 
 extension ViewController {
@@ -456,7 +422,11 @@ extension ViewController {
     }
     
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return sectionTitles[section]
+        return sectionsData[section].0
+    }
+    
+    override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+        return sectionsData[section].1
     }
     
 }
