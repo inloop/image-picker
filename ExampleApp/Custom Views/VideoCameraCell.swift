@@ -45,8 +45,13 @@ class VideoCameraCell : CameraCollectionViewCell {
     
     override func updateRecordingVideoStatus(isRecording: Bool, shouldAnimate: Bool) {
 
+        //update button state
+        recordButton.isSelected = isRecording
+        
+        //update other buttons
         let updates: () -> Void = {
             self.recIndicator.alpha = isRecording ? 1 : 0
+            self.flipButton.alpha = isRecording ? 0 : 1
         }
 
         shouldAnimate ? UIView.animate(withDuration: 0.25, animations: updates) : updates()

@@ -121,7 +121,7 @@
                 <outlet property="recordButton" destination="XWp-o0-bWK" id="ph4-SO-vgL"/>
                 <outlet property="stateView" destination="M6V-QL-aoZ" id="j5y-wa-hJh"/>
             </connections>
-            <point key="canvasLocation" x="-315" y="-169"/>
+            <point key="canvasLocation" x="-420" y="-179"/>
         </collectionViewCell>
     </objects>
     <resources>

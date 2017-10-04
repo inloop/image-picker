@@ -562,7 +562,7 @@ extension ImagePickerController : CaptureSessionVideoRecordingDelegate {
     
     private func updateCameraCellRecordingStatusIfNeeded(isRecording: Bool, animated: Bool) {
         guard let cameraCell = collectionView.cameraCell(layout: layoutConfiguration) else { return }
-        cameraCell.updateRecordingVideoStatus(isRecording: false, shouldAnimate: true)
+        cameraCell.updateRecordingVideoStatus(isRecording: isRecording, shouldAnimate: animated)
     }
     
 }
