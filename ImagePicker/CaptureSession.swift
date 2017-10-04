@@ -355,52 +355,58 @@ final class CaptureSession : NSObject {
             return
         }
         
-        //log("capture session: configuring - adding video output")
+    
+        // Add movie file output.
+        if presetConfiguration == .videos {
+    
+            // A capture session cannot support at the same time:
+            // - Live Photo capture and
+            // - movie file output
+            // - video data output
+            // If your capture session includes an AVCaptureMovieFileOutput object, the
+            // isLivePhotoCaptureSupported property becomes false.
+            
+            log("capture session: configuring - adding movie file input")
+            
+            let movieFileOutput = AVCaptureMovieFileOutput()
+            if self.session.canAddOutput(movieFileOutput) {
+                self.session.addOutput(movieFileOutput)
+                self.videoFileOutput = movieFileOutput
+                
+                DispatchQueue.main.async { [weak self] in
+                    self?.videoRecordingDelegate?.captureSessionDidBecomeReadyForVideoRecording(self!)
+                }
+            }
+            else {
+                log("capture session: could not add video output to the session")
+                setupResult = .configurationFailed
+                session.commitConfiguration()
+                return
+            }
+        }
         
-        // A capture session cannot support at the same time:
-        // - Live Photo capture and
-        // - movie file output
-        // - video data output
-        // If your capture session includes an AVCaptureMovieFileOutput object, the
-        // isLivePhotoCaptureSupported property becomes false.
+        if presetConfiguration == .livePhotos || presetConfiguration == .videos {
+            
+            log("capture session: configuring - adding audio input")
+            
+            // Add audio input, if fails no need to fail whole configuration
+            do {
+                let audioDevice = AVCaptureDevice.default(for: AVMediaType.audio)
+                let audioDeviceInput = try AVCaptureDeviceInput(device: audioDevice!)
+                
+                if session.canAddInput(audioDeviceInput) {
+                    session.addInput(audioDeviceInput)
+                }
+                else {
+                    log("capture session: could not add audio device input to the session")
+                }
+            }
+            catch {
+                log("capture session: could not create audio device input: \(error)")
+            }
+        }
         
-        // Add video file output.
-//        let movieFileOutput = AVCaptureMovieFileOutput()
-//        if self.session.canAddOutput(movieFileOutput) {
-//            self.session.addOutput(movieFileOutput)
-//            self.videoFileOutput = movieFileOutput
-//
-//            DispatchQueue.main.async { [weak self] in
-//                self?.videoRecordingDelegate?.captureSessionDidBecomeReadyForVideoRecording(self!)
-//            }
-//        }
-//        else {
-//            log("capture session: could not add video output to the session")
-//            setupResult = .configurationFailed
-//            session.commitConfiguration()
-//            return
-//        }
-        
-//        log("capture session: configuring - adding audio input")
-//
-//        // Add audio input, if fails no need to fail whole configuration
-//        do {
-//            let audioDevice = AVCaptureDevice.default(for: AVMediaType.audio)
-//            let audioDeviceInput = try AVCaptureDeviceInput(device: audioDevice!)
-//
-//            if session.canAddInput(audioDeviceInput) {
-//                session.addInput(audioDeviceInput)
-//            }
-//            else {
-//                log("capture session: could not add audio device input to the session")
-//            }
-//        }
-//        catch {
-//            log("capture session: could not create audio device input: \(error)")
-//        }
-        
-        
-        if presetConfiguration == .livePhotos || presetConfiguration == .photos {
+        if presetConfiguration == .livePhotos || presetConfiguration == .photos || presetConfiguration == .videos {
             // Add photo output.
             log("capture session: configuring - adding photo output")
             

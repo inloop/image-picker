@@ -23,8 +23,8 @@ public struct CaptureSettings {
         ///
         case photoAndLivePhoto
         
-        //TODO: support videos
-        //case video
+        //TODO: document this
+        case video
     }
     
     ///
@@ -57,7 +57,7 @@ extension CaptureSettings.CameraMode {
         switch self {
         case .photo: return .photos
         case .photoAndLivePhoto: return .livePhotos
-        //case .video: return .videos
+        case .video: return .videos
         }
     }
     
