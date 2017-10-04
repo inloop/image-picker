@@ -299,14 +299,6 @@ extension ViewController : ImagePickerControllerDelegate {
         }
     }
     
-    static let durationFormatter: DateComponentsFormatter = {
-        let formatter = DateComponentsFormatter()
-        formatter.unitsStyle = .positional
-        formatter.allowedUnits = [.minute, .second]
-        formatter.zeroFormattingBehavior = .pad
-        return formatter
-    }()
-    
 }
 
 extension ViewController: ImagePickerControllerDataSource {

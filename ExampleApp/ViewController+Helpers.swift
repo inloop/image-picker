@@ -107,6 +107,14 @@ typealias CellConfigurationBlock = ((UITableViewCell, ViewController) -> Void)?
 
 extension ViewController {
     
+    static let durationFormatter: DateComponentsFormatter = {
+        let formatter = DateComponentsFormatter()
+        formatter.unitsStyle = .positional
+        formatter.allowedUnits = [.minute, .second]
+        formatter.zeroFormattingBehavior = .pad
+        return formatter
+    }()
+    
     func uncheckCellsInSection(except indexPath: IndexPath){
         for path in tableView.indexPathsForVisibleRows ?? [] where path.section == indexPath.section {
             let cell = tableView.cellForRow(at: path)!
