@@ -42,6 +42,7 @@
 		42E736491F838DB80060E24D /* ViewController+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42E736481F838DB80060E24D /* ViewController+Helpers.swift */; };
 		42E7364C1F84DCDC0060E24D /* VideoCameraCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42E7364A1F84DCDC0060E24D /* VideoCameraCell.swift */; };
 		42E7364D1F84DE7E0060E24D /* VideoCameraCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 42E7364B1F84DCDC0060E24D /* VideoCameraCell.xib */; };
+		42E736521F8510B70060E24D /* VideoCaptureDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42E736511F8510B70060E24D /* VideoCaptureDelegate.swift */; };
 		42EDD4051F7125C700EAD2F5 /* CaptureSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 420CBBC21F712135002288C5 /* CaptureSession.swift */; };
 		42EDD4061F71261600EAD2F5 /* AVPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 420CBBC01F711E83002288C5 /* AVPreviewView.swift */; };
 		42EDD4161F712B2A00EAD2F5 /* Miscellaneous.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42EDD4151F712B2A00EAD2F5 /* Miscellaneous.swift */; };
@@ -115,6 +116,7 @@
 		42E736481F838DB80060E24D /* ViewController+Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewController+Helpers.swift"; sourceTree = "<group>"; };
 		42E7364A1F84DCDC0060E24D /* VideoCameraCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCameraCell.swift; sourceTree = "<group>"; };
 		42E7364B1F84DCDC0060E24D /* VideoCameraCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = VideoCameraCell.xib; sourceTree = "<group>"; };
+		42E736511F8510B70060E24D /* VideoCaptureDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCaptureDelegate.swift; sourceTree = "<group>"; };
 		42EDD4151F712B2A00EAD2F5 /* Miscellaneous.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Miscellaneous.swift; sourceTree = "<group>"; };
 		42EDD4171F7164FB00EAD2F5 /* PhotoCaptureDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCaptureDelegate.swift; sourceTree = "<group>"; };
 		42EDD41B1F71727500EAD2F5 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -236,6 +238,7 @@
 				420CBBC01F711E83002288C5 /* AVPreviewView.swift */,
 				420CBBC21F712135002288C5 /* CaptureSession.swift */,
 				42EDD4171F7164FB00EAD2F5 /* PhotoCaptureDelegate.swift */,
+				42E736511F8510B70060E24D /* VideoCaptureDelegate.swift */,
 				42311FFB1F73DBBE00B1AEB4 /* VideoOuptutSampleBufferDelegate.swift */,
 			);
 			name = Media;
@@ -387,6 +390,7 @@
 				421442631F6014B3006BA45A /* CellRegistrator.swift in Sources */,
 				420C24361F5ED4AB008935D4 /* ImagePickerLayout.swift in Sources */,
 				42D0979C1F7BF6B300A66E33 /* AssetCell.swift in Sources */,
+				42E736521F8510B70060E24D /* VideoCaptureDelegate.swift in Sources */,
 				429BFDAA1F68161D00029440 /* ImagePickerAssetModel.swift in Sources */,
 				42D7036B1F7908B10057D557 /* CaptureSettings.swift in Sources */,
 				42EDD41A1F716F6300EAD2F5 /* PhotoCaptureDelegate.swift in Sources */,

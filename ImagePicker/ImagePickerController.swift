@@ -562,6 +562,11 @@ extension ImagePickerController : CaptureSessionVideoRecordingDelegate {
         updateCameraCellRecordingStatusIfNeeded(isRecording: false, animated: true)
     }
     
+    func captureSessionDid(_ session: CaptureSession, didInterruptVideoRecording videoURL: URL, reason: Error) {
+        log("did interrupt video recording, reason: \(reason)")
+        updateCameraCellRecordingStatusIfNeeded(isRecording: false, animated: true)
+    }
+    
     func captureSessionDid(_ session: CaptureSession, didFailVideoRecording error: Error) {
         log("did fail video recording")
         updateCameraCellRecordingStatusIfNeeded(isRecording: false, animated: true)

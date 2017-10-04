@@ -38,7 +38,16 @@ protocol CaptureSessionVideoRecordingDelegate : class {
     
     ///called when cancel recording as a result of calling `cancelVideoRecording` func.
     func captureSessionDidCancelVideoRecording(_ session: CaptureSession)
+    
+    ///called when a recording was successfully finished
     func captureSessionDid(_ session: CaptureSession, didFinishVideoRecording videoURL: URL)
+    
+    ///called when a recording was finished prematurely due to a system interruption
+    ///(empty disk, app put on bg, etc). Video is however saved on provided URL or in
+    ///assets library if turned on.
+    func captureSessionDid(_ session: CaptureSession, didInterruptVideoRecording videoURL: URL, reason: Error)
+    
+    ///called when a recording failed
     func captureSessionDid(_ session: CaptureSession, didFailVideoRecording error: Error)
 }
 
@@ -146,8 +155,7 @@ final class CaptureSession : NSObject {
     
     weak var videoRecordingDelegate: CaptureSessionVideoRecordingDelegate?
     fileprivate var videoFileOutput: AVCaptureMovieFileOutput?
-    fileprivate var backgroundRecordingID: UIBackgroundTaskIdentifier? = nil
-    fileprivate var recordingIsBeingCancelled = false
+    fileprivate var videoCaptureDelegate: VideoCaptureDelegate?
     var isReadyForVideoRecording: Bool {
         return videoFileOutput != nil
     }
@@ -794,7 +802,7 @@ extension CaptureSession {
     
 }
 
-extension CaptureSession: AVCaptureFileOutputRecordingDelegate {
+extension CaptureSession {
     
     func startVideoRecording() {
         
@@ -819,31 +827,49 @@ extension CaptureSession: AVCaptureFileOutputRecordingDelegate {
                 return
             }
             
-            //if already recording do nothing
+            // if already recording do nothing
             guard movieFileOutput.isRecording == false else {
                 return log("capture session: trying to record a video but there is one already being recorded")
             }
             
-            if UIDevice.current.isMultitaskingSupported {
-                /*
-                 Setup background task.
-                 This is needed because the `capture(_:, didFinishRecordingToOutputFileAt:, fromConnections:, error:)`
-                 callback is not received until AVCam returns to the foreground unless you request background execution time.
-                 This also ensures that there will be time to write the file to the photo library when AVCam is backgrounded.
-                 To conclude this background execution, endBackgroundTask(_:) is called in
-                 `capture(_:, didFinishRecordingToOutputFileAt:, fromConnections:, error:)` after the recorded file has been saved.
-                 */
-                strongSelf.backgroundRecordingID = UIApplication.shared.beginBackgroundTask(expirationHandler: nil)
-            }
-            
-            // Update the orientation on the movie file output video connection before starting recording.
+            // update the orientation on the movie file output video connection before starting recording.
             let movieFileOutputConnection = strongSelf.videoFileOutput?.connection(with: AVMediaType.video)
             movieFileOutputConnection?.videoOrientation = videoPreviewLayerOrientation!
             
-            // Start recording to a temporary file.
+            // start recording to a temporary file.
             let outputFileName = NSUUID().uuidString
             let outputURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(outputFileName).appendingPathExtension("mov")
-            movieFileOutput.startRecording(to: outputURL, recordingDelegate: self!)
+            
+            // create a recording delegate
+            let recordingDelegate = VideoCaptureDelegate(didStart: {
+                DispatchQueue.main.async { [weak self] in
+                    self?.videoRecordingDelegate?.captureSessionDidStartVideoRecording(self!)
+                }
+            }, didFinish: { (delegate) in
+                DispatchQueue.main.async { [weak self] in
+                    if delegate.isBeingCancelled {
+                        self?.videoRecordingDelegate?.captureSessionDidCancelVideoRecording(self!)
+                    }
+                    else {
+                        self?.videoRecordingDelegate?.captureSessionDid(self!, didFinishVideoRecording: outputURL)
+                    }
+                }
+                
+            }, didFail: { (delegate, error) in
+                DispatchQueue.main.async { [weak self] in
+                    if delegate.recordingWasInterrupted {
+                        self?.videoRecordingDelegate?.captureSessionDid(self!, didInterruptVideoRecording: outputURL, reason: error)
+                    }
+                    else {
+                        self?.videoRecordingDelegate?.captureSessionDid(self!, didFailVideoRecording: error)
+                    }
+                }
+            })
+            recordingDelegate.savesPhotoToLibrary = strongSelf.saveCapturedAssetsToPhotoLibrary
+            
+            // start recording
+            movieFileOutput.startRecording(to: outputURL, recordingDelegate: recordingDelegate)
+            strongSelf.videoCaptureDelegate = recordingDelegate
         }
     }
 
@@ -864,58 +890,13 @@ extension CaptureSession: AVCaptureFileOutputRecordingDelegate {
                 return log("capture session: trying to stop a video recording but no recording is in progress")
             }
             
-            capturedSelf.recordingIsBeingCancelled = cancel
+            guard let recordingDelegate = capturedSelf.videoCaptureDelegate else {
+                fatalError("capture session: trying to stop a video recording but video capture delegate is nil")
+            }
+            
+            recordingDelegate.isBeingCancelled = cancel
             movieFileOutput.stopRecording()
         }
-    }
-    
-    func fileOutput(_ captureOutput: AVCaptureFileOutput, didStartRecordingTo fileURL: URL, from connections: [AVCaptureConnection]) {
-        DispatchQueue.main.async { [weak self] in
-            self?.videoRecordingDelegate?.captureSessionDidStartVideoRecording(self!)
-        }
-    }
-    
-    func fileOutput(_ captureOutput: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
-        
-        func cleanup(deleteFile: Bool) {
-            if let currentBackgroundRecordingID = backgroundRecordingID {
-                backgroundRecordingID = UIBackgroundTaskInvalid
-                if currentBackgroundRecordingID != UIBackgroundTaskInvalid {
-                    UIApplication.shared.endBackgroundTask(currentBackgroundRecordingID)
-                }
-            }
-            if deleteFile {
-                let path = outputFileURL.path
-                if FileManager.default.fileExists(atPath: path) {
-                    do {
-                        try FileManager.default.removeItem(atPath: path)
-                    }
-                    catch let error {
-                        log("capture session: could not remove recording at url: \(outputFileURL)")
-                        log("capture session: error: \(error)")
-                    }
-                }
-
-            }
-            recordingIsBeingCancelled = false
-        }
-        
-        if let error = error {
-            log("capture session: movie recording failed error: \(error)")
-            //this can be true even if recording is stopped due to a reason (no disk space)
-            //let successfullyFinished = (((error as NSError).userInfo[AVErrorRecordingSuccessfullyFinishedKey] as AnyObject).boolValue)
-            cleanup(deleteFile: true)
-            videoRecordingDelegate?.captureSessionDid(self, didFailVideoRecording: error)
-        }
-        else if recordingIsBeingCancelled == true {
-            cleanup(deleteFile: true)
-            self.videoRecordingDelegate?.captureSessionDidCancelVideoRecording(self)
-        }
-        else {
-            cleanup(deleteFile: false)
-            videoRecordingDelegate?.captureSessionDid(self, didFinishVideoRecording: outputFileURL)
-        }
-
     }
     
 }
