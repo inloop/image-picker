@@ -17,7 +17,7 @@ An easy to use drop-in framework providing user interface for taking pictures an
 - [x] support for iPhone X
 
 **Requirements**
-- iOS 10+
+- iOS 10.1+
 - Xcode 9+
 - Swift 4
 
