@@ -2,6 +2,8 @@
 
 An easy to use drop-in framework providing user interface for taking pictures and videos and pick assets from Photo Library. User interface is designed to support `inputView` "keyboard-like" presentation for conversation user interfaces. Project is written in Swift4.
 
+![Demo](http://kinemakity.com/download/demo_1.gif)
+
 **Features:**
 - [x] presentation designed for chat apps as well as regular view controllers
 - [x] portrait and landscape modes
