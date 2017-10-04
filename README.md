@@ -189,10 +189,12 @@ let imagePicker = ImagePickerController()
 imagePicker.layoutConfiguration.showsFirstActionItem = true
 imagePicker.layoutConfiguration.showsSecondActionItem = true
 ```
+
 2. register your action cells on cell registrator, for example
 ```
 imagePicker.registerCellClassForActionItems(IconWithTextCell.self)
 ```
+
 3. configure cell by implementing delegate method, for example
 ```
 func imagePicker(controller: ImagePickerController, willDisplayActionItem cell: UICollectionViewCell, at index: Int) {
@@ -211,6 +213,7 @@ func imagePicker(controller: ImagePickerController, willDisplayActionItem cell: 
         break
     }
 }
+
 ```
 4. handle actions by implementing delegate method
 ```

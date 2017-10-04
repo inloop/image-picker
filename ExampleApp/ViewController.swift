@@ -37,7 +37,7 @@ let cellsData: [[CellData]] = [
     [
         CellData("Only Photos (default)", #selector(ViewController.configCaptureMode(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.captureMode == .photo ? .checkmark : .none }),
         CellData("Photos and Live Photos", #selector(ViewController.configCaptureMode(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.captureMode == .photoAndLivePhoto ? .checkmark : .none }),
-        CellData("Photos and Videos", #selector(ViewController.configCaptureMode(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.captureMode == .video ? .checkmark : .none })
+        CellData("Photos and Videos", #selector(ViewController.configCaptureMode(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.captureMode == .photoAndVideo ? .checkmark : .none })
     ],
     [
         CellData("Don't save (default)", #selector(ViewController.configSavesCapturedAssets(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.savesCapturedAssets ? .none : .checkmark }),
@@ -129,7 +129,7 @@ class ViewController: UITableViewController {
         switch indexPath.row {
         case 0: captureMode = .photo
         case 1: captureMode = .photoAndLivePhoto
-        case 2: captureMode = .video
+        case 2: captureMode = .photoAndVideo
         default: break
         }
     }
@@ -203,8 +203,8 @@ class ViewController: UITableViewController {
             case .photoAndLivePhoto:
                 imagePicker.captureSettings.cameraMode = .photoAndLivePhoto
                 imagePicker.cellRegistrator.registerNibForCameraItem(UINib(nibName: "LivePhotoCameraCell", bundle: nil))
-            case .video:
-                imagePicker.captureSettings.cameraMode = .video
+            case .photoAndVideo:
+                imagePicker.captureSettings.cameraMode = .photoAndVideo
                 imagePicker.cellRegistrator.registerNibForCameraItem(UINib(nibName: "VideoCameraCell", bundle: nil))
             }
             

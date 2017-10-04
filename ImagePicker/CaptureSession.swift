@@ -719,7 +719,7 @@ extension CaptureSession {
             //    photoSettings.previewPhotoFormat = [kCVPixelBufferPixelFormatTypeKey as String : photoSettings.availablePreviewPhotoPixelFormatTypes.first!]
             //}
             
-            //TODO: THIS I dont know how it works, need to find out
+            //TODO: I dont know how it works, need to find out
             if #available(iOS 11.0, *) {
                 if photoSettings.availableEmbeddedThumbnailPhotoCodecTypes.count > 0 {
                     //TODO: specify thumb size somehow, this does crash!

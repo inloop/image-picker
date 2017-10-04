@@ -17,12 +17,9 @@ import Foundation
 ///
 struct ImagePickerSelectionPolicy {
     
-    //TODO: this logic here is hardcoded (secon indexes), there should be a layout model instance
-    //and ti should be used to dermine what section is what index
-    
     func shouldSelectItem(atSection section: Int, layoutConfiguration: LayoutConfiguration) -> Bool {
         switch section {
-        case 0, 1:
+        case layoutConfiguration.sectionIndexForActions, layoutConfiguration.sectionIndexForCamera:
             return false
         default:
             return true
@@ -31,7 +28,7 @@ struct ImagePickerSelectionPolicy {
     
     func shouldHighlightItem(atSection section: Int, layoutConfiguration: LayoutConfiguration) -> Bool {
         switch section {
-        case 1:
+        case layoutConfiguration.sectionIndexForCamera:
             return false
         default:
             return true
