@@ -5,15 +5,14 @@ An easy to use drop-in framework providing user interface for taking pictures an
 **Features:**
 - [x] presentation designed for chat apps as well as regular view controllers
 - [x] portrait and landscape modes
-- [x] capturing assets (photos, live photos)
+- [x] capturing assets (photos, live photos, videos)
 - [x] saving captured assets to Photo Library
 - [x] flipping camera to front/rear
 - [x] turning on/off live photos
 - [x] highly customisable layout and UI
 
 **Features to add:**
-- [] capturing videos (work in progress)
-- [] support for iPhone X
+- [x] support for iPhone X
 
 **Requirements**
 - iOS 10+
@@ -63,7 +62,7 @@ Various kind of configuration is supported. All configuration should be done **b
 - to use your custom views for action, camera and asset items use `CellRegistrator` class
 - don't forget to set your `delegate` and `dataSource` if needed
 - to define a source of photos that should be available to pick up use view controller's `assetsFetchResultBlock` block
-- //TODO: document rest of vc properties!
+- to access selected assets use `selectedAssets` array
 
 ### Capture settings
 
@@ -298,7 +297,7 @@ Optionaly, before presenting image picker, you can check if user has granted acc
 2. [ok] flip cameras
 3. [ok] blur/unblur camera cell video layer when capture session is suspended/unsuspended
 4. [ok] blur/unblur camera cell video layer when capture session is interrupted, failed or app goes to background/unactive
-5. add public API for recording videos
+5. [ok] add public API for recording videos
 6. [ok] add public API for enabling/disabling live photos
 7. [ok] add public API for setting if taken pictures should be saved in camera roll or just directly provided through delegate
 8. [ok] when user denies access to camera,  show that access is denied
@@ -310,7 +309,7 @@ Optionaly, before presenting image picker, you can check if user has granted acc
 ## Known Issues
 
 1. autorotate to landsacpe on iPhone X does not work properly - safe area is not updated so layout is broken
-2. [fixex] live photos does not work - it says device does not support live photos event thought all shold be set correctly (does not work on SE nor iPhone 7) -> this is because session preset is to video, see comments in code to fix it
+2. [fixed] live photos does not work - it says device does not support live photos event thought all shold be set correctly (does not work on SE nor iPhone 7) -> this is because session preset is to video, see comments in code to fix it
 3. [fixed] flipping camera animation is flickering, I could not find a proper way how to achieve nice animation with blurred content, I tried following solutions:
     1. adding UIVisualEffectsView as subview of camera output but it's flickering when camera goes black on a while
     2. taking screenshot of AVVideoPreviewLayer is not possible - it returns transparent empty image
@@ -321,7 +320,8 @@ Optionaly, before presenting image picker, you can check if user has granted acc
 5. when rotating device, there is a little lag in video when changing orientation of outputs - it should be smooth though
 6. [fixed] when flipping from front camera to back camera, latest sample buffer image that is used does not have proper transform, you can see that it is rotated horizontally so it creates unpleasant effect durring unblur animation when flipping cameras
 7. [fixed] when user defines layout configuration without camera - image picker still initializes capture session wich asks for permissions, crashes if no privacy key in info.plist is set and this is all not necessary
-
+8. when `video` preset is used, blurring of camera cell is turned off because capture session does not support both video data output and movie file output at the same time
+    possible solution: only use movie file output when recording is about to begin and remove it when it ended
 
 ## Technologies used
 
