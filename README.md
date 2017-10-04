@@ -68,9 +68,9 @@ Various kind of configuration is supported. All configuration should be done **b
 
 ### Capture settings
 
-Currently Image Picker supports capturing *photos* and *live photos*. Videos will be supported soon. 
+Currently Image Picker supports capturing *photos*, *live photos* and *videos*.
 
-To configure Image Picker to support desired media type use `CaptureSettings` struct. Use property `cameraMode` to specify what kind of output you are interested in. If you don't intend to support live photos at all, please use value `photo`, otherwise `photoAndLivePhoto`.
+To configure Image Picker to support desired media type use `CaptureSettings` struct. Use property `cameraMode` to specify what kind of output you are interested in. If you don't intend to support live photos at all, please use value `photo`, otherwise `photoAndLivePhoto`. If you wish to capture photos and videos use `photoAndVideo`. Capturing videos and live photos at the same time is not supported and you nor can't switch between presets after it's been configrued.
 
 By default, all captured assets are not saved to photo library but rather provided to you by the delegate right away. However if you wish to save assets to photo library set `savesCapturedAssetToPhotoLibrary` to *true*. 
 
@@ -213,8 +213,8 @@ func imagePicker(controller: ImagePickerController, willDisplayActionItem cell: 
         break
     }
 }
-
 ```
+
 4. handle actions by implementing delegate method
 ```
 func imagePicker(controller: ImagePickerController, didSelectActionItemAt index: Int) {
@@ -226,9 +226,16 @@ func imagePicker(controller: ImagePickerController, didSelectActionItemAt index:
 
 Image picker provides a default camera cell that just shows a camera output and captures a photo when user taps it. 
 
-If you wish to implement fancier features such as custom buttons, camera flipping, taking live photos, showing camera current permissions, updating live photo statuses you have to provide your own subclass of `CameraCollectionViewCell` and implement dedicated methods.
+If you wish to implement fancier features you must provide your own subclass of `CameraCollectionViewCell` and implement dedicated methods.
 
-To see an example of custom implementation that supports all mentioned features please see class `LivePhotoCameraCell` of *ExampleApp*.
+Supported features of whoose UI can be fully customized:
+- [x] taking photos, live photos, recording videos, flipping camera
+- [x] providing custom buttons (camera flipping, taking photos, recording videos)
+- [x] updating Live Photo status
+- [x] updating recording status
+- [x] showing current access permissions to camera
+
+To see an example of custom implementation that supports all mentioned features please see class `LivePhotoCameraCell` and `VideoCameraCell` of *ExampleApp*.
 
 ### Implementing custom assets cell
 
