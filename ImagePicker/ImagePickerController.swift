@@ -432,11 +432,18 @@ extension ImagePickerController : ImagePickerDelegateDelegate {
             cell.authorizationStatus = status
         }
         
-        captureSession?.resume()
+        if isRecordingVideo == false {
+            captureSession?.resume()
+        }
     }
     
     func imagePicker(delegate: ImagePickerDelegate, didEndDisplayingCameraCell cell: CameraCollectionViewCell) {
-        captureSession?.suspend()
+        
+        let isRecordingVideo = captureSession?.isRecordingVideo ?? false
+        if isRecordingVideo == false {
+            captureSession?.suspend()
+        }
+        
         // blur cell asap
         DispatchQueue.global(qos: .userInteractive).async {
             if let image = self.captureSession?.latestVideoBufferImage {
