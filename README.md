@@ -248,6 +248,7 @@ imagePicker.register(cellClass: ImageCell.self, forAssetItemOf: .image)
 imagePicker.register(cellClass: VideoCell.self, forAssetItemOf: .video)
 ```
 > Please note, that `CellRegistrator` provides a method to register 1 cell or nib for any asset media type.
+
 2. implement delegate method to configure your asset cells, for example
 ```swift
 func imagePicker(controller: ImagePickerController, willDisplayAssetItem cell: ImagePickerAssetCell, asset: PHAsset) {
