@@ -205,7 +205,7 @@ class ViewController: UITableViewController {
                 imagePicker.cellRegistrator.registerNibForCameraItem(UINib(nibName: "LivePhotoCameraCell", bundle: nil))
             case .video:
                 imagePicker.captureSettings.cameraMode = .video
-                imagePicker.cellRegistrator.registerNibForCameraItem(UINib(nibName: "LivePhotoCameraCell", bundle: nil))
+                imagePicker.cellRegistrator.registerNibForCameraItem(UINib(nibName: "VideoCameraCell", bundle: nil))
             }
             
             // save capture assets to photo library?

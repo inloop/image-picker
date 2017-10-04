@@ -151,6 +151,9 @@ final class CaptureSession : NSObject {
     var isReadyForVideoRecording: Bool {
         return videoFileOutput != nil
     }
+    var isRecordingVideo: Bool {
+        return videoFileOutput?.isRecording ?? false
+    }
     
     // MARK: Photo Capturing
     
@@ -431,22 +434,24 @@ final class CaptureSession : NSObject {
             }
         }
         
-        // Add video data output - we use this to capture last video sample that is
-        // used when blurring video layer - for example when capture session is suspended, changing configuration etc.
-        // NOTE: video data output can not be connected at the same time as video file output!
-        videoDataOutput = AVCaptureVideoDataOutput()
-        if session.canAddOutput(videoDataOutput!) {
-            session.addOutput(videoDataOutput!)
-            videoDataOutput!.alwaysDiscardsLateVideoFrames = true
-            videoDataOutput!.setSampleBufferDelegate(videoOutpuSampleBufferDelegate, queue: videoOutpuSampleBufferDelegate.processQueue)
-            
-            if let connection = videoDataOutput!.connection(with: AVMediaType.video) {
-                connection.videoOrientation = self.videoOrientation
-                connection.automaticallyAdjustsVideoMirroring = false
+        if presetConfiguration != .videos {
+            // Add video data output - we use this to capture last video sample that is
+            // used when blurring video layer - for example when capture session is suspended, changing configuration etc.
+            // NOTE: video data output can not be connected at the same time as video file output!
+            videoDataOutput = AVCaptureVideoDataOutput()
+            if session.canAddOutput(videoDataOutput!) {
+                session.addOutput(videoDataOutput!)
+                videoDataOutput!.alwaysDiscardsLateVideoFrames = true
+                videoDataOutput!.setSampleBufferDelegate(videoOutpuSampleBufferDelegate, queue: videoOutpuSampleBufferDelegate.processQueue)
+                
+                if let connection = videoDataOutput!.connection(with: AVMediaType.video) {
+                    connection.videoOrientation = self.videoOrientation
+                    connection.automaticallyAdjustsVideoMirroring = false
+                }
             }
-        }
-        else {
-            log("capture session: warning - could not add video data output to the session")
+            else {
+                log("capture session: warning - could not add video data output to the session")
+            }
         }
         
         session.commitConfiguration()
@@ -794,11 +799,11 @@ extension CaptureSession: AVCaptureFileOutputRecordingDelegate {
     func startVideoRecording() {
         
         guard let movieFileOutput = self.videoFileOutput else {
-            return
+            return log("capture session: trying to record a video but no movie file output is set")
         }
         
         guard let previewLayer = self.previewLayer else {
-            return
+            return log("capture session: trying to record a video but no preview layer is set")
         }
         
         /*
@@ -816,7 +821,7 @@ extension CaptureSession: AVCaptureFileOutputRecordingDelegate {
             
             //if already recording do nothing
             guard movieFileOutput.isRecording == false else {
-                return
+                return log("capture session: trying to record a video but there is one already being recorded")
             }
             
             if UIDevice.current.isMultitaskingSupported {
@@ -836,8 +841,7 @@ extension CaptureSession: AVCaptureFileOutputRecordingDelegate {
             movieFileOutputConnection?.videoOrientation = videoPreviewLayerOrientation!
             
             // Start recording to a temporary file.
-            //let outputFileName = NSUUID().uuidString
-            let outputFileName = "exporting_video_to_this_file"
+            let outputFileName = NSUUID().uuidString
             let outputURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(outputFileName).appendingPathExtension("mov")
             movieFileOutput.startRecording(to: outputURL, recordingDelegate: self!)
         }
@@ -851,13 +855,13 @@ extension CaptureSession: AVCaptureFileOutputRecordingDelegate {
     func stopVideoRecording(cancel: Bool = false) {
     
         guard let movieFileOutput = self.videoFileOutput else {
-            return
+            return log("capture session: trying to stop a video recording but no movie file output is set")
         }
         
         sessionQueue.async { [capturedSelf = self] in
             
             guard movieFileOutput.isRecording else {
-                return
+                return log("capture session: trying to stop a video recording but no recording is in progress")
             }
             
             capturedSelf.recordingIsBeingCancelled = cancel
@@ -896,7 +900,6 @@ extension CaptureSession: AVCaptureFileOutputRecordingDelegate {
             recordingIsBeingCancelled = false
         }
         
-        //var success = true
         if let error = error {
             log("capture session: movie recording failed error: \(error)")
             //this can be true even if recording is stopped due to a reason (no disk space)
