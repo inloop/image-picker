@@ -25,6 +25,8 @@ class LivePhotoCameraCell : CameraCollectionViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         liveIndicator.alpha = 0
+        enableLivePhotosButton.unselectedTintColor = UIColor.white
+        enableLivePhotosButton.selectedTintColor = UIColor.yellow
     }
     
     @IBAction func snapButtonTapped(_ sender: UIButton) {
@@ -73,6 +75,9 @@ class LivePhotoCameraCell : CameraCollectionViewCell {
 
 open class StationaryButton : UIButton {
     
+    var unselectedTintColor: UIColor?
+    var selectedTintColor: UIColor?
+    
     open override var isSelected: Bool {
         get { return super.isSelected }
         set { setSelected(newValue, animated: false) }
@@ -111,10 +116,10 @@ open class StationaryButton : UIButton {
     
     private func updateTint() {
         if isSelected {
-            tintColor = UIColor.yellow
+            tintColor = selectedTintColor
         }
         else {
-            tintColor = UIColor(white: 0.8, alpha: 0.4)
+            tintColor = unselectedTintColor
         }
     }
 }

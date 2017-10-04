@@ -38,7 +38,16 @@ protocol CaptureSessionVideoRecordingDelegate : class {
     
     ///called when cancel recording as a result of calling `cancelVideoRecording` func.
     func captureSessionDidCancelVideoRecording(_ session: CaptureSession)
+    
+    ///called when a recording was successfully finished
     func captureSessionDid(_ session: CaptureSession, didFinishVideoRecording videoURL: URL)
+    
+    ///called when a recording was finished prematurely due to a system interruption
+    ///(empty disk, app put on bg, etc). Video is however saved on provided URL or in
+    ///assets library if turned on.
+    func captureSessionDid(_ session: CaptureSession, didInterruptVideoRecording videoURL: URL, reason: Error)
+    
+    ///called when a recording failed
     func captureSessionDid(_ session: CaptureSession, didFailVideoRecording error: Error)
 }
 
@@ -146,10 +155,12 @@ final class CaptureSession : NSObject {
     
     weak var videoRecordingDelegate: CaptureSessionVideoRecordingDelegate?
     fileprivate var videoFileOutput: AVCaptureMovieFileOutput?
-    fileprivate var backgroundRecordingID: UIBackgroundTaskIdentifier? = nil
-    fileprivate var recordingIsBeingCancelled = false
+    fileprivate var videoCaptureDelegate: VideoCaptureDelegate?
     var isReadyForVideoRecording: Bool {
         return videoFileOutput != nil
+    }
+    var isRecordingVideo: Bool {
+        return videoFileOutput?.isRecording ?? false
     }
     
     // MARK: Photo Capturing
@@ -355,52 +366,58 @@ final class CaptureSession : NSObject {
             return
         }
         
-        //log("capture session: configuring - adding video output")
+    
+        // Add movie file output.
+        if presetConfiguration == .videos {
+    
+            // A capture session cannot support at the same time:
+            // - Live Photo capture and
+            // - movie file output
+            // - video data output
+            // If your capture session includes an AVCaptureMovieFileOutput object, the
+            // isLivePhotoCaptureSupported property becomes false.
+            
+            log("capture session: configuring - adding movie file input")
+            
+            let movieFileOutput = AVCaptureMovieFileOutput()
+            if self.session.canAddOutput(movieFileOutput) {
+                self.session.addOutput(movieFileOutput)
+                self.videoFileOutput = movieFileOutput
+                
+                DispatchQueue.main.async { [weak self] in
+                    self?.videoRecordingDelegate?.captureSessionDidBecomeReadyForVideoRecording(self!)
+                }
+            }
+            else {
+                log("capture session: could not add video output to the session")
+                setupResult = .configurationFailed
+                session.commitConfiguration()
+                return
+            }
+        }
         
-        // A capture session cannot support at the same time:
-        // - Live Photo capture and
-        // - movie file output
-        // - video data output
-        // If your capture session includes an AVCaptureMovieFileOutput object, the
-        // isLivePhotoCaptureSupported property becomes false.
+        if presetConfiguration == .livePhotos || presetConfiguration == .videos {
+            
+            log("capture session: configuring - adding audio input")
+            
+            // Add audio input, if fails no need to fail whole configuration
+            do {
+                let audioDevice = AVCaptureDevice.default(for: AVMediaType.audio)
+                let audioDeviceInput = try AVCaptureDeviceInput(device: audioDevice!)
+                
+                if session.canAddInput(audioDeviceInput) {
+                    session.addInput(audioDeviceInput)
+                }
+                else {
+                    log("capture session: could not add audio device input to the session")
+                }
+            }
+            catch {
+                log("capture session: could not create audio device input: \(error)")
+            }
+        }
         
-        // Add video file output.
-//        let movieFileOutput = AVCaptureMovieFileOutput()
-//        if self.session.canAddOutput(movieFileOutput) {
-//            self.session.addOutput(movieFileOutput)
-//            self.videoFileOutput = movieFileOutput
-//
-//            DispatchQueue.main.async { [weak self] in
-//                self?.videoRecordingDelegate?.captureSessionDidBecomeReadyForVideoRecording(self!)
-//            }
-//        }
-//        else {
-//            log("capture session: could not add video output to the session")
-//            setupResult = .configurationFailed
-//            session.commitConfiguration()
-//            return
-//        }
-        
-//        log("capture session: configuring - adding audio input")
-//
-//        // Add audio input, if fails no need to fail whole configuration
-//        do {
-//            let audioDevice = AVCaptureDevice.default(for: AVMediaType.audio)
-//            let audioDeviceInput = try AVCaptureDeviceInput(device: audioDevice!)
-//
-//            if session.canAddInput(audioDeviceInput) {
-//                session.addInput(audioDeviceInput)
-//            }
-//            else {
-//                log("capture session: could not add audio device input to the session")
-//            }
-//        }
-//        catch {
-//            log("capture session: could not create audio device input: \(error)")
-//        }
-        
-        
-        if presetConfiguration == .livePhotos || presetConfiguration == .photos {
+        if presetConfiguration == .livePhotos || presetConfiguration == .photos || presetConfiguration == .videos {
             // Add photo output.
             log("capture session: configuring - adding photo output")
             
@@ -425,22 +442,24 @@ final class CaptureSession : NSObject {
             }
         }
         
-        // Add video data output - we use this to capture last video sample that is
-        // used when blurring video layer - for example when capture session is suspended, changing configuration etc.
-        // NOTE: video data output can not be connected at the same time as video file output!
-        videoDataOutput = AVCaptureVideoDataOutput()
-        if session.canAddOutput(videoDataOutput!) {
-            session.addOutput(videoDataOutput!)
-            videoDataOutput!.alwaysDiscardsLateVideoFrames = true
-            videoDataOutput!.setSampleBufferDelegate(videoOutpuSampleBufferDelegate, queue: videoOutpuSampleBufferDelegate.processQueue)
-            
-            if let connection = videoDataOutput!.connection(with: AVMediaType.video) {
-                connection.videoOrientation = self.videoOrientation
-                connection.automaticallyAdjustsVideoMirroring = false
+        if presetConfiguration != .videos {
+            // Add video data output - we use this to capture last video sample that is
+            // used when blurring video layer - for example when capture session is suspended, changing configuration etc.
+            // NOTE: video data output can not be connected at the same time as video file output!
+            videoDataOutput = AVCaptureVideoDataOutput()
+            if session.canAddOutput(videoDataOutput!) {
+                session.addOutput(videoDataOutput!)
+                videoDataOutput!.alwaysDiscardsLateVideoFrames = true
+                videoDataOutput!.setSampleBufferDelegate(videoOutpuSampleBufferDelegate, queue: videoOutpuSampleBufferDelegate.processQueue)
+                
+                if let connection = videoDataOutput!.connection(with: AVMediaType.video) {
+                    connection.videoOrientation = self.videoOrientation
+                    connection.automaticallyAdjustsVideoMirroring = false
+                }
             }
-        }
-        else {
-            log("capture session: warning - could not add video data output to the session")
+            else {
+                log("capture session: warning - could not add video data output to the session")
+            }
         }
         
         session.commitConfiguration()
@@ -700,7 +719,7 @@ extension CaptureSession {
             //    photoSettings.previewPhotoFormat = [kCVPixelBufferPixelFormatTypeKey as String : photoSettings.availablePreviewPhotoPixelFormatTypes.first!]
             //}
             
-            //TODO: THIS I dont know how it works, need to find out
+            //TODO: I dont know how it works, need to find out
             if #available(iOS 11.0, *) {
                 if photoSettings.availableEmbeddedThumbnailPhotoCodecTypes.count > 0 {
                     //TODO: specify thumb size somehow, this does crash!
@@ -783,16 +802,16 @@ extension CaptureSession {
     
 }
 
-extension CaptureSession: AVCaptureFileOutputRecordingDelegate {
+extension CaptureSession {
     
     func startVideoRecording() {
         
         guard let movieFileOutput = self.videoFileOutput else {
-            return
+            return log("capture session: trying to record a video but no movie file output is set")
         }
         
         guard let previewLayer = self.previewLayer else {
-            return
+            return log("capture session: trying to record a video but no preview layer is set")
         }
         
         /*
@@ -808,32 +827,49 @@ extension CaptureSession: AVCaptureFileOutputRecordingDelegate {
                 return
             }
             
-            //if already recording do nothing
+            // if already recording do nothing
             guard movieFileOutput.isRecording == false else {
-                return
+                return log("capture session: trying to record a video but there is one already being recorded")
             }
             
-            if UIDevice.current.isMultitaskingSupported {
-                /*
-                 Setup background task.
-                 This is needed because the `capture(_:, didFinishRecordingToOutputFileAt:, fromConnections:, error:)`
-                 callback is not received until AVCam returns to the foreground unless you request background execution time.
-                 This also ensures that there will be time to write the file to the photo library when AVCam is backgrounded.
-                 To conclude this background execution, endBackgroundTask(_:) is called in
-                 `capture(_:, didFinishRecordingToOutputFileAt:, fromConnections:, error:)` after the recorded file has been saved.
-                 */
-                strongSelf.backgroundRecordingID = UIApplication.shared.beginBackgroundTask(expirationHandler: nil)
-            }
-            
-            // Update the orientation on the movie file output video connection before starting recording.
+            // update the orientation on the movie file output video connection before starting recording.
             let movieFileOutputConnection = strongSelf.videoFileOutput?.connection(with: AVMediaType.video)
             movieFileOutputConnection?.videoOrientation = videoPreviewLayerOrientation!
             
-            // Start recording to a temporary file.
-            //let outputFileName = NSUUID().uuidString
-            let outputFileName = "exporting_video_to_this_file"
+            // start recording to a temporary file.
+            let outputFileName = NSUUID().uuidString
             let outputURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(outputFileName).appendingPathExtension("mov")
-            movieFileOutput.startRecording(to: outputURL, recordingDelegate: self!)
+            
+            // create a recording delegate
+            let recordingDelegate = VideoCaptureDelegate(didStart: {
+                DispatchQueue.main.async { [weak self] in
+                    self?.videoRecordingDelegate?.captureSessionDidStartVideoRecording(self!)
+                }
+            }, didFinish: { (delegate) in
+                DispatchQueue.main.async { [weak self] in
+                    if delegate.isBeingCancelled {
+                        self?.videoRecordingDelegate?.captureSessionDidCancelVideoRecording(self!)
+                    }
+                    else {
+                        self?.videoRecordingDelegate?.captureSessionDid(self!, didFinishVideoRecording: outputURL)
+                    }
+                }
+                
+            }, didFail: { (delegate, error) in
+                DispatchQueue.main.async { [weak self] in
+                    if delegate.recordingWasInterrupted {
+                        self?.videoRecordingDelegate?.captureSessionDid(self!, didInterruptVideoRecording: outputURL, reason: error)
+                    }
+                    else {
+                        self?.videoRecordingDelegate?.captureSessionDid(self!, didFailVideoRecording: error)
+                    }
+                }
+            })
+            recordingDelegate.savesPhotoToLibrary = strongSelf.saveCapturedAssetsToPhotoLibrary
+            
+            // start recording
+            movieFileOutput.startRecording(to: outputURL, recordingDelegate: recordingDelegate)
+            strongSelf.videoCaptureDelegate = recordingDelegate
         }
     }
 
@@ -845,68 +881,22 @@ extension CaptureSession: AVCaptureFileOutputRecordingDelegate {
     func stopVideoRecording(cancel: Bool = false) {
     
         guard let movieFileOutput = self.videoFileOutput else {
-            return
+            return log("capture session: trying to stop a video recording but no movie file output is set")
         }
         
         sessionQueue.async { [capturedSelf = self] in
             
             guard movieFileOutput.isRecording else {
-                return
+                return log("capture session: trying to stop a video recording but no recording is in progress")
             }
             
-            capturedSelf.recordingIsBeingCancelled = cancel
+            guard let recordingDelegate = capturedSelf.videoCaptureDelegate else {
+                fatalError("capture session: trying to stop a video recording but video capture delegate is nil")
+            }
+            
+            recordingDelegate.isBeingCancelled = cancel
             movieFileOutput.stopRecording()
         }
-    }
-    
-    func fileOutput(_ captureOutput: AVCaptureFileOutput, didStartRecordingTo fileURL: URL, from connections: [AVCaptureConnection]) {
-        DispatchQueue.main.async { [weak self] in
-            self?.videoRecordingDelegate?.captureSessionDidStartVideoRecording(self!)
-        }
-    }
-    
-    func fileOutput(_ captureOutput: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
-        
-        func cleanup(deleteFile: Bool) {
-            if let currentBackgroundRecordingID = backgroundRecordingID {
-                backgroundRecordingID = UIBackgroundTaskInvalid
-                if currentBackgroundRecordingID != UIBackgroundTaskInvalid {
-                    UIApplication.shared.endBackgroundTask(currentBackgroundRecordingID)
-                }
-            }
-            if deleteFile {
-                let path = outputFileURL.path
-                if FileManager.default.fileExists(atPath: path) {
-                    do {
-                        try FileManager.default.removeItem(atPath: path)
-                    }
-                    catch let error {
-                        log("capture session: could not remove recording at url: \(outputFileURL)")
-                        log("capture session: error: \(error)")
-                    }
-                }
-
-            }
-            recordingIsBeingCancelled = false
-        }
-        
-        //var success = true
-        if let error = error {
-            log("capture session: movie recording failed error: \(error)")
-            //this can be true even if recording is stopped due to a reason (no disk space)
-            //let successfullyFinished = (((error as NSError).userInfo[AVErrorRecordingSuccessfullyFinishedKey] as AnyObject).boolValue)
-            cleanup(deleteFile: true)
-            videoRecordingDelegate?.captureSessionDid(self, didFailVideoRecording: error)
-        }
-        else if recordingIsBeingCancelled == true {
-            cleanup(deleteFile: true)
-            self.videoRecordingDelegate?.captureSessionDidCancelVideoRecording(self)
-        }
-        else {
-            cleanup(deleteFile: false)
-            videoRecordingDelegate?.captureSessionDid(self, didFinishVideoRecording: outputFileURL)
-        }
-
     }
     
 }

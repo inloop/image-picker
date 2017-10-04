@@ -52,7 +52,7 @@ extension CMSampleBuffer {
         // downscale image
         let filter = CIFilter(name: "CILanczosScaleTransform")!
         filter.setValue(ciImage, forKey: "inputImage")
-        filter.setValue(0.2, forKey: "inputScale")
+        filter.setValue(0.25, forKey: "inputScale")
         filter.setValue(1.0, forKey: "inputAspectRatio")
         let resizedCiImage = filter.value(forKey: "outputImage") as! CIImage
         

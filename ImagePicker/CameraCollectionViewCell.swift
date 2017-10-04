@@ -13,6 +13,8 @@ import AVFoundation
 protocol CameraCollectionViewCellDelegate : class {
     func takePicture()
     func takeLivePhoto()
+    func startVideoRecording()
+    func stopVideoRecording()
     func flipCamera(_ completion: (() -> Void)?)
 }
 
@@ -90,6 +92,21 @@ open class CameraCollectionViewCell : UICollectionViewCell {
     }
     
     ///
+    /// If video recording is enabled this method is called each time user starts or stops
+    /// a recording. Override this method to update UI based on recording status.
+    ///
+    /// - parameter isRecording: If video is recording or not
+    /// - parameter shouldAnimate: If the UI change should be animated or not.
+    ///
+    open func updateRecordingVideoStatus(isRecording: Bool, shouldAnimate: Bool) {
+    
+    }
+    
+    open func videoRecodingDidBecomeReady() {
+        
+    }
+    
+    ///
     /// Flips camera from front/rear or rear/front. Flip is always supplemented with
     /// an flip animation.
     ///
@@ -111,6 +128,14 @@ open class CameraCollectionViewCell : UICollectionViewCell {
     ///
     public func takeLivePhoto() {
         delegate?.takeLivePhoto()
+    }
+    
+    public func startVideoRecording() {
+        delegate?.startVideoRecording()
+    }
+    
+    public func stopVideoRecording() {
+        delegate?.stopVideoRecording()
     }
     
     // MARK: Internal Methods

@@ -422,17 +422,28 @@ extension ImagePickerController : ImagePickerDelegateDelegate {
         let inProgressLivePhotos = captureSession?.inProgressLivePhotoCapturesCount ?? 0
         cell.updateLivePhotoStatus(isProcessing: inProgressLivePhotos > 0, shouldAnimate: false)
         
+        //update video recording status
+        let isRecordingVideo = captureSession?.isRecordingVideo ?? false
+        cell.updateRecordingVideoStatus(isRecording: isRecordingVideo, shouldAnimate: false)
+        
         //update authorization status if it's changed
         let status = AVCaptureDevice.authorizationStatus(for: .video)
         if cell.authorizationStatus != status {
             cell.authorizationStatus = status
         }
         
-        captureSession?.resume()
+        if isRecordingVideo == false {
+            captureSession?.resume()
+        }
     }
     
     func imagePicker(delegate: ImagePickerDelegate, didEndDisplayingCameraCell cell: CameraCollectionViewCell) {
-        captureSession?.suspend()
+        
+        let isRecordingVideo = captureSession?.isRecordingVideo ?? false
+        if isRecordingVideo == false {
+            captureSession?.suspend()
+        }
+        
         // blur cell asap
         DispatchQueue.global(qos: .userInteractive).async {
             if let image = self.captureSession?.latestVideoBufferImage {
@@ -446,23 +457,6 @@ extension ImagePickerController : ImagePickerDelegateDelegate {
 }
 
 extension ImagePickerController : CaptureSessionDelegate {
-    
-    func blurCellIfNeeded(animated: Bool) {
-        
-        guard let cameraCell = collectionView.cameraCell(layout: layoutConfiguration) else { return }
-        guard let captureSession = captureSession else { return }
-        
-        cameraCell.blurIfNeeded(blurImage: captureSession.latestVideoBufferImage, animated: animated, completion: nil)
-    }
-    
-    func unblurCellIfNeeded(animated: Bool) {
-        
-        guard let cameraCell = collectionView.cameraCell(layout: layoutConfiguration) else {
-            return
-        }
-        
-        cameraCell.unblurIfNeeded(unblurImage: nil, animated: animated, completion: nil)
-    }
     
     func captureSessionDidResume(_ session: CaptureSession) {
         log("did resume")
@@ -500,6 +494,23 @@ extension ImagePickerController : CaptureSessionDelegate {
         log("interruption ended")
     }
     
+    private func blurCellIfNeeded(animated: Bool) {
+        
+        guard let cameraCell = collectionView.cameraCell(layout: layoutConfiguration) else { return }
+        guard let captureSession = captureSession else { return }
+        
+        cameraCell.blurIfNeeded(blurImage: captureSession.latestVideoBufferImage, animated: animated, completion: nil)
+    }
+    
+    private func unblurCellIfNeeded(animated: Bool) {
+        
+        guard let cameraCell = collectionView.cameraCell(layout: layoutConfiguration) else {
+            return
+        }
+        
+        cameraCell.unblurIfNeeded(unblurImage: nil, animated: animated, completion: nil)
+    }
+    
 }
 
 extension ImagePickerController : CaptureSessionPhotoCapturingDelegate {
@@ -532,22 +543,38 @@ extension ImagePickerController : CaptureSessionVideoRecordingDelegate {
     
     func captureSessionDidBecomeReadyForVideoRecording(_ session: CaptureSession) {
         log("ready for video recording")
+        guard let cameraCell = collectionView.cameraCell(layout: layoutConfiguration) else { return }
+        cameraCell.videoRecodingDidBecomeReady()
     }
     
     func captureSessionDidStartVideoRecording(_ session: CaptureSession) {
         log("did start video recording")
+        updateCameraCellRecordingStatusIfNeeded(isRecording: true, animated: true)
     }
     
     func captureSessionDidCancelVideoRecording(_ session: CaptureSession) {
         log("did cancel video recording")
+        updateCameraCellRecordingStatusIfNeeded(isRecording: false, animated: true)
     }
     
     func captureSessionDid(_ session: CaptureSession, didFinishVideoRecording videoURL: URL) {
         log("did finish video recording")
+        updateCameraCellRecordingStatusIfNeeded(isRecording: false, animated: true)
+    }
+    
+    func captureSessionDid(_ session: CaptureSession, didInterruptVideoRecording videoURL: URL, reason: Error) {
+        log("did interrupt video recording, reason: \(reason)")
+        updateCameraCellRecordingStatusIfNeeded(isRecording: false, animated: true)
     }
     
     func captureSessionDid(_ session: CaptureSession, didFailVideoRecording error: Error) {
         log("did fail video recording")
+        updateCameraCellRecordingStatusIfNeeded(isRecording: false, animated: true)
+    }
+    
+    private func updateCameraCellRecordingStatusIfNeeded(isRecording: Bool, animated: Bool) {
+        guard let cameraCell = collectionView.cameraCell(layout: layoutConfiguration) else { return }
+        cameraCell.updateRecordingVideoStatus(isRecording: isRecording, shouldAnimate: animated)
     }
     
 }
@@ -560,6 +587,14 @@ extension ImagePickerController: CameraCollectionViewCellDelegate {
     
     func takeLivePhoto() {
         captureSession?.capturePhoto(livePhotoMode: .on)
+    }
+    
+    func startVideoRecording() {
+        captureSession?.startVideoRecording()
+    }
+    
+    func stopVideoRecording() {
+        captureSession?.stopVideoRecording(cancel: false)
     }
     
     func flipCamera(_ completion: (() -> Void)? = nil) {

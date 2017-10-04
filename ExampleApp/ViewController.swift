@@ -16,10 +16,10 @@ let cellsData: [[CellData]] = [
         CellData("Modally", #selector(ViewController.togglePresentationMode(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.presentsModally ? .checkmark : .none })
     ],
     [
-        CellData("Two items", #selector(ViewController.setNumberOfActionItems(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.numberOfActionItems == 2 ? .checkmark : .none }),
-        CellData("One item", #selector(ViewController.setNumberOfActionItems(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.numberOfActionItems == 1 ? .checkmark : .none }),
         CellData("Disabled (default)", #selector(ViewController.setNumberOfActionItems(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.numberOfActionItems == 0 ? .checkmark : .none }),
-        ],
+        CellData("One item", #selector(ViewController.setNumberOfActionItems(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.numberOfActionItems == 1 ? .checkmark : .none }),
+        CellData("Two items", #selector(ViewController.setNumberOfActionItems(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.numberOfActionItems == 2 ? .checkmark : .none }),
+    ],
     [
         CellData("Enabled (default)", #selector(ViewController.configCameraItem(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.cameraConfig == .enabled ? .checkmark : .none }),
         CellData("Disabled", #selector(ViewController.configCameraItem(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.cameraConfig == .disabled ? .checkmark : .none })
@@ -37,7 +37,7 @@ let cellsData: [[CellData]] = [
     [
         CellData("Only Photos (default)", #selector(ViewController.configCaptureMode(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.captureMode == .photo ? .checkmark : .none }),
         CellData("Photos and Live Photos", #selector(ViewController.configCaptureMode(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.captureMode == .photoAndLivePhoto ? .checkmark : .none }),
-        //CellData("Videos (not yet supported)", #selector(ViewController.configCaptureMode(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = /*controller.captureMode == .video ? .checkmark : */ .none })
+        CellData("Photos and Videos", #selector(ViewController.configCaptureMode(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.captureMode == .photoAndVideo ? .checkmark : .none })
     ],
     [
         CellData("Don't save (default)", #selector(ViewController.configSavesCapturedAssets(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.savesCapturedAssets ? .none : .checkmark }),
@@ -129,7 +129,7 @@ class ViewController: UITableViewController {
         switch indexPath.row {
         case 0: captureMode = .photo
         case 1: captureMode = .photoAndLivePhoto
-        //TODO: support video
+        case 2: captureMode = .photoAndVideo
         default: break
         }
     }
@@ -203,6 +203,9 @@ class ViewController: UITableViewController {
             case .photoAndLivePhoto:
                 imagePicker.captureSettings.cameraMode = .photoAndLivePhoto
                 imagePicker.cellRegistrator.registerNibForCameraItem(UINib(nibName: "LivePhotoCameraCell", bundle: nil))
+            case .photoAndVideo:
+                imagePicker.captureSettings.cameraMode = .photoAndVideo
+                imagePicker.cellRegistrator.registerNibForCameraItem(UINib(nibName: "VideoCameraCell", bundle: nil))
             }
             
             // save capture assets to photo library?
@@ -298,14 +301,6 @@ extension ViewController : ImagePickerControllerDelegate {
             break
         }
     }
-    
-    static let durationFormatter: DateComponentsFormatter = {
-        let formatter = DateComponentsFormatter()
-        formatter.unitsStyle = .positional
-        formatter.allowedUnits = [.minute, .second]
-        formatter.zeroFormattingBehavior = .pad
-        return formatter
-    }()
     
 }
 

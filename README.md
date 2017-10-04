@@ -7,18 +7,17 @@ An easy to use drop-in framework providing user interface for taking pictures an
 **Features:**
 - [x] presentation designed for chat apps as well as regular view controllers
 - [x] portrait and landscape modes
-- [x] capturing assets (photos, live photos)
+- [x] capturing assets (photos, live photos, videos)
 - [x] saving captured assets to Photo Library
 - [x] flipping camera to front/rear
 - [x] turning on/off live photos
 - [x] highly customisable layout and UI
 
 **Features to add:**
-- [] capturing videos (work in progress)
-- [] support for iPhone X
+- [x] support for iPhone X
 
 **Requirements**
-- iOS 10+
+- iOS 10.1+
 - Xcode 9+
 - Swift 4
 
@@ -65,19 +64,19 @@ Various kind of configuration is supported. All configuration should be done **b
 - to use your custom views for action, camera and asset items use `CellRegistrator` class
 - don't forget to set your `delegate` and `dataSource` if needed
 - to define a source of photos that should be available to pick up use view controller's `assetsFetchResultBlock` block
-- //TODO: document rest of vc properties!
+- to access selected assets use `selectedAssets` array
 
 ### Capture settings
 
-Currently Image Picker supports capturing *photos* and *live photos*. Videos will be supported soon. 
+Currently Image Picker supports capturing *photos*, *live photos* and *videos*.
 
-To configure Image Picker to support desired media type use `CaptureSettings` struct. Use property `cameraMode` to specify what kind of output you are interested in. If you don't intend to support live photos at all, please use value `photo`, otherwise `photoAndLivePhoto`.
+To configure Image Picker to support desired media type use `CaptureSettings` struct. Use property `cameraMode` to specify what kind of output you are interested in. If you don't intend to support live photos at all, please use value `photo`, otherwise `photoAndLivePhoto`. If you wish to capture photos and videos use `photoAndVideo`. Capturing videos and live photos at the same time is not supported and you nor can't switch between presets after it's been configrued.
 
 By default, all captured assets are not saved to photo library but rather provided to you by the delegate right away. However if you wish to save assets to photo library set `savesCapturedAssetToPhotoLibrary` to *true*. 
 
 An example of configuration for taking photos and live photos and saving them to photo library:
 
-```
+```swift
 let imagePicker = ImagePickerController()
 imagePicker.captureSettings.cameraMode = .photoAndLivePhoto
 imagePicker.captureSettings.savesCapturedAssetToPhotoLibrary = true
@@ -91,7 +90,7 @@ By default Image Picker fetches from Photo Library 1000 recently added photos an
 
 For example to fetch only live photos you can use following code snippet:
 
-```
+```swift
 let imagePicker = ImagePickerController()
 imagePicker.assetsFetchResultBlock = {
     guard let livePhotosCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumLivePhotos, options: nil).firstObject else {
@@ -107,12 +106,12 @@ For more information how to configure fetch results please refer to [Photos fram
 Image picker view hierarchy contains of `UICollectionView` to show action, camera and asset items and an overlay view to show permissions status. When custom cells are provided via `CellRegistrator` it is your responsibility to do the styling as well styling custom overlay view for permissions status. However, few style attributes are supported such as background color. Please use custom appearance mechanism to achieve desired styling.
 
 1. to style all image pickers globally use global appearance proxy object:
-```
+```swift
 ImagePickerController.appearance().backgroundColor = UIColor.black
 ```
 
 2. to style a particular instance of image picker use instances appearance proxy object:
-```
+```swift
 let vc = ImagePickerController()
 vc.appearance().backgroundColor = UIColor.black
 ```
@@ -126,21 +125,21 @@ Please note that UIKit's appearance proxy is not currently supported.
 Image picker supports various kind of layouts and both vertical and horizontal scroll direction. Using `LayoutConfiguration` you can set layout that you need specifically to your app.
 
 1. **Action Items** are always shown as first section and can contain up to 2 buttons. By default this section is turned off. Next example will show how to turn on both action items:
-```
+```swift
 let imagePicker = ImagePickerController()
 imagePicker.layoutConfiguration.showsFirstActionItem = true
 imagePicker.layoutConfiguration.showsSecondActionItem = true
 ```
 
 2. **Camera Item** is always shown in a section after action items section. So if action item if off this section is shown as first. Camera item section is by default on, so if you wish to turn it off use following code:
-```
+```swift
 let imagePicker = ImagePickerController()
 imagePicker.layoutConfiguration.showsCameraItem = false
 ```
 > Please note that if you turn off camera section, Image Picker will not ask user for camera permissions.
 
 3. **Asset Items** are always shown regardless if there are any photos in the app. You can control how many asset items are in a col or a row (based on scroll direction). By default, there are 2 asset in a col or a row. To change this to 1 see next snippet:
-```
+```swift
 let imagePicker = ImagePickerController()
 imagePicker.layoutConfiguration.numberOfAssetItemsInRow = 1
 ```
@@ -157,12 +156,12 @@ imagePicker.layoutConfiguration.numberOfAssetItemsInRow = 1
 All views used by Image Picker can be provided by you to achieve highly customisable UI that fits your app the best. As mentioned earlier, whole UI consists of a collection view and an overlay view.
 
 - **collection view** displays cells to display action, camera and asset items. To register custom cells use `CellRegistrator`. It contains API to register both nibs and classes for each section type. For example to register custom cells for action items section use following code:
-```
+```swift
 let imagePicker = ImagePickerController()
 imagePicker.cellRegistrator.registerNibForActionItems(UINib(nibName: "IconWithTextCell", bundle: nil))
 ```
 Same principle is applied to registering custom camera and asset items. You can also set specific cells for each asset media types such photos and videos. For example to use specific cell for video  assets use:
-```
+```swift
 let imagePicker = ImagePickerController()
 imagePicker.cellRegistrator.register(cellClass: VideoCell.self, forAssetItemOf: .video)
 imagePicker.cellRegistrator.register(cellClass: ImageCell.self, forAssetItemOf: .image)
@@ -170,7 +169,7 @@ imagePicker.cellRegistrator.register(cellClass: ImageCell.self, forAssetItemOf: 
 > *Note:* Please make sure that if you use custom cells you register cells for all media types (audio, video) otherwise Image Picker will throw an exception. Please don't forget that camera item cells **must** subclass CameraCollectionViewCell and asset items cells **must** conform to `ImagePickerAssetCell` protocol. You can also fine-tune your asset cells to a specific asset types such us live photos, panorama photos, etc. using the delegate. Please see our ExampleApp for implementation details.
 
 - **overlay view** is shown over collection view in situations when app does not have access permissions to *Photos Library*. To support overlay view please implement a datasource conforming to `ImagePickerControllerDatasource` protocol. Possible implementation could look like this:
-```
+```swift
 extension ViewController: ImagePickerControllerDataSource {
     func imagePicker(controller: ImagePickerController, viewForAuthorizationStatus status: PHAuthorizationStatus) -> UIView {
         let statusView = CustomPermissionStatusView(frame: .zero)
@@ -185,17 +184,19 @@ extension ViewController: ImagePickerControllerDataSource {
 You can enable action cells on `LayoutConfiguration` so Image Picker will show action buttons in first section. In this case you **must** register your cell classes or nibs on `CellRegistrator`. After that implement corresponding `ImagePickerControllerDelegate` method to configure cell before it's displayed.
 
 1. enable action cells (one or two) on layout configuration, for example
-```
+```swift
 let imagePicker = ImagePickerController()
 imagePicker.layoutConfiguration.showsFirstActionItem = true
 imagePicker.layoutConfiguration.showsSecondActionItem = true
 ```
+
 2. register your action cells on cell registrator, for example
-```
+```swift
 imagePicker.registerCellClassForActionItems(IconWithTextCell.self)
 ```
+
 3. configure cell by implementing delegate method, for example
-```
+```swift
 func imagePicker(controller: ImagePickerController, willDisplayActionItem cell: UICollectionViewCell, at index: Int) {
     switch cell {
     case let iconWithTextCell as IconWithTextCell:
@@ -213,8 +214,9 @@ func imagePicker(controller: ImagePickerController, willDisplayActionItem cell: 
     }
 }
 ```
+
 4. handle actions by implementing delegate method
-```
+```swift
 func imagePicker(controller: ImagePickerController, didSelectActionItemAt index: Int) {
     print("did select action \(index)")
 }
@@ -224,23 +226,31 @@ func imagePicker(controller: ImagePickerController, didSelectActionItemAt index:
 
 Image picker provides a default camera cell that just shows a camera output and captures a photo when user taps it. 
 
-If you wish to implement fancier features such as custom buttons, camera flipping, taking live photos, showing camera current permissions, updating live photo statuses you have to provide your own subclass of `CameraCollectionViewCell` and implement dedicated methods.
+If you wish to implement fancier features you must provide your own subclass of `CameraCollectionViewCell` and implement dedicated methods.
 
-To see an example of custom implementation that supports all mentioned features please see class `LivePhotoCameraCell` of *ExampleApp*.
+Supported features of whoose UI can be fully customized:
+- [x] taking photos, live photos, recording videos, flipping camera
+- [x] providing custom buttons (camera flipping, taking photos, recording videos)
+- [x] updating Live Photo status
+- [x] updating recording status
+- [x] showing current access permissions to camera
+
+To see an example of custom implementation that supports all mentioned features please see class `LivePhotoCameraCell` and `VideoCameraCell` of *ExampleApp*.
 
 ### Implementing custom assets cell
 
 Image picker provides a default assets cell that shows an image thumbnail and selected state. If you wish to provide custom asset cell, that could show for example asset's media subtype (live photo, panorama, HDR, screenshot, streamed video, etc.) simply register your own asset cells on `CellRegistrator` that conforms to `ImagePickerAssetCell` and in implement image picker delegate's `func imagePicker(controller: ImagePickerController, willDisplayAssetItem cell: ImagePickerAssetCell, asset: PHAsset)` method. Possible example implementation could be:
 
 1. register cell classes for each asset media type, for example
-```
+```swift
 let imagePicker = ImagePickerController()
 imagePicker.register(cellClass: ImageCell.self, forAssetItemOf: .image)
 imagePicker.register(cellClass: VideoCell.self, forAssetItemOf: .video)
 ```
 > Please note, that `CellRegistrator` provides a method to register 1 cell or nib for any asset media type.
+
 2. implement delegate method to configure your asset cells, for example
-```
+```swift
 func imagePicker(controller: ImagePickerController, willDisplayAssetItem cell: ImagePickerAssetCell, asset: PHAsset) {
     switch cell {
         
@@ -269,14 +279,14 @@ Please for more info and detailed implementation see our ExampleApp and ImageCel
 
 If you wish to present Image Picker in default set up, you don't need to do any special configuration, simple create new instance and present a view controller:
 
-```
+```swift
 let imagePicker = ImagePickerController()
 navigationController.present(imagePicker, animated: true, completion: nil)
 ```
 
 However, most of the time you will want to do custom configuration so please do all the configuration before the view controller's view is loaded (`viewDidLoad()` method is called).
 
-```
+```swift
 let imagePicker = ImagePickerController()
 imagePicker.cellRegistrator ...
 imagePicker.layoutConfiguration ...
@@ -300,7 +310,7 @@ Optionaly, before presenting image picker, you can check if user has granted acc
 2. [ok] flip cameras
 3. [ok] blur/unblur camera cell video layer when capture session is suspended/unsuspended
 4. [ok] blur/unblur camera cell video layer when capture session is interrupted, failed or app goes to background/unactive
-5. add public API for recording videos
+5. [ok] add public API for recording videos
 6. [ok] add public API for enabling/disabling live photos
 7. [ok] add public API for setting if taken pictures should be saved in camera roll or just directly provided through delegate
 8. [ok] when user denies access to camera,  show that access is denied
@@ -312,7 +322,7 @@ Optionaly, before presenting image picker, you can check if user has granted acc
 ## Known Issues
 
 1. autorotate to landsacpe on iPhone X does not work properly - safe area is not updated so layout is broken
-2. [fixex] live photos does not work - it says device does not support live photos event thought all shold be set correctly (does not work on SE nor iPhone 7) -> this is because session preset is to video, see comments in code to fix it
+2. [fixed] live photos does not work - it says device does not support live photos event thought all shold be set correctly (does not work on SE nor iPhone 7) -> this is because session preset is to video, see comments in code to fix it
 3. [fixed] flipping camera animation is flickering, I could not find a proper way how to achieve nice animation with blurred content, I tried following solutions:
     1. adding UIVisualEffectsView as subview of camera output but it's flickering when camera goes black on a while
     2. taking screenshot of AVVideoPreviewLayer is not possible - it returns transparent empty image
@@ -323,7 +333,8 @@ Optionaly, before presenting image picker, you can check if user has granted acc
 5. when rotating device, there is a little lag in video when changing orientation of outputs - it should be smooth though
 6. [fixed] when flipping from front camera to back camera, latest sample buffer image that is used does not have proper transform, you can see that it is rotated horizontally so it creates unpleasant effect durring unblur animation when flipping cameras
 7. [fixed] when user defines layout configuration without camera - image picker still initializes capture session wich asks for permissions, crashes if no privacy key in info.plist is set and this is all not necessary
-
+8. when `video` preset is used, blurring of camera cell is turned off because capture session does not support both video data output and movie file output at the same time
+    possible solution: only use movie file output when recording is about to begin and remove it when it ended
 
 ## Technologies used
 
