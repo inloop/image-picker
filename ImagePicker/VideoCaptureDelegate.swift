@@ -109,7 +109,7 @@ final class VideoCaptureDelegate: NSObject, AVCaptureFileOutputRecordingDelegate
             
             log("capture session: movie recording failed error: \(error)")
             
-            //this can be true even if recording is stopped due to a reason (no disk space, ...)
+            //this can be true even if recording is stopped due to a reason (no disk space, ...) so the video can still be delivered.
             let successfullyFinished = (((error as NSError).userInfo[AVErrorRecordingSuccessfullyFinishedKey] as AnyObject).boolValue) ?? false
             
             if successfullyFinished {
