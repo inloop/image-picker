@@ -104,7 +104,7 @@ final class CaptureSession : NSObject {
     var isSessionRunning = false
     weak var previewLayer: AVCaptureVideoPreviewLayer?
     
-    var presetConfiguration: SessionPresetConfiguration = .livePhotos
+    var presetConfiguration: SessionPresetConfiguration = .photos
     
     ///
     /// Save assets to library or not. Appropriate delegate is called in all cases.

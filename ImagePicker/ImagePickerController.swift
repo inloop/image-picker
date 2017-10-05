@@ -416,6 +416,17 @@ extension ImagePickerController : ImagePickerDelegateDelegate {
             cell.delegate = self
             cell.previewView.session = captureSession?.session
             captureSession?.previewLayer = cell.previewView.previewLayer
+            
+            //when using videos preset, we are using different technique for
+            //blurring the cell content. If isVisualEffectViewUsedForBlurring is
+            //true, then UIVisualEffectView is used for blurring. In other cases
+            //we manually blur video data output frame (it's faster). Reason why
+            //we have 2 different blurring techniques is that the faster solution
+            //can not be used when we have .video preset configuration.
+            if let config = captureSession?.presetConfiguration, config == .videos {
+                cell.isVisualEffectViewUsedForBlurring = true
+            }
+            
         }
         
         //update live photos
@@ -432,6 +443,7 @@ extension ImagePickerController : ImagePickerDelegateDelegate {
             cell.authorizationStatus = status
         }
         
+        //resume session only if not recording video
         if isRecordingVideo == false {
             captureSession?.resume()
         }
@@ -440,6 +452,8 @@ extension ImagePickerController : ImagePickerDelegateDelegate {
     func imagePicker(delegate: ImagePickerDelegate, didEndDisplayingCameraCell cell: CameraCollectionViewCell) {
         
         let isRecordingVideo = captureSession?.isRecordingVideo ?? false
+        
+        //susped session only if not recording video, otherwise the recording would be stopped.
         if isRecordingVideo == false {
             captureSession?.suspend()
         }
@@ -450,6 +464,11 @@ extension ImagePickerController : ImagePickerDelegateDelegate {
                 let blurred = UIImageEffects.imageByApplyingLightEffect(to: image)
                 DispatchQueue.main.async {
                     cell.blurIfNeeded(blurImage: blurred, animated: false, completion: nil)
+                }
+            }
+            else {
+                DispatchQueue.main.async {
+                    cell.blurIfNeeded(blurImage: nil, animated: false, completion: nil)
                 }
             }
         }
@@ -606,8 +625,11 @@ extension ImagePickerController: CameraCollectionViewCellDelegate {
         }
         
         var image = captureSession.latestVideoBufferImage
-        image = UIImageEffects.imageByApplyingLightEffect(to: image)
+        if image != nil {
+            image = UIImageEffects.imageByApplyingLightEffect(to: image!)
+        }
         
+        // 1. blur cell
         cameraCell.blurIfNeeded(blurImage: image, animated: true) { _ in
             
             // 2. flip camera
@@ -618,7 +640,9 @@ extension ImagePickerController: CameraCollectionViewCellDelegate {
                     
                     //set new image from buffer
                     var image = captureSession.latestVideoBufferImage
-                    image = UIImageEffects.imageByApplyingLightEffect(to: image)
+                    if image != nil {
+                        image = UIImageEffects.imageByApplyingLightEffect(to: image!)
+                    }
                     
                     // 4. unblur
                     cameraCell.unblurIfNeeded(unblurImage: image, animated: true, completion: { _ in
