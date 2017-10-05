@@ -11,6 +11,10 @@ import Photos
 
 final class VideoCaptureDelegate: NSObject, AVCaptureFileOutputRecordingDelegate {
     
+    deinit {
+        log("deinit: \(String(describing: self))")
+    }
+    
     // MARK: Public Methods
     
     /// set this to false if you dont wish to save taken picture to photo library
