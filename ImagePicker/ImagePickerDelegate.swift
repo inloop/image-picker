@@ -29,6 +29,7 @@ protocol ImagePickerDelegateDelegate : class {
     func imagePicker(delegate: ImagePickerDelegate, willDisplayAssetCell cell: ImagePickerAssetCell, at index: Int)
     
     //func imagePicker(delegate: ImagePickerDelegate, didEndDisplayingAssetCell cell: ImagePickerAssetCell)
+    func imagePicker(delegate: ImagePickerDelegate, didScroll scrollView: UIScrollView)
 }
 
 final class ImagePickerDelegate : NSObject, UICollectionViewDelegateFlowLayout {
@@ -93,6 +94,10 @@ final class ImagePickerDelegate : NSObject, UICollectionViewDelegateFlowLayout {
         case configuration.sectionIndexForActions, configuration.sectionIndexForAssets: break
         default: fatalError("index path not supported")
         }
+    }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        delegate?.imagePicker(delegate: self, didScroll: scrollView)
     }
     
 }

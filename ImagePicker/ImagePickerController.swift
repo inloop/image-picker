@@ -473,6 +473,13 @@ extension ImagePickerController : ImagePickerDelegateDelegate {
             }
         }
     }
+    
+    func imagePicker(delegate: ImagePickerDelegate, didScroll scrollView: UIScrollView) {
+        //update only if the view is visible.
+        //TODO: precaching is not enabled for now (it's laggy need to profile)
+        //guard isViewLoaded && view.window != nil else { return }
+        //collectionViewDataSource.assetsModel.updateCachedAssets(collectionView: collectionView)
+    }
 }
 
 extension ImagePickerController : CaptureSessionDelegate {
