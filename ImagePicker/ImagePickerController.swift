@@ -183,6 +183,7 @@ public final class ImagePickerController : UIViewController {
         case .restricted, .denied:
             if let view = overlayView ?? dataSource?.imagePicker(controller: self, viewForAuthorizationStatus: status), view.superview != collectionView {
                 collectionView.backgroundView = view
+                overlayView = view
             }
             
         case .notDetermined:
