@@ -78,7 +78,7 @@ final class ImagePickerDataSource : NSObject, UICollectionViewDataSource {
             
             return cell as! UICollectionViewCell
         
-        default: fatalError("only 3 sections are supporte")
+        default: fatalError("only 3 sections are supported")
         }
     }
     

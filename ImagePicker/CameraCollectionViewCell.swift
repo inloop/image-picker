@@ -41,6 +41,10 @@ open class CameraCollectionViewCell : UICollectionViewCell {
         return view
     }()
     
+    var blurView: UIVisualEffectView?
+    
+    var isVisualEffectViewUsedForBlurring = false
+    
     weak var delegate: CameraCollectionViewCellDelegate?
     
     // MARK: View Lifecycle Methods
@@ -60,6 +64,7 @@ open class CameraCollectionViewCell : UICollectionViewCell {
     open override func layoutSubviews() {
         super.layoutSubviews()
         imageView.frame = previewView.bounds
+        blurView?.frame = previewView.bounds
     }
     
     // MARK: Public Methods
@@ -142,47 +147,83 @@ open class CameraCollectionViewCell : UICollectionViewCell {
     
     func blurIfNeeded(blurImage: UIImage?, animated: Bool, completion: ((Bool) -> Void)?) {
         
-        guard imageView.image == nil else {
-            return
+        var view: UIView
+        
+        if isVisualEffectViewUsedForBlurring == false {
+        
+            guard imageView.image == nil else {
+                return
+            }
+            
+            imageView.image = blurImage
+            
+            view = imageView
+        }
+        else {
+            
+            if blurView == nil {
+                blurView = UIVisualEffectView(effect: UIBlurEffect(style: .light))
+                previewView.addSubview(blurView!)
+            }
+            
+            view = blurView!
+            view.frame = previewView.bounds
         }
         
-        imageView.alpha = 0
-        imageView.image = blurImage
+        view.alpha = 0
 
         if animated == false {
-            imageView.alpha = 1
+            view.alpha = 1
             completion?(true)
         }
         else {
             UIView.animate(withDuration: 0.1, delay: 0, options: .allowAnimatedContent, animations: {
-                self.imageView.alpha = 1
+                view.alpha = 1
             }, completion: completion)
         }
     }
     
     func unblurIfNeeded(unblurImage: UIImage?, animated: Bool, completion: ((Bool) -> Void)?) {
         
-        guard imageView.image != nil else {
-            return
-        }
-
-        if animated == false {
-            imageView.alpha = 0
-            imageView.image = nil
-            completion?(true)
-        }
-        else {
+        var animationBlock: () -> ()
+        var animationCompletionBlock: (Bool) -> ()
+        
+        if isVisualEffectViewUsedForBlurring == false {
+        
+            guard imageView.image != nil else {
+                return
+            }
             
             if let image = unblurImage {
                 imageView.image = image
             }
             
-            UIView.animate(withDuration: 0.1, delay: 0, options: .allowAnimatedContent, animations: {
+            animationBlock = {
                 self.imageView.alpha = 0
-            }, completion: { (finished) in
+            }
+            
+            animationCompletionBlock = { finished in
                 self.imageView.image = nil
                 completion?(finished)
-            })
+            }
+        }
+        else {
+            
+            animationBlock = {
+                self.blurView?.alpha = 0
+            }
+            
+            animationCompletionBlock = { finished in
+                completion?(finished)
+            }
+        }
+
+        if animated == false {
+            animationBlock()
+            animationCompletionBlock(true)
+        }
+        else {
+            UIView.animate(withDuration: 0.1, delay: 0, options: .allowAnimatedContent, animations: animationBlock, completion: animationCompletionBlock)
         }
     }
     

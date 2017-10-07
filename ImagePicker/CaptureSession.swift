@@ -104,7 +104,7 @@ final class CaptureSession : NSObject {
     var isSessionRunning = false
     weak var previewLayer: AVCaptureVideoPreviewLayer?
     
-    var presetConfiguration: SessionPresetConfiguration = .livePhotos
+    var presetConfiguration: SessionPresetConfiguration = .photos
     
     ///
     /// Save assets to library or not. Appropriate delegate is called in all cases.
@@ -156,6 +156,7 @@ final class CaptureSession : NSObject {
     weak var videoRecordingDelegate: CaptureSessionVideoRecordingDelegate?
     fileprivate var videoFileOutput: AVCaptureMovieFileOutput?
     fileprivate var videoCaptureDelegate: VideoCaptureDelegate?
+    
     var isReadyForVideoRecording: Bool {
         return videoFileOutput != nil
     }
@@ -846,6 +847,12 @@ extension CaptureSession {
                     self?.videoRecordingDelegate?.captureSessionDidStartVideoRecording(self!)
                 }
             }, didFinish: { (delegate) in
+                
+                // we need to remove reference to the delegate so it can be deallocated
+                self?.sessionQueue.async {
+                    self?.videoCaptureDelegate = nil
+                }
+                
                 DispatchQueue.main.async { [weak self] in
                     if delegate.isBeingCancelled {
                         self?.videoRecordingDelegate?.captureSessionDidCancelVideoRecording(self!)
@@ -856,6 +863,12 @@ extension CaptureSession {
                 }
                 
             }, didFail: { (delegate, error) in
+                
+                // we need to remove reference to the delegate so it can be deallocated
+                self?.sessionQueue.async {
+                    self?.videoCaptureDelegate = nil
+                }
+                
                 DispatchQueue.main.async { [weak self] in
                     if delegate.recordingWasInterrupted {
                         self?.videoRecordingDelegate?.captureSessionDid(self!, didInterruptVideoRecording: outputURL, reason: error)

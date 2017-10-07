@@ -32,7 +32,13 @@ class AssetCell : UICollectionViewCell, ImagePickerAssetCell {
     var representedAssetIdentifier: String?
     
     override var isSelected: Bool {
-        didSet { selectedImageView.isHidden = !isSelected }
+        didSet {
+            selectedImageView.isHidden = !isSelected
+            if selectedImageView.isHidden == false {
+                selectedImageView.image = UIImage(named: "icon-check-background", in: Bundle(for: type(of: self)), compatibleWith: nil)
+                selectedImageView.foregroundImage = UIImage(named: "icon-check", in: Bundle(for: type(of: self)), compatibleWith: nil)
+            }
+        }
     }
     
     override init(frame: CGRect) {
@@ -42,8 +48,6 @@ class AssetCell : UICollectionViewCell, ImagePickerAssetCell {
         contentView.addSubview(imageView)
         
         selectedImageView.frame = CGRect(x: 0, y: 0, width: 31, height: 31)
-        selectedImageView.image = UIImage(named: "icon-check-background", in: Bundle(for: type(of: self)), compatibleWith: nil)
-        selectedImageView.foregroundImage = UIImage(named: "icon-check", in: Bundle(for: type(of: self)), compatibleWith: nil)
         
         contentView.addSubview(selectedImageView)
         selectedImageView.isHidden = true
