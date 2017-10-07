@@ -21,12 +21,18 @@ public protocol ImagePickerControllerDelegate : class {
     func imagePicker(controller: ImagePickerController, didSelectActionItemAt index: Int)
     
     ///
-    /// Called when user select an asset
+    /// Called when user select an asset.
     ///
-    func imagePicker(controller: ImagePickerController, didFinishPicking asset: PHAsset)
+    func imagePicker(controller: ImagePickerController, didSelect asset: PHAsset)
     
-    //perhaps we can use method above and remove this one, client does not care if user took a picture or
-    //picked it from a library, to do that we perhaps have to save taken image to photo library
+    ///
+    /// Called when user unselect previously selected asset.
+    ///
+    func imagePicker(controller: ImagePickerController, didDeselect asset: PHAsset)
+    
+    ///
+    /// Called when user takes new photo.
+    ///
     func imagePicker(controller: ImagePickerController, didTake image: UIImage)
     
     ///
@@ -45,7 +51,8 @@ public protocol ImagePickerControllerDelegate : class {
 //this will make sure all delegate methods are optional
 extension ImagePickerControllerDelegate {
     public func imagePicker(controller: ImagePickerController, didSelectActionItemAt index: Int) {}
-    public func imagePicker(controller: ImagePickerController, didFinishPicking asset: PHAsset) {}
+    public func imagePicker(controller: ImagePickerController, didSelect asset: PHAsset) {}
+    public func imagePicker(controller: ImagePickerController, didUnselect asset: PHAsset) {}
     public func imagePicker(controller: ImagePickerController, didTake image: UIImage) {}
     public func imagePicker(controller: ImagePickerController, willDisplayActionItem cell: UICollectionViewCell, at index: Int) {}
     public func imagePicker(controller: ImagePickerController, willDisplayAssetItem cell: ImagePickerAssetCell, asset: PHAsset) {}
@@ -106,10 +113,30 @@ open class ImagePickerController : UIViewController {
         get {
             let selectedIndexPaths = collectionView.indexPathsForSelectedItems ?? []
             let selectedAssets = selectedIndexPaths.flatMap { indexPath in
-                return collectionViewDataSource.assetsModel.fetchResult.object(at: indexPath.row)
+                return asset(at: indexPath.row)
             }
             return selectedAssets
         }
+    }
+    
+    ///
+    /// Returns an array of assets at index set. An exception will be thrown if it fails
+    ///
+    public func assets(at indexes: IndexSet) -> [PHAsset] {
+        guard let fetchResult = collectionViewDataSource.assetsModel.fetchResult else {
+            fatalError("Accessing assets at indexes \(indexes) failed")
+        }
+        return fetchResult.objects(at: indexes)
+    }
+    
+    ///
+    /// Returns an asset at index. If there is no asset at the index, an exception will be thrown.
+    ///
+    public func asset(at index: Int) -> PHAsset {
+        guard let fetchResult = collectionViewDataSource.assetsModel.fetchResult else {
+            fatalError("Accessing asset at index \(index) failed")
+        }
+        return fetchResult.object(at: index)
     }
     
     ///
@@ -141,17 +168,20 @@ open class ImagePickerController : UIViewController {
         return instanceAppearanceProxy!
     }
     
-    // MARK: Private Methods
-    
-    fileprivate var collectionViewDataSource = ImagePickerDataSource(assetsModel: ImagePickerAssetModel())
-    fileprivate var collectionViewDelegate = ImagePickerDelegate()
-    
-    fileprivate lazy var collectionView: UICollectionView = {
+    ///
+    /// A collection view that is used for displaying content.
+    ///
+    public lazy var collectionView: UICollectionView = {
         let view = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
         view.dataSource = self.collectionViewDataSource
         view.delegate = self.collectionViewDelegate
         return view
     }()
+    
+    // MARK: Private Methods
+    
+    fileprivate var collectionViewDataSource = ImagePickerDataSource(assetsModel: ImagePickerAssetModel())
+    fileprivate var collectionViewDelegate = ImagePickerDelegate()
     
     fileprivate var captureSession: CaptureSession?
     
@@ -393,10 +423,11 @@ extension ImagePickerController : ImagePickerDelegateDelegate {
     }
         
     func imagePicker(delegate: ImagePickerDelegate, didSelectAssetItemAt index: Int) {
-        guard let asset = collectionViewDataSource.assetsModel.fetchResult?.object(at: index) else {
-            return
-        }
-        self.delegate?.imagePicker(controller: self, didFinishPicking: asset)
+        self.delegate?.imagePicker(controller: self, didSelect: asset(at: index))
+    }
+    
+    func imagePicker(delegate: ImagePickerDelegate, didDeselectAssetItemAt index: Int) {
+        self.delegate?.imagePicker(controller: self, didDeselect: asset(at: index))
     }
     
     func imagePicker(delegate: ImagePickerDelegate, willDisplayActionCell cell: UICollectionViewCell, at index: Int) {
@@ -404,10 +435,7 @@ extension ImagePickerController : ImagePickerDelegateDelegate {
     }
     
     func imagePicker(delegate: ImagePickerDelegate, willDisplayAssetCell cell: ImagePickerAssetCell, at index: Int) {
-        guard let asset = collectionViewDataSource.assetsModel.fetchResult?.object(at: index) else {
-            return
-        }
-        self.delegate?.imagePicker(controller: self, willDisplayAssetItem: cell, asset: asset)
+        self.delegate?.imagePicker(controller: self, willDisplayAssetItem: cell, asset: asset(at: index))
     }
     
     func imagePicker(delegate: ImagePickerDelegate, willDisplayCameraCell cell: CameraCollectionViewCell) {

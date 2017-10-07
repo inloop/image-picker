@@ -232,6 +232,7 @@ class ViewController: UITableViewController {
             })
         }
         else {
+            updateNavigationItem(with: 0)
             currentInputView = nil
             reloadInputViews()
         }
@@ -254,8 +255,19 @@ class ViewController: UITableViewController {
     }
     
     @objc func dismissPresentedImagePicker(sender: UIBarButtonItem) {
+        updateNavigationItem(with: 0)
         presentButton.isSelected = false
         navigationController?.visibleViewController?.dismiss(animated: true, completion: nil)
+    }
+    
+    func updateNavigationItem(with selectedCount: Int) {
+        if selectedCount == 0 {
+            navigationController?.visibleViewController?.navigationItem.setRightBarButton(nil, animated: true)
+        }
+        else {
+            let title = "Items (\(selectedCount))"
+            navigationController?.visibleViewController?.navigationItem.setRightBarButton(UIBarButtonItem(title: title, style: .plain, target: nil, action: nil), animated: true)
+        }
     }
     
 }
@@ -266,8 +278,14 @@ extension ViewController : ImagePickerControllerDelegate {
         print("did select action \(index)")
     }
     
-    public func imagePicker(controller: ImagePickerController, didFinishPicking asset: PHAsset) {
+    public func imagePicker(controller: ImagePickerController, didSelect asset: PHAsset) {
         print("selected assets: \(controller.selectedAssets.count)")
+        updateNavigationItem(with: controller.selectedAssets.count)
+    }
+    
+    public func imagePicker(controller: ImagePickerController, didDeselect asset: PHAsset) {
+        print("selected assets: \(controller.selectedAssets.count)")
+        updateNavigationItem(with: controller.selectedAssets.count)
     }
     
     public func imagePicker(controller: ImagePickerController, didTake image: UIImage) {
