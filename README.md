@@ -17,7 +17,6 @@ An easy to use drop-in framework providing user interface for taking pictures an
 - [x] support for iPhone X
 - add @objcMembers
 - add public API to access loaded assets (ask for asset at index)
-- defaultFetchResult results should be sorted ascending
 
 **Requirements**
 - iOS 10.1+
