@@ -141,17 +141,20 @@ open class ImagePickerController : UIViewController {
         return instanceAppearanceProxy!
     }
     
-    // MARK: Private Methods
-    
-    fileprivate var collectionViewDataSource = ImagePickerDataSource(assetsModel: ImagePickerAssetModel())
-    fileprivate var collectionViewDelegate = ImagePickerDelegate()
-    
-    fileprivate lazy var collectionView: UICollectionView = {
+    ///
+    /// A collection view that is used for displaying content.
+    ///
+    public lazy var collectionView: UICollectionView = {
         let view = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
         view.dataSource = self.collectionViewDataSource
         view.delegate = self.collectionViewDelegate
         return view
     }()
+    
+    // MARK: Private Methods
+    
+    fileprivate var collectionViewDataSource = ImagePickerDataSource(assetsModel: ImagePickerAssetModel())
+    fileprivate var collectionViewDelegate = ImagePickerDelegate()
     
     fileprivate var captureSession: CaptureSession?
     
