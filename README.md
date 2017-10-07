@@ -18,7 +18,6 @@ An easy to use drop-in framework providing user interface for taking pictures an
 - add @objcMembers
 - add public API to access loaded assets (ask for asset at index)
 - defaultFetchResult results should be sorted ascending
-- update delegate methods so that user can detect that assets were also deselected
 
 **Requirements**
 - iOS 10.1+

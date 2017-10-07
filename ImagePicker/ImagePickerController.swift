@@ -21,12 +21,18 @@ public protocol ImagePickerControllerDelegate : class {
     func imagePicker(controller: ImagePickerController, didSelectActionItemAt index: Int)
     
     ///
-    /// Called when user select an asset
+    /// Called when user select an asset.
     ///
-    func imagePicker(controller: ImagePickerController, didFinishPicking asset: PHAsset)
+    func imagePicker(controller: ImagePickerController, didSelect asset: PHAsset)
     
-    //perhaps we can use method above and remove this one, client does not care if user took a picture or
-    //picked it from a library, to do that we perhaps have to save taken image to photo library
+    ///
+    /// Called when user unselect previously selected asset.
+    ///
+    func imagePicker(controller: ImagePickerController, didDeselect asset: PHAsset)
+    
+    ///
+    /// Called when user takes new photo.
+    ///
     func imagePicker(controller: ImagePickerController, didTake image: UIImage)
     
     ///
@@ -45,7 +51,8 @@ public protocol ImagePickerControllerDelegate : class {
 //this will make sure all delegate methods are optional
 extension ImagePickerControllerDelegate {
     public func imagePicker(controller: ImagePickerController, didSelectActionItemAt index: Int) {}
-    public func imagePicker(controller: ImagePickerController, didFinishPicking asset: PHAsset) {}
+    public func imagePicker(controller: ImagePickerController, didSelect asset: PHAsset) {}
+    public func imagePicker(controller: ImagePickerController, didUnselect asset: PHAsset) {}
     public func imagePicker(controller: ImagePickerController, didTake image: UIImage) {}
     public func imagePicker(controller: ImagePickerController, willDisplayActionItem cell: UICollectionViewCell, at index: Int) {}
     public func imagePicker(controller: ImagePickerController, willDisplayAssetItem cell: ImagePickerAssetCell, asset: PHAsset) {}
@@ -399,7 +406,14 @@ extension ImagePickerController : ImagePickerDelegateDelegate {
         guard let asset = collectionViewDataSource.assetsModel.fetchResult?.object(at: index) else {
             return
         }
-        self.delegate?.imagePicker(controller: self, didFinishPicking: asset)
+        self.delegate?.imagePicker(controller: self, didSelect: asset)
+    }
+    
+    func imagePicker(delegate: ImagePickerDelegate, didDeselectAssetItemAt index: Int) {
+        guard let asset = collectionViewDataSource.assetsModel.fetchResult?.object(at: index) else {
+            return
+        }
+        self.delegate?.imagePicker(controller: self, didDeselect: asset)
     }
     
     func imagePicker(delegate: ImagePickerDelegate, willDisplayActionCell cell: UICollectionViewCell, at index: Int) {

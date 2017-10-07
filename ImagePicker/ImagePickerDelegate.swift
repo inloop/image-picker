@@ -17,6 +17,9 @@ protocol ImagePickerDelegateDelegate : class {
     /// Called when user selects one of asset items
     func imagePicker(delegate: ImagePickerDelegate, didSelectAssetItemAt index: Int)
     
+    /// Called when user deselects one of selected asset items
+    func imagePicker(delegate: ImagePickerDelegate, didDeselectAssetItemAt index: Int)
+    
     /// Called when action item is about to be displayed
     func imagePicker(delegate: ImagePickerDelegate, willDisplayActionCell cell: UICollectionViewCell, at index: Int)
     
@@ -54,6 +57,12 @@ final class ImagePickerDelegate : NSObject, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if indexPath.section == layout?.configuration.sectionIndexForAssets {
             delegate?.imagePicker(delegate: self, didSelectAssetItemAt: indexPath.row)
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
+        if indexPath.section == layout?.configuration.sectionIndexForAssets {
+            delegate?.imagePicker(delegate: self, didDeselectAssetItemAt: indexPath.row)
         }
     }
     
