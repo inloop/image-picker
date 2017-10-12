@@ -1,8 +1,8 @@
-![Image Picker: Image picker for chat applications](http://kinemakity.com/download/banner.png)
+![Image Picker: Image picker for chat applications](https://user-images.githubusercontent.com/500145/31496739-deaafdc4-af5c-11e7-847c-03266262d990.png)
 
 An easy to use drop-in framework providing user interface for taking pictures and videos and pick assets from Photo Library. User interface is designed to support `inputView` "keyboard-like" presentation for conversation user interfaces. Project is written in Swift4.
 
-![Demo](http://kinemakity.com/download/demo_1.gif)
+![Demo](https://user-images.githubusercontent.com/500145/31496397-766f626e-af5b-11e7-9d6f-c0c5dda93086.gif)
 
 **Features:**
 - [x] presentation designed for chat apps as well as regular view controllers
