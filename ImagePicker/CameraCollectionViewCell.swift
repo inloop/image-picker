@@ -117,7 +117,7 @@ open class CameraCollectionViewCell : UICollectionViewCell {
     ///
     /// - parameter completion: A block is called as soon as camera is changed.
     ///
-    public func flipCamera(_ completion: (() -> Void)?) {
+    public func flipCamera(_ completion: (() -> Void)? = nil) {
         delegate?.flipCamera(completion)
     }
     
