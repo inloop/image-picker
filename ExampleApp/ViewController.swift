@@ -269,7 +269,7 @@ class ViewController: UITableViewController {
             navigationController?.visibleViewController?.navigationItem.setRightBarButton(UIBarButtonItem(title: title, style: .plain, target: nil, action: nil), animated: true)
         }
     }
-    
+
 }
 
 extension ViewController : ImagePickerControllerDelegate {
