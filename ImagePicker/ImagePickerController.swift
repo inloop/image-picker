@@ -107,6 +107,31 @@ open class ImagePickerController : UIViewController {
     public weak var dataSource: ImagePickerControllerDataSource?
     
     ///
+    /// Programatically select asset.
+    ///
+    public func selectAsset(at index: Int, animated: Bool, scrollPosition: UICollectionViewScrollPosition) {
+        let path = IndexPath(item: index, section: layoutConfiguration.sectionIndexForAssets)
+        collectionView.selectItem(at: path, animated: animated, scrollPosition: scrollPosition)
+    }
+    
+    ///
+    /// Programatically deselect asset.
+    ///
+    public func deselectAsset(at index: Int, animated: Bool) {
+        let path = IndexPath(item: index, section: layoutConfiguration.sectionIndexForAssets)
+        collectionView.deselectItem(at: path, animated: animated)
+    }
+    
+    ///
+    /// Programatically deselect all selected assets.
+    ///
+    public func deselectAllAssets(animated: Bool) {
+        for selectedPath in collectionView.indexPathsForSelectedItems ?? [] {
+            collectionView.deselectItem(at: selectedPath, animated: animated)
+        }
+    }
+    
+    ///
     /// Access all currently selected images
     ///
     public var selectedAssets: [PHAsset] {

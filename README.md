@@ -64,7 +64,6 @@ Various kind of configuration is supported. All configuration should be done **b
 - to use your custom views for action, camera and asset items use `CellRegistrator` class
 - don't forget to set your `delegate` and `dataSource` if needed
 - to define a source of photos that should be available to pick up use view controller's `assetsFetchResultBlock` block
-- to access selected assets use `selectedAssets` array
 
 ### Capture settings
 
@@ -86,7 +85,7 @@ Please refer to `CaptureSettings` public header for more information.
 
 ### Providing your own photos fetch result
 
-By default Image Picker fetches from Photo Library 1000 recently added photos and videos. If you wish to provide your own fetch result please implement image picker controller's `assetsFetchResultBlock` block.
+By default Image Picker fetches from Photo Library 1000 photos and videos from smart album `smartAlbumUserLibrary` that should represent *Camera Roll* album. If you wish to provide your own fetch result please implement image picker controller's `assetsFetchResultBlock` block.
 
 For example to fetch only live photos you can use following code snippet:
 
@@ -226,7 +225,9 @@ func imagePicker(controller: ImagePickerController, didSelectActionItemAt index:
 
 Image picker provides a default camera cell that just shows a camera output and captures a photo when user taps it. 
 
-If you wish to implement fancier features you must provide your own subclass of `CameraCollectionViewCell` and implement dedicated methods.
+If you wish to implement fancier features you must provide your own subclass of `CameraCollectionViewCell` or nib file with custom cell class subclassing it and implement dedicated methods.
+
+> Note: Please note, that custom nib's cell class must inherit from `CameraCollectionViewCell` and must not specify any reuse identifer. Image Picker is handling reuse identifiers internally.
 
 Supported features of whoose UI can be fully customized:
 - [x] taking photos, live photos, recording videos, flipping camera
@@ -303,6 +304,16 @@ If you wish to present Image Picker as "keyboard" in your chat app, you have to 
 To see an example how to set up Image Picker as an input view of a view controller refer to our Example App.
 
 Optionaly, before presenting image picker, you can check if user has granted access permissions to Photos Library using `PHPhotoLibrary` API and ask for permissions. If you don't do it, image picker will take care of this automatically for you *after* it's presented.
+
+## Accessing, selecting and deselecting asset items
+
+Image Picker has several convinience methods to work with asset items.
+
+- `selectedAssets` property returns an array of currently selected `PHAsset` items
+- to access asset items at certain indexes, use `assets(at:)` and `asset(at:)`
+- to programatically select an asset item use `selectAsset(at:animated:scrollPosition:)`
+- to programatically deselect an asset item use `deselectAsset(at:animated:)`
+- to programatically deselect all selected items use `deselectAllAssets(_:)`
 
 ## Features to add
 

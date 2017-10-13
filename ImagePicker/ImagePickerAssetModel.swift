@@ -26,16 +26,16 @@ final class ImagePickerAssetModel {
     lazy var imageManager = PHCachingImageManager()
     var thumbnailSize: CGSize?
     
-    /// Tryies to access smart album recently added and uses just fetchAssets as fallback
+    /// Tryies to access smart album .smartAlbumUserLibrary that should be `Camera Roll` and uses just fetchAssets as fallback
     private lazy var defaultFetchResult: PHFetchResult<PHAsset> = {
         
         let assetsOptions = PHFetchOptions()
         assetsOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
         assetsOptions.fetchLimit = 1000
         
-        let collections = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumRecentlyAdded, options: nil)
-        if let recentlyAdded = collections.firstObject {
-            return PHAsset.fetchAssets(in: recentlyAdded, options: assetsOptions)
+        let collections = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumUserLibrary, options: nil)
+        if let cameraRoll = collections.firstObject {
+            return PHAsset.fetchAssets(in: cameraRoll, options: assetsOptions)
         }
         else {
             return PHAsset.fetchAssets(with: assetsOptions)

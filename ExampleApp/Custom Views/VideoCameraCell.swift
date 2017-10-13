@@ -38,7 +38,7 @@ class VideoCameraCell : CameraCollectionViewCell {
     }
     
     @IBAction func flipButtonTapped(_ sender: UIButton) {
-        flipCamera(nil)
+        flipCamera()
     }
     
     // MARK: Override Methods
