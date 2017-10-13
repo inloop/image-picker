@@ -64,7 +64,6 @@ Various kind of configuration is supported. All configuration should be done **b
 - to use your custom views for action, camera and asset items use `CellRegistrator` class
 - don't forget to set your `delegate` and `dataSource` if needed
 - to define a source of photos that should be available to pick up use view controller's `assetsFetchResultBlock` block
-- to access selected assets use `selectedAssets` array
 
 ### Capture settings
 
@@ -305,6 +304,16 @@ If you wish to present Image Picker as "keyboard" in your chat app, you have to 
 To see an example how to set up Image Picker as an input view of a view controller refer to our Example App.
 
 Optionaly, before presenting image picker, you can check if user has granted access permissions to Photos Library using `PHPhotoLibrary` API and ask for permissions. If you don't do it, image picker will take care of this automatically for you *after* it's presented.
+
+## Accessing, selecting and deselecting asset items
+
+Image Picker has several convinience methods to work with asset items.
+
+- `selectedAssets` property returns an array of currently selected `PHAsset` items
+- to access asset items at certain indexes, use `assets(at:)` and `asset(at:)`
+- to programatically select an asset item use `selectAsset(at:animated:scrollPosition:)`
+- to programatically deselect an asset item use `deselectAsset(at:animated:)`
+- to programatically deselect all selected items use `deselectAllAssets(_:)`
 
 ## Features to add
 
