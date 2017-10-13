@@ -85,7 +85,7 @@ Please refer to `CaptureSettings` public header for more information.
 
 ### Providing your own photos fetch result
 
-By default Image Picker fetches from Photo Library 1000 recently added photos and videos. If you wish to provide your own fetch result please implement image picker controller's `assetsFetchResultBlock` block.
+By default Image Picker fetches from Photo Library 1000 photos and videos from smart album `smartAlbumUserLibrary` that should represent *Camera Roll* album. If you wish to provide your own fetch result please implement image picker controller's `assetsFetchResultBlock` block.
 
 For example to fetch only live photos you can use following code snippet:
 
