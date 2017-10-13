@@ -117,29 +117,29 @@ open class CameraCollectionViewCell : UICollectionViewCell {
     ///
     /// - parameter completion: A block is called as soon as camera is changed.
     ///
-    public func flipCamera(_ completion: (() -> Void)? = nil) {
+    @objc public func flipCamera(_ completion: (() -> Void)? = nil) {
         delegate?.flipCamera(completion)
     }
     
     ///
     /// Takes a picture
     ///
-    public func takePicture() {
+    @objc public func takePicture() {
         delegate?.takePicture()
     }
     
     ///
     /// Takes a live photo. Please note that live photos must be enabled when configuring Image Picker.
     ///
-    public func takeLivePhoto() {
+    @objc public func takeLivePhoto() {
         delegate?.takeLivePhoto()
     }
     
-    public func startVideoRecording() {
+    @objc public func startVideoRecording() {
         delegate?.startVideoRecording()
     }
     
-    public func stopVideoRecording() {
+    @objc public func stopVideoRecording() {
         delegate?.stopVideoRecording()
     }
     
