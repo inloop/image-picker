@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Photos
 
 ///
 /// Each image picker asset cell must conform to this protocol.
@@ -20,9 +21,76 @@ public protocol ImagePickerAssetCell : class {
     var representedAssetIdentifier: String? { get set }
 }
 
+class VideoAssetCell : AssetCell {
+    
+    var durationLabel: UILabel
+    var iconView: UIImageView
+    
+    override init(frame: CGRect) {
+        
+        durationLabel = UILabel(frame: .zero)
+        iconView = UIImageView(frame: .zero)
+        
+        super.init(frame: frame)
+        
+        durationLabel.textColor = UIColor.white
+        durationLabel.font = UIFont.systemFont(ofSize: 10, weight: .semibold)
+        durationLabel.textAlignment = .right
+        //durationLabel.backgroundColor = UIColor.red
+        contentView.addSubview(durationLabel)
+        contentView.addSubview(iconView)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        let margin: CGFloat = 5
+        durationLabel.frame.size = CGSize(width: 50, height: 20)
+        durationLabel.frame.origin = CGPoint(
+            x: contentView.bounds.width - durationLabel.frame.size.width - margin,
+            y: contentView.bounds.height - durationLabel.frame.size.height - margin
+        )
+        iconView.frame.size = CGSize(width: 20, height: 20)
+        iconView.frame.origin = CGPoint(
+            x: margin,
+            y: contentView.bounds.height - iconView.frame.height - margin
+        )
+    }
+    
+    static let durationFormatter: DateComponentsFormatter = {
+        let formatter = DateComponentsFormatter()
+        formatter.unitsStyle = .positional
+        formatter.allowedUnits = [.minute, .second]
+        formatter.zeroFormattingBehavior = .pad
+        return formatter
+    }()
+    
+    func update(with asset: PHAsset) {
+        
+        switch asset.mediaType {
+        case .image:
+            iconView.isHidden = true
+            durationLabel.isHidden = true
+        case .video:
+            iconView.isHidden = false
+            durationLabel.isHidden = false
+            iconView.image = UIImage(named: "icon-check-background", in: Bundle(for: type(of: self)), compatibleWith: nil)
+            durationLabel.text = VideoAssetCell.durationFormatter.string(from: asset.duration)
+        default: break
+        }
+        
+    }
+    
+}
+
 ///
 /// A default implementation of `ImagePickerAssetCell`. If user does not register
-/// her custom cell, Image Picker will use this one.
+/// a custom cell, Image Picker will use this one. It has an image view and
+/// a camera icon with video duration if asset is of type video. Also contains
+/// default icon for selected state.
 ///
 class AssetCell : UICollectionViewCell, ImagePickerAssetCell {
     

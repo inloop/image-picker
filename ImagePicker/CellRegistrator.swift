@@ -211,7 +211,7 @@ extension UICollectionView {
         
         case (nil, nil):
             //if user did not register all required classes/nibs - register default cells
-            register(AssetCell.self, forCellWithReuseIdentifier: registrator.cellIdentifierForAssetItems)
+            register(VideoAssetCell.self, forCellWithReuseIdentifier: registrator.cellIdentifierForAssetItems)
             //fatalError("there is not registered cell class nor nib for asset items, please user appropriate register methods on `CellRegistrator`")
         
         case (let nib, nil):

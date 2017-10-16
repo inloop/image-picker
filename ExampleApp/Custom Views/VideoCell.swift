@@ -21,5 +21,4 @@ class VideoCell: UICollectionViewCell, ImagePickerAssetCell {
         super.awakeFromNib()
         // Initialization code
     }
-
 }

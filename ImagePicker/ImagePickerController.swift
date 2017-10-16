@@ -460,7 +460,14 @@ extension ImagePickerController : ImagePickerDelegateDelegate {
     }
     
     func imagePicker(delegate: ImagePickerDelegate, willDisplayAssetCell cell: ImagePickerAssetCell, at index: Int) {
-        self.delegate?.imagePicker(controller: self, willDisplayAssetItem: cell, asset: asset(at: index))
+        let theAsset = asset(at: index)
+        
+        //if the cell is default cell provided by Image Picker, it's our responsibility
+        //to update the cell with the asset.
+        if let defaultCell = cell as? VideoAssetCell {
+            defaultCell.update(with: theAsset)
+        }
+        self.delegate?.imagePicker(controller: self, willDisplayAssetItem: cell, asset: theAsset)
     }
     
     func imagePicker(delegate: ImagePickerDelegate, willDisplayCameraCell cell: CameraCollectionViewCell) {
