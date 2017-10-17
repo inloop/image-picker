@@ -8,29 +8,23 @@
 
 import Foundation
 import UIKit
-import ImagePicker
 
 class VideoCameraCell : CameraCollectionViewCell {
     
-    @IBOutlet weak var recordButton: UIButton!
+    @IBOutlet weak var recordButton: RecordVideoButton!
     @IBOutlet weak var flipButton: UIButton!
-    @IBOutlet weak var recIndicator: UILabel!
-    @IBOutlet weak var stateView: StateView!
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        recIndicator.alpha = 0
         recordButton.isEnabled = false
         recordButton.alpha = 0.5
     }
     
     @IBAction func recordButtonTapped(_ sender: UIButton) {
         if sender.isSelected {
-            print("should stop recording")
             stopVideoRecording()
         }
         else {
-            print("should start recording")
             startVideoRecording()
         }
     }
@@ -48,7 +42,6 @@ class VideoCameraCell : CameraCollectionViewCell {
         
         //update other buttons
         let updates: () -> Void = {
-            self.recIndicator.alpha = isRecording ? 1 : 0
             self.flipButton.alpha = isRecording ? 0 : 1
         }
 
@@ -62,22 +55,4 @@ class VideoCameraCell : CameraCollectionViewCell {
         }
     }
     
-    override func updateCameraAuthorizationStatus() {
-        switch authorizationStatus! {
-        case .authorized:
-            stateView.isHidden = true
-        case .denied:
-            stateView.isHidden = false
-            stateView.titleLabel.text = "Denied"
-            stateView.subtitleLabel.text = ""
-        case .restricted:
-            stateView.isHidden = false
-            stateView.titleLabel.text = "Restricted"
-            stateView.subtitleLabel.text = ""
-        case .notDetermined:
-            stateView.isHidden = false
-            stateView.titleLabel.text = "Grant Access"
-            stateView.subtitleLabel.text = ""
-        }
-    }
 }

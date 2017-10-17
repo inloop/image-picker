@@ -182,7 +182,7 @@ extension UICollectionView {
     ///
     /// Used by datasource when registering all cells to the collection view
     ///
-    func apply(registrator: CellRegistrator) {
+    func apply(registrator: CellRegistrator, cameraMode: CaptureSettings.CameraMode) {
     
         //register action items considering type
         register(nibsData: registrator.actionItemNibsData?.map { $1 })
@@ -192,8 +192,16 @@ extension UICollectionView {
         switch (registrator.cameraItemNib, registrator.cameraItemClass) {
         
         case (nil, nil):
-            //if user does not set any class or nib we have to register default cell `CameraCollectionViewCell`
-            register(CameraCollectionViewCell.self, forCellWithReuseIdentifier: registrator.cellIdentifierForCameraItem)
+            //if user does not set any class or nib we have to register default cell `CameraCollectionViewCell` based on camera mode
+            switch cameraMode {
+            case .photo, .photoAndLivePhoto:
+                let nib = UINib(nibName: "LivePhotoCameraCell", bundle: Bundle(for: LivePhotoCameraCell.self))
+                register(nib, forCellWithReuseIdentifier: registrator.cellIdentifierForCameraItem)
+                
+            case .photoAndVideo:
+                let nib = UINib(nibName: "VideoCameraCell", bundle: Bundle(for: VideoCameraCell.self))
+                register(nib, forCellWithReuseIdentifier: registrator.cellIdentifierForCameraItem)
+            }
         
         case (let nib, nil):
             register(nib, forCellWithReuseIdentifier: registrator.cellIdentifierForCameraItem)

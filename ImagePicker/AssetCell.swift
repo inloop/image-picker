@@ -21,6 +21,12 @@ public protocol ImagePickerAssetCell : class {
     var representedAssetIdentifier: String? { get set }
 }
 
+///
+/// A default collection view cell that represents asset item. It supports:
+/// - shows image view of image thumbnail
+/// - icon and duration for videos
+/// - selected icon when isSelected is true
+///
 class VideoAssetCell : AssetCell {
     
     var durationLabel: UILabel
@@ -95,8 +101,7 @@ class VideoAssetCell : AssetCell {
 
 ///
 /// A default implementation of `ImagePickerAssetCell`. If user does not register
-/// a custom cell, Image Picker will use this one. It has an image view and
-/// a camera icon with video duration if asset is of type video. Also contains
+/// a custom cell, Image Picker will use this one. Also contains
 /// default icon for selected state.
 ///
 class AssetCell : UICollectionViewCell, ImagePickerAssetCell {

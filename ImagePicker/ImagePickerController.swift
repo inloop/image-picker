@@ -297,7 +297,7 @@ open class ImagePickerController : UIViewController {
         view.addGestureRecognizer(recognizer)
         
         //apply cell registrator to collection view
-        collectionView.apply(registrator: cellRegistrator)
+        collectionView.apply(registrator: cellRegistrator, cameraMode: captureSettings.cameraMode)
         
         //connect all remaining objects as needed
         collectionViewDataSource.cellRegistrator = cellRegistrator
@@ -488,6 +488,11 @@ extension ImagePickerController : ImagePickerDelegateDelegate {
                 cell.isVisualEffectViewUsedForBlurring = true
             }
             
+        }
+        
+        //if cell is default LivePhotoCameraCell, we must update it based on camera config
+        if let liveCameraCell = cell as? LivePhotoCameraCell {
+            liveCameraCell.updateWithCameraMode(captureSettings.cameraMode)
         }
         
         //update live photos
