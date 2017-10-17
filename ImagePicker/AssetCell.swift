@@ -72,8 +72,15 @@ class VideoAssetCell : AssetCell {
         
         switch asset.mediaType {
         case .image:
-            iconView.isHidden = true
-            durationLabel.isHidden = true
+            if asset.mediaSubtypes.contains(.photoLive) {
+                iconView.isHidden = false
+                durationLabel.isHidden = true
+                iconView.image = UIImage(named: "icon-check", in: Bundle(for: type(of: self)), compatibleWith: nil)
+            }
+            else {
+                iconView.isHidden = true
+                durationLabel.isHidden = true
+            }
         case .video:
             iconView.isHidden = false
             durationLabel.isHidden = false
@@ -133,9 +140,10 @@ class AssetCell : UICollectionViewCell, ImagePickerAssetCell {
     override func layoutSubviews() {
         super.layoutSubviews()
         imageView.frame = bounds
+        let margin: CGFloat = 5
         selectedImageView.frame.origin = CGPoint(
-            x: bounds.width - selectedImageView.frame.width - 5,
-            y: bounds.height - selectedImageView.frame.height - 5
+            x: bounds.width - selectedImageView.frame.width - margin,
+            y: margin
         )
     }
     

@@ -42,16 +42,26 @@
                             <action selector="snapButtonTapped:" destination="V8G-LZ-O2A" eventType="touchUpInside" id="lbo-8L-1fj"/>
                         </connections>
                     </button>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bSH-Nk-1Bz" customClass="ShutterButton" customModule="Image_Picker" customModuleProvider="target">
+                        <rect key="frame" x="124.5" y="100" width="60" height="60"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="60" id="0Bc-uv-Nop"/>
+                            <constraint firstAttribute="width" constant="60" id="EOs-7R-pYA"/>
+                        </constraints>
+                    </view>
                 </subviews>
             </view>
             <constraints>
                 <constraint firstAttribute="trailing" secondItem="TZz-zW-MUA" secondAttribute="trailing" constant="5" id="NLc-a1-JTW"/>
+                <constraint firstItem="bSH-Nk-1Bz" firstAttribute="centerY" secondItem="V8G-LZ-O2A" secondAttribute="centerY" id="PtC-pD-GXP"/>
                 <constraint firstAttribute="bottom" secondItem="4iJ-Ed-DOd" secondAttribute="bottom" constant="15" id="Rll-YC-DwU"/>
                 <constraint firstItem="TZz-zW-MUA" firstAttribute="top" secondItem="V8G-LZ-O2A" secondAttribute="top" constant="10" id="TjB-no-kwN"/>
+                <constraint firstItem="bSH-Nk-1Bz" firstAttribute="centerX" secondItem="V8G-LZ-O2A" secondAttribute="centerX" id="aGQ-ph-S50"/>
                 <constraint firstItem="4iJ-Ed-DOd" firstAttribute="centerX" secondItem="V8G-LZ-O2A" secondAttribute="centerX" id="lYc-EA-zJY"/>
             </constraints>
             <size key="customSize" width="308" height="260"/>
-            <point key="canvasLocation" x="-211" y="-200"/>
+            <point key="canvasLocation" x="-326" y="-196"/>
         </collectionViewCell>
     </objects>
     <resources>

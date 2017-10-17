@@ -4,6 +4,7 @@
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13173"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -11,7 +12,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="KUc-Pb-VFJ" userLabel="Video Camera Cell" customClass="VideoCameraCell" customModuleProvider="target">
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="KUc-Pb-VFJ" userLabel="Video Camera Cell" customClass="VideoCameraCell" customModule="Image_Picker" customModuleProvider="target">
             <rect key="frame" x="0.0" y="0.0" width="219" height="259"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO">
@@ -65,14 +66,13 @@
                             <outlet property="titleLabel" destination="hEJ-h8-alE" id="68M-g0-jeN"/>
                         </connections>
                     </view>
-                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XWp-o0-bWK" customClass="StationaryButton" customModuleProvider="target">
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XWp-o0-bWK" customClass="RecordVideoButton" customModule="Image_Picker" customModuleProvider="target">
                         <rect key="frame" x="79.5" y="194" width="60" height="60"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="60" id="Lmu-Ph-K0b"/>
                             <constraint firstAttribute="height" constant="60" id="j1o-Y6-ONi"/>
                         </constraints>
                         <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <state key="normal" image="button_snap"/>
                         <connections>
                             <action selector="recordButtonTapped:" destination="KUc-Pb-VFJ" eventType="touchUpInside" id="3pP-6r-ufF"/>
                         </connections>
@@ -125,7 +125,6 @@
         </collectionViewCell>
     </objects>
     <resources>
-        <image name="button_snap" width="60" height="60"/>
         <image name="icon_flip_camera" width="24" height="21"/>
     </resources>
 </document>

@@ -202,7 +202,7 @@ class ViewController: UITableViewController {
                 imagePicker.captureSettings.cameraMode = .photo
             case .photoAndLivePhoto:
                 imagePicker.captureSettings.cameraMode = .photoAndLivePhoto
-                imagePicker.cellRegistrator.registerNibForCameraItem(UINib(nibName: "LivePhotoCameraCell", bundle: nil))
+                imagePicker.cellRegistrator.registerNibForCameraItem(UINib(nibName: "CameraCell", bundle: nil))
             case .photoAndVideo:
                 imagePicker.captureSettings.cameraMode = .photoAndVideo
                 imagePicker.cellRegistrator.registerNibForCameraItem(UINib(nibName: "VideoCameraCell", bundle: nil))
