@@ -162,8 +162,8 @@ imagePicker.cellRegistrator.registerNibForActionItems(UINib(nibName: "IconWithTe
 Same principle is applied to registering custom camera and asset items. You can also set specific cells for each asset media types such photos and videos. For example to use specific cell for video  assets use:
 ```swift
 let imagePicker = ImagePickerController()
-imagePicker.cellRegistrator.register(cellClass: VideoCell.self, forAssetItemOf: .video)
-imagePicker.cellRegistrator.register(cellClass: ImageCell.self, forAssetItemOf: .image)
+imagePicker.cellRegistrator.register(cellClass: CustomVideoCell.self, forAssetItemOf: .video)
+imagePicker.cellRegistrator.register(cellClass: CustomImageCell.self, forAssetItemOf: .image)
 ```
 > *Note:* Please make sure that if you use custom cells you register cells for all media types (audio, video) otherwise Image Picker will throw an exception. Please don't forget that camera item cells **must** subclass CameraCollectionViewCell and asset items cells **must** conform to `ImagePickerAssetCell` protocol. You can also fine-tune your asset cells to a specific asset types such us live photos, panorama photos, etc. using the delegate. Please see our ExampleApp for implementation details.
 
@@ -245,8 +245,8 @@ Image picker provides a default assets cell that shows an image thumbnail and se
 1. register cell classes for each asset media type, for example
 ```swift
 let imagePicker = ImagePickerController()
-imagePicker.register(cellClass: ImageCell.self, forAssetItemOf: .image)
-imagePicker.register(cellClass: VideoCell.self, forAssetItemOf: .video)
+imagePicker.register(cellClass: CustomImageCell.self, forAssetItemOf: .image)
+imagePicker.register(cellClass: CustomVideoCell.self, forAssetItemOf: .video)
 ```
 > Please note, that `CellRegistrator` provides a method to register 1 cell or nib for any asset media type.
 
@@ -255,10 +255,10 @@ imagePicker.register(cellClass: VideoCell.self, forAssetItemOf: .video)
 func imagePicker(controller: ImagePickerController, willDisplayAssetItem cell: ImagePickerAssetCell, asset: PHAsset) {
     switch cell {
         
-    case let videoCell as VideoCell:
+    case let videoCell as CustomVideoCell:
         videoCell.label.text = ViewController.durationFormatter.string(from: asset.duration)
         
-    case let imageCell as ImageCell:
+    case let imageCell as CustomImageCell:
         if asset.mediaSubtypes.contains(.photoLive) {
             imageCell.subtypeImageView.image = #imageLiteral(resourceName: "icon-live")
         }
@@ -274,7 +274,7 @@ func imagePicker(controller: ImagePickerController, willDisplayAssetItem cell: I
 }
 ```
 
-Please for more info and detailed implementation see our ExampleApp and ImageCell class and nib.
+Please for more info and detailed implementation see our ExampleApp and `CustomImageCell` class and nib or directly to implementation of `AssetCell` in Image Picker sources.
 
 ## Presentation
 
