@@ -223,7 +223,7 @@ func imagePicker(controller: ImagePickerController, didSelectActionItemAt index:
 
 ### Implementing custom camera cell
 
-Image picker provides a default camera cell that just shows a camera output and captures a photo when user taps it. 
+Image picker provides a default camera cell that adapts to taking pictures, live photos or videos based on `captureSettings`.
 
 If you wish to implement fancier features you must provide your own subclass of `CameraCollectionViewCell` or nib file with custom cell class subclassing it and implement dedicated methods.
 
@@ -236,7 +236,7 @@ Supported features of whoose UI can be fully customized:
 - [x] updating recording status
 - [x] showing current access permissions to camera
 
-To see an example of custom implementation that supports all mentioned features please see class `LivePhotoCameraCell` and `VideoCameraCell` of *ExampleApp*.
+To see an example of custom implementation that supports all mentioned features please see class `LivePhotoCameraCell` and `VideoCameraCell` of *Image Picker* source code..
 
 ### Implementing custom assets cell
 
