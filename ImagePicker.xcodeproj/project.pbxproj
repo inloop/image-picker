@@ -195,6 +195,12 @@
 				42EDD4151F712B2A00EAD2F5 /* Miscellaneous.swift */,
 				42D0979B1F7BF6B300A66E33 /* AssetCell.swift */,
 				427925F21F9636D700B6D55F /* StationaryButton.swift */,
+				427925F41F96381400B6D55F /* ShutterButton.swift */,
+				427925F61F96388000B6D55F /* RecordButton.swift */,
+				427925FB1F963A8C00B6D55F /* VideoCameraCell.swift */,
+				427925FC1F963A8C00B6D55F /* VideoCameraCell.xib */,
+				427925FF1F963E9B00B6D55F /* LivePhotoCameraCell.swift */,
+				427926001F963E9C00B6D55F /* LivePhotoCameraCell.xib */,
 				425BEC841F7D351A0091D008 /* Assets.xcassets */,
 				42D097981F7BD6E100A66E33 /* UIImageEffects.h */,
 				42D097971F7BD6E100A66E33 /* UIImageEffects.m */,
@@ -225,12 +231,6 @@
 				421442621F6014B3006BA45A /* CellRegistrator.swift */,
 				420C24251F5D8393008935D4 /* ImagePickerController.swift */,
 				420C24401F5EEA3C008935D4 /* LayoutConfiguration.swift */,
-				427925F41F96381400B6D55F /* ShutterButton.swift */,
-				427925F61F96388000B6D55F /* RecordButton.swift */,
-				427925FB1F963A8C00B6D55F /* VideoCameraCell.swift */,
-				427925FC1F963A8C00B6D55F /* VideoCameraCell.xib */,
-				427925FF1F963E9B00B6D55F /* LivePhotoCameraCell.swift */,
-				427926001F963E9C00B6D55F /* LivePhotoCameraCell.xib */,
 			);
 			name = Public;
 			sourceTree = "<group>";

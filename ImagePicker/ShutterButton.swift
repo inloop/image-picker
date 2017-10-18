@@ -82,7 +82,6 @@ class ShutterButton : UIButton {
             }
             CATransaction.commit()
         }
-        
     }
     
     override func layoutSubviews() {

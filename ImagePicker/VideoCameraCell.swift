@@ -9,6 +9,7 @@
 import Foundation
 import UIKit
 
+//TODO: add a recording indicator (red dot with timer)
 class VideoCameraCell : CameraCollectionViewCell {
     
     @IBOutlet weak var recordButton: RecordVideoButton!
