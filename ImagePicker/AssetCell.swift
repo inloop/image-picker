@@ -39,10 +39,13 @@ class VideoAssetCell : AssetCell {
         
         super.init(frame: frame)
         
+        iconView.tintColor = UIColor.white
+        iconView.contentMode = .center
+        
         durationLabel.textColor = UIColor.white
         durationLabel.font = UIFont.systemFont(ofSize: 10, weight: .semibold)
         durationLabel.textAlignment = .right
-        //durationLabel.backgroundColor = UIColor.red
+
         contentView.addSubview(durationLabel)
         contentView.addSubview(iconView)
     }
@@ -59,7 +62,7 @@ class VideoAssetCell : AssetCell {
             x: contentView.bounds.width - durationLabel.frame.size.width - margin,
             y: contentView.bounds.height - durationLabel.frame.size.height - margin
         )
-        iconView.frame.size = CGSize(width: 20, height: 20)
+        iconView.frame.size = CGSize(width: 21, height: 21)
         iconView.frame.origin = CGPoint(
             x: margin,
             y: contentView.bounds.height - iconView.frame.height - margin
@@ -81,7 +84,7 @@ class VideoAssetCell : AssetCell {
             if asset.mediaSubtypes.contains(.photoLive) {
                 iconView.isHidden = false
                 durationLabel.isHidden = true
-                iconView.image = UIImage(named: "icon-check", in: Bundle(for: type(of: self)), compatibleWith: nil)
+                iconView.image = UIImage(named: "icon-badge-livephoto", in: Bundle(for: type(of: self)), compatibleWith: nil)
             }
             else {
                 iconView.isHidden = true
@@ -90,7 +93,7 @@ class VideoAssetCell : AssetCell {
         case .video:
             iconView.isHidden = false
             durationLabel.isHidden = false
-            iconView.image = UIImage(named: "icon-check-background", in: Bundle(for: type(of: self)), compatibleWith: nil)
+            iconView.image = UIImage(named: "icon-badge-video", in: Bundle(for: type(of: self)), compatibleWith: nil)
             durationLabel.text = VideoAssetCell.durationFormatter.string(from: asset.duration)
         default: break
         }
