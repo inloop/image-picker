@@ -200,14 +200,19 @@ class ViewController: UITableViewController {
             switch captureMode {
             case .photo:
                 imagePicker.captureSettings.cameraMode = .photo
+                //if you wish to use your own cell for capturing photos register it here:
+                //please note that custom cell must sublcass `CameraCollectionViewCell`.
+                //imagePicker.cellRegistrator.registerNibForCameraItem(UINib(nibName: "CustomNibName", bundle: nil))
             case .photoAndLivePhoto:
                 imagePicker.captureSettings.cameraMode = .photoAndLivePhoto
-                //if you wish to use your own cell register it here:
-                //imagePicker.cellRegistrator.registerNibForCameraItem(UINib(nibName: "CameraCell", bundle: nil))
+                //if you wish to use your own cell for photo and live photo register it here:
+                //please note that custom cell must sublcass `CameraCollectionViewCell`.
+                //imagePicker.cellRegistrator.registerNibForCameraItem(UINib(nibName: "CustomNibName", bundle: nil))
             case .photoAndVideo:
                 imagePicker.captureSettings.cameraMode = .photoAndVideo
-                //if you wish to use your own cell register it here:
-                //imagePicker.cellRegistrator.registerNibForCameraItem(UINib(nibName: "VideoCameraCell", bundle: nil))
+                //if you wish to use your own cell for photo and video register it here:
+                //please note that custom cell must sublcass `CameraCollectionViewCell`.
+                //imagePicker.cellRegistrator.registerNibForCameraItem(UINib(nibName: "CustomNibName", bundle: nil))
             }
             
             // save capture assets to photo library?
