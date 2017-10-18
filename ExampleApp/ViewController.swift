@@ -174,9 +174,12 @@ class ViewController: UITableViewController {
             // config assets source
             switch assetsSource {
             case .recentlyAdded:
+                //for recently added we use default fetch result and default asset cell
                 break
             case .onlyVideos:
-                imagePicker.cellRegistrator.register(nib: UINib(nibName: "VideoCell", bundle: nil), forAssetItemOf: .video)
+                //registering custom video cell to demonstrate how to use custom cells
+                //please note that custom asset cells must conform to  ImagePickerAssetCell protocol
+                imagePicker.cellRegistrator.register(nib: UINib(nibName: "CustomVideoCell", bundle: nil), forAssetItemOf: .video)
                 imagePicker.assetsFetchResultBlock = {
                     guard let collection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumVideos, options: nil).firstObject else {
                         return nil //you can return nil if you did not find desired fetch result, default fetch result will be used.
@@ -184,7 +187,9 @@ class ViewController: UITableViewController {
                     return PHAsset.fetchAssets(in: collection, options: nil)
                 }
             case .onlySelfies:
-                imagePicker.cellRegistrator.registerNibForAssetItems(UINib(nibName: "ImageCell", bundle: nil))
+                //registering custom image cell to demonstrate how to use custom cells
+                //please note that custom asset cells must conform to  ImagePickerAssetCell protocol
+                imagePicker.cellRegistrator.registerNibForAssetItems(UINib(nibName: "CustomImageCell", bundle: nil))
                 imagePicker.assetsFetchResultBlock = {
                     guard let collection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumSelfPortraits, options: nil).firstObject else {
                         return nil
@@ -319,10 +324,10 @@ extension ViewController : ImagePickerControllerDelegate {
     func imagePicker(controller: ImagePickerController, willDisplayAssetItem cell: ImagePickerAssetCell, asset: PHAsset) {
         switch cell {
         
-        case let videoCell as VideoCell:
+        case let videoCell as CustomVideoCell:
             videoCell.label.text = ViewController.durationFormatter.string(from: asset.duration)
         
-        case let imageCell as ImageCell:
+        case let imageCell as CustomImageCell:
             if asset.mediaSubtypes.contains(.photoLive) {
                 imageCell.subtypeImageView.image = #imageLiteral(resourceName: "icon-live")
             }

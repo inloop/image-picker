@@ -9,7 +9,7 @@
 import UIKit
 import ImagePicker
 
-class VideoCell: UICollectionViewCell, ImagePickerAssetCell {
+class CustomVideoCell: UICollectionViewCell, ImagePickerAssetCell {
     
     @IBOutlet weak var imageView: UIImageView!
     
