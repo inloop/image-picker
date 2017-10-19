@@ -47,7 +47,7 @@ class VideoAssetCell : AssetCell {
         iconView.contentMode = .center
         
         durationLabel.textColor = UIColor.white
-        durationLabel.font = UIFont.systemFont(ofSize: 10, weight: .semibold)
+        durationLabel.font = UIFont.systemFont(ofSize: 12, weight: .semibold)
         durationLabel.textAlignment = .right
 
         contentView.addSubview(gradientView)
@@ -62,8 +62,8 @@ class VideoAssetCell : AssetCell {
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        gradientView.frame.size = CGSize(width: bounds.width, height: 30)
-        gradientView.frame.origin = CGPoint(x: 0, y: bounds.height-30)
+        gradientView.frame.size = CGSize(width: bounds.width, height: 40)
+        gradientView.frame.origin = CGPoint(x: 0, y: bounds.height-40)
         
         let margin: CGFloat = 5
         durationLabel.frame.size = CGSize(width: 50, height: 20)

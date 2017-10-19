@@ -87,7 +87,7 @@ class ViewController: UITableViewController {
     var numberOfActionItems: Int = 2
     var cameraConfig: CameraItemConfig = .enabled
     var assetsSource: AssetsSource = .recentlyAdded
-    var assetItemsInRow:Int = 3
+    var assetItemsInRow:Int = 2
     var captureMode: CaptureSettings.CameraMode = .photoAndLivePhoto
     var savesCapturedAssets: Bool = false
     
