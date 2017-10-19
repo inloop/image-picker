@@ -31,21 +31,26 @@ class VideoAssetCell : AssetCell {
     
     var durationLabel: UILabel
     var iconView: UIImageView
+    var gradientView: UIImageView
     
     override init(frame: CGRect) {
         
         durationLabel = UILabel(frame: .zero)
+        gradientView = UIImageView(frame: .zero)
         iconView = UIImageView(frame: .zero)
         
         super.init(frame: frame)
+        
+        gradientView.isHidden = true
         
         iconView.tintColor = UIColor.white
         iconView.contentMode = .center
         
         durationLabel.textColor = UIColor.white
-        durationLabel.font = UIFont.systemFont(ofSize: 10, weight: .semibold)
+        durationLabel.font = UIFont.systemFont(ofSize: 12, weight: .semibold)
         durationLabel.textAlignment = .right
 
+        contentView.addSubview(gradientView)
         contentView.addSubview(durationLabel)
         contentView.addSubview(iconView)
     }
@@ -56,6 +61,10 @@ class VideoAssetCell : AssetCell {
     
     override func layoutSubviews() {
         super.layoutSubviews()
+        
+        gradientView.frame.size = CGSize(width: bounds.width, height: 40)
+        gradientView.frame.origin = CGPoint(x: 0, y: bounds.height-40)
+        
         let margin: CGFloat = 5
         durationLabel.frame.size = CGSize(width: 50, height: 20)
         durationLabel.frame.origin = CGPoint(
@@ -82,15 +91,20 @@ class VideoAssetCell : AssetCell {
         switch asset.mediaType {
         case .image:
             if asset.mediaSubtypes.contains(.photoLive) {
+                gradientView.isHidden = false
+                gradientView.image = UIImage(named: "gradient", in: Bundle(for: type(of: self)), compatibleWith: nil)?.resizableImage(withCapInsets: .zero, resizingMode: .stretch)
                 iconView.isHidden = false
                 durationLabel.isHidden = true
                 iconView.image = UIImage(named: "icon-badge-livephoto", in: Bundle(for: type(of: self)), compatibleWith: nil)
             }
             else {
+                gradientView.isHidden = true
                 iconView.isHidden = true
                 durationLabel.isHidden = true
             }
         case .video:
+            gradientView.isHidden = false
+            gradientView.image = UIImage(named: "gradient", in: Bundle(for: type(of: self)), compatibleWith: nil)?.resizableImage(withCapInsets: .zero, resizingMode: .stretch)
             iconView.isHidden = false
             durationLabel.isHidden = false
             iconView.image = UIImage(named: "icon-badge-video", in: Bundle(for: type(of: self)), compatibleWith: nil)
