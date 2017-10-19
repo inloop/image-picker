@@ -154,7 +154,7 @@ imagePicker.layoutConfiguration.numberOfAssetItemsInRow = 1
 
 All views used by Image Picker can be provided by you to achieve highly customisable UI that fits your app the best. As mentioned earlier, whole UI consists of a collection view and an overlay view.
 
-- **collection view** displays cells to display action, camera and asset items. To register custom cells use `CellRegistrator`. It contains API to register both nibs and classes for each section type. For example to register custom cells for action items section use following code:
+- **collection view** uses cells to display action, camera and asset items. By default Image Picker provides cells for you with standard features and UI. However, if you wish to use your own cells incorporating your own UI and features use `CellRegistrator`. It contains API to register both nibs and classes for each section type. For example to register custom cells for action items section use following code:
 ```swift
 let imagePicker = ImagePickerController()
 imagePicker.cellRegistrator.registerNibForActionItems(UINib(nibName: "IconWithTextCell", bundle: nil))
@@ -240,7 +240,7 @@ To see an example of custom implementation that supports all mentioned features 
 
 ### Implementing custom assets cell
 
-Image picker provides a default assets cell that shows an image thumbnail and selected state. If you wish to provide custom asset cell, that could show for example asset's media subtype (live photo, panorama, HDR, screenshot, streamed video, etc.) simply register your own asset cells on `CellRegistrator` that conforms to `ImagePickerAssetCell` and in implement image picker delegate's `func imagePicker(controller: ImagePickerController, willDisplayAssetItem cell: ImagePickerAssetCell, asset: PHAsset)` method. Possible example implementation could be:
+Image picker provides a default assets cell that shows an image thumbnail, selected state, if asset is video it shows an icon and duration and if it's an live photo it shows an icon. If you wish to provide custom asset cell, that could show for example asset's media subtype (live photo, panorama, HDR, screenshot, streamed video, etc.) simply register your own asset cells on `CellRegistrator` that conforms to `ImagePickerAssetCell` and in implement image picker delegate's `func imagePicker(controller: ImagePickerController, willDisplayAssetItem cell: ImagePickerAssetCell, asset: PHAsset)` method. Possible example implementation could be:
 
 1. register cell classes for each asset media type, for example
 ```swift
@@ -274,7 +274,7 @@ func imagePicker(controller: ImagePickerController, willDisplayAssetItem cell: I
 }
 ```
 
-Please for more info and detailed implementation see our ExampleApp and `CustomImageCell` class and nib or directly to implementation of `AssetCell` in Image Picker sources.
+To see an example of custom implementation that supports all mentioned features please see class `VideoAssetCell` and `AssetCell` of *Image Picker* source code.
 
 ## Presentation
 
