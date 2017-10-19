@@ -94,10 +94,10 @@ class ViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        //configure global appearance. If you wish to specify appearance per
+        //Configure global appearance. If you wish to specify appearance per
         //instance simple set appearance() on the instance itself. It will
         //have a precedense over global appearance
-        ImagePickerController.appearance().backgroundColor = UIColor.black
+        //ImagePickerController.appearance().backgroundColor = UIColor.black
         
         navigationItem.title = "Image Picker"
         
