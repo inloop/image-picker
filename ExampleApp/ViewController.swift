@@ -307,13 +307,14 @@ extension ViewController : ImagePickerControllerDelegate {
     func imagePicker(controller: ImagePickerController, willDisplayActionItem cell: UICollectionViewCell, at index: Int) {
         switch cell {
         case let iconWithTextCell as IconWithTextCell:
+            iconWithTextCell.titleLabel.textColor = UIColor.black
             switch index {
             case 0:
                 iconWithTextCell.titleLabel.text = "Camera"
-                iconWithTextCell.imageView.image = #imageLiteral(resourceName: "ic-camera")
+                iconWithTextCell.imageView.image = #imageLiteral(resourceName: "button-camera")
             case 1:
-                iconWithTextCell.titleLabel.text = "Photo Library"
-                iconWithTextCell.imageView.image = #imageLiteral(resourceName: "ic-photo")
+                iconWithTextCell.titleLabel.text = "Photos"
+                iconWithTextCell.imageView.image = #imageLiteral(resourceName: "button-photo-library")
             default: break
             }
         default:
