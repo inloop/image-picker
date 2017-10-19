@@ -30,6 +30,8 @@
 		42310B9C1F7506DD0096DA5D /* ImagePicker.h in Headers */ = {isa = PBXBuildFile; fileRef = 420C24181F5D82F9008935D4 /* ImagePicker.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		42311FFC1F73DBBF00B1AEB4 /* VideoOuptutSampleBufferDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42311FFB1F73DBBE00B1AEB4 /* VideoOuptutSampleBufferDelegate.swift */; };
 		42428A8E1F618E4200D4EB3B /* CustomImageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42428A8D1F618E4100D4EB3B /* CustomImageCell.swift */; };
+		425777531F98D110000824F0 /* ActionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 425777511F98D10F000824F0 /* ActionCell.swift */; };
+		425777541F98D119000824F0 /* ActionCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 425777521F98D10F000824F0 /* ActionCell.xib */; };
 		425BEC851F7D351A0091D008 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 425BEC841F7D351A0091D008 /* Assets.xcassets */; };
 		427925F31F9636D700B6D55F /* StationaryButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 427925F21F9636D700B6D55F /* StationaryButton.swift */; };
 		427925F51F96381400B6D55F /* ShutterButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 427925F41F96381400B6D55F /* ShutterButton.swift */; };
@@ -105,6 +107,8 @@
 		4217080D1F62D06D000DA508 /* CameraCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraCollectionViewCell.swift; sourceTree = "<group>"; };
 		42311FFB1F73DBBE00B1AEB4 /* VideoOuptutSampleBufferDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoOuptutSampleBufferDelegate.swift; sourceTree = "<group>"; };
 		42428A8D1F618E4100D4EB3B /* CustomImageCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomImageCell.swift; sourceTree = "<group>"; };
+		425777511F98D10F000824F0 /* ActionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionCell.swift; sourceTree = "<group>"; };
+		425777521F98D10F000824F0 /* ActionCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ActionCell.xib; sourceTree = "<group>"; };
 		425BEC841F7D351A0091D008 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		427925F21F9636D700B6D55F /* StationaryButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StationaryButton.swift; sourceTree = "<group>"; };
 		427925F41F96381400B6D55F /* ShutterButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShutterButton.swift; sourceTree = "<group>"; };
@@ -201,6 +205,8 @@
 				427925FC1F963A8C00B6D55F /* VideoCameraCell.xib */,
 				427925FF1F963E9B00B6D55F /* LivePhotoCameraCell.swift */,
 				427926001F963E9C00B6D55F /* LivePhotoCameraCell.xib */,
+				425777511F98D10F000824F0 /* ActionCell.swift */,
+				425777521F98D10F000824F0 /* ActionCell.xib */,
 				425BEC841F7D351A0091D008 /* Assets.xcassets */,
 				42D097981F7BD6E100A66E33 /* UIImageEffects.h */,
 				42D097971F7BD6E100A66E33 /* UIImageEffects.m */,
@@ -363,6 +369,7 @@
 				427925FE1F963B2800B6D55F /* VideoCameraCell.xib in Resources */,
 				425BEC851F7D351A0091D008 /* Assets.xcassets in Resources */,
 				427926021F96407900B6D55F /* LivePhotoCameraCell.xib in Resources */,
+				425777541F98D119000824F0 /* ActionCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -411,6 +418,7 @@
 				42EDD4051F7125C700EAD2F5 /* CaptureSession.swift in Sources */,
 				427925F71F96388000B6D55F /* RecordButton.swift in Sources */,
 				427925F31F9636D700B6D55F /* StationaryButton.swift in Sources */,
+				425777531F98D110000824F0 /* ActionCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -16,9 +16,9 @@ let cellsData: [[CellData]] = [
         CellData("Modally", #selector(ViewController.togglePresentationMode(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.presentsModally ? .checkmark : .none })
     ],
     [
-        CellData("Disabled (default)", #selector(ViewController.setNumberOfActionItems(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.numberOfActionItems == 0 ? .checkmark : .none }),
+        CellData("Disabled", #selector(ViewController.setNumberOfActionItems(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.numberOfActionItems == 0 ? .checkmark : .none }),
         CellData("One item", #selector(ViewController.setNumberOfActionItems(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.numberOfActionItems == 1 ? .checkmark : .none }),
-        CellData("Two items", #selector(ViewController.setNumberOfActionItems(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.numberOfActionItems == 2 ? .checkmark : .none }),
+        CellData("Two items (default)", #selector(ViewController.setNumberOfActionItems(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.numberOfActionItems == 2 ? .checkmark : .none }),
     ],
     [
         CellData("Enabled (default)", #selector(ViewController.configCameraItem(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.cameraConfig == .enabled ? .checkmark : .none }),
@@ -154,13 +154,19 @@ class ViewController: UITableViewController {
             switch numberOfActionItems {
             case 1:
                 imagePicker.layoutConfiguration.showsFirstActionItem = true
-                imagePicker.cellRegistrator.register(nib: UINib(nibName: "IconWithTextCell", bundle: nil), forActionItemAt: 0)
+                imagePicker.layoutConfiguration.showsSecondActionItem = false
+                //if you wish to register your own action cell register it here,
+                //it can by any UICollectionViewCell
+                //imagePicker.cellRegistrator.register(nib: UINib(nibName: "IconWithTextCell", bundle: nil), forActionItemAt: 0)
             case 2:
                 imagePicker.layoutConfiguration.showsFirstActionItem = true
                 imagePicker.layoutConfiguration.showsSecondActionItem = true
-                imagePicker.cellRegistrator.registerNibForActionItems(UINib(nibName: "IconWithTextCell", bundle: nil))
+                //if you wish to register your own action cell register it here,
+                //it can by any UICollectionViewCell
+                //imagePicker.cellRegistrator.registerNibForActionItems(UINib(nibName: "IconWithTextCell", bundle: nil))
             default:
-                break
+                imagePicker.layoutConfiguration.showsFirstActionItem = false
+                imagePicker.layoutConfiguration.showsSecondActionItem = false
             }
             
             // set camera item enabled/disabled
