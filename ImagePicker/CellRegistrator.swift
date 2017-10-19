@@ -196,7 +196,8 @@ extension UICollectionView {
             guard let identifier = registrator.cellIdentifier(forActionItemAt: Int.max) else {
                 fatalError("Image Picker: unable to register default action item cell")
             }
-            register(ActionCell.self, forCellWithReuseIdentifier: identifier)
+            let nib = UINib(nibName: "ActionCell", bundle: Bundle(for: ActionCell.self))
+            register(nib, forCellWithReuseIdentifier: identifier)
         }
         else {
             register(nibsData: registrator.actionItemNibsData?.map { $1 })
