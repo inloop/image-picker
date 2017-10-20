@@ -31,7 +31,7 @@ A central object `ImagePickerController` manages user interactions and delivers 
 
 Image Picker consists of 3 main functional parts:
 
-1. **section of action items** - supports up to 2 custom action buttons, this section is optional and by default turned off.
+1. **section of action items** - supports up to 2 action buttons, this section is optional and by default contains action item for camera and photos.
 2. **section of camera item** - shows camera's video output and provides UI for user to take photos, videos, etc. This section is optinal and by default it's turned on.
 3. **section of asset items** - shows thumbnails of assets found in Photo Library allowing user to select them. Section is mandatory and and can not be turned off.
 
@@ -123,11 +123,10 @@ Please note that UIKit's appearance proxy is not currently supported.
 
 Image picker supports various kind of layouts and both vertical and horizontal scroll direction. Using `LayoutConfiguration` you can set layout that you need specifically to your app.
 
-1. **Action Items** are always shown as first section and can contain up to 2 buttons. By default this section is turned off. Next example will show how to turn on both action items:
+1. **Action Items** are always shown as first section and can contain up to 2 buttons. By default this section shows 2 items. Next example will show how to turn off second action item:
 ```swift
 let imagePicker = ImagePickerController()
-imagePicker.layoutConfiguration.showsFirstActionItem = true
-imagePicker.layoutConfiguration.showsSecondActionItem = true
+imagePicker.layoutConfiguration.showsSecondActionItem = false
 ```
 
 2. **Camera Item** is always shown in a section after action items section. So if action item if off this section is shown as first. Camera item section is by default on, so if you wish to turn it off use following code:
@@ -180,9 +179,9 @@ extension ViewController: ImagePickerControllerDataSource {
 
 ### Implementing custom action cell
 
-You can enable action cells on `LayoutConfiguration` so Image Picker will show action buttons in first section. In this case you **must** register your cell classes or nibs on `CellRegistrator`. After that implement corresponding `ImagePickerControllerDelegate` method to configure cell before it's displayed.
+If you wish to use your own action item cells, please register your cell classes or nibs at `CellRegistrator`. After that implement corresponding `ImagePickerControllerDelegate` method to configure cell before it's displayed.
 
-1. enable action cells (one or two) on layout configuration, for example
+1. use layout configuration to set your number of action items desired
 ```swift
 let imagePicker = ImagePickerController()
 imagePicker.layoutConfiguration.showsFirstActionItem = true
