@@ -16,9 +16,9 @@ let cellsData: [[CellData]] = [
         CellData("Modally", #selector(ViewController.togglePresentationMode(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.presentsModally ? .checkmark : .none })
     ],
     [
-        CellData("Disabled (default)", #selector(ViewController.setNumberOfActionItems(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.numberOfActionItems == 0 ? .checkmark : .none }),
+        CellData("Disabled", #selector(ViewController.setNumberOfActionItems(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.numberOfActionItems == 0 ? .checkmark : .none }),
         CellData("One item", #selector(ViewController.setNumberOfActionItems(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.numberOfActionItems == 1 ? .checkmark : .none }),
-        CellData("Two items", #selector(ViewController.setNumberOfActionItems(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.numberOfActionItems == 2 ? .checkmark : .none }),
+        CellData("Two items (default)", #selector(ViewController.setNumberOfActionItems(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.numberOfActionItems == 2 ? .checkmark : .none }),
     ],
     [
         CellData("Enabled (default)", #selector(ViewController.configCameraItem(indexPath:)), .indexPath, { cell, controller in cell.accessoryType = controller.cameraConfig == .enabled ? .checkmark : .none }),
@@ -87,17 +87,17 @@ class ViewController: UITableViewController {
     var numberOfActionItems: Int = 2
     var cameraConfig: CameraItemConfig = .enabled
     var assetsSource: AssetsSource = .recentlyAdded
-    var assetItemsInRow:Int = 3
+    var assetItemsInRow: Int = 2
     var captureMode: CaptureSettings.CameraMode = .photoAndLivePhoto
     var savesCapturedAssets: Bool = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        //configure global appearance. If you wish to specify appearance per
+        //Configure global appearance. If you wish to specify appearance per
         //instance simple set appearance() on the instance itself. It will
         //have a precedense over global appearance
-        ImagePickerController.appearance().backgroundColor = UIColor.black
+        //ImagePickerController.appearance().backgroundColor = UIColor.black
         
         navigationItem.title = "Image Picker"
         
@@ -154,13 +154,19 @@ class ViewController: UITableViewController {
             switch numberOfActionItems {
             case 1:
                 imagePicker.layoutConfiguration.showsFirstActionItem = true
-                imagePicker.cellRegistrator.register(nib: UINib(nibName: "IconWithTextCell", bundle: nil), forActionItemAt: 0)
+                imagePicker.layoutConfiguration.showsSecondActionItem = false
+                //if you wish to register your own action cell register it here,
+                //it can by any UICollectionViewCell
+                //imagePicker.cellRegistrator.register(nib: UINib(nibName: "IconWithTextCell", bundle: nil), forActionItemAt: 0)
             case 2:
                 imagePicker.layoutConfiguration.showsFirstActionItem = true
                 imagePicker.layoutConfiguration.showsSecondActionItem = true
-                imagePicker.cellRegistrator.registerNibForActionItems(UINib(nibName: "IconWithTextCell", bundle: nil))
+                //if you wish to register your own action cell register it here,
+                //it can by any UICollectionViewCell
+                //imagePicker.cellRegistrator.registerNibForActionItems(UINib(nibName: "IconWithTextCell", bundle: nil))
             default:
-                break
+                imagePicker.layoutConfiguration.showsFirstActionItem = false
+                imagePicker.layoutConfiguration.showsSecondActionItem = false
             }
             
             // set camera item enabled/disabled
@@ -174,9 +180,12 @@ class ViewController: UITableViewController {
             // config assets source
             switch assetsSource {
             case .recentlyAdded:
+                //for recently added we use default fetch result and default asset cell
                 break
             case .onlyVideos:
-                imagePicker.cellRegistrator.register(nib: UINib(nibName: "VideoCell", bundle: nil), forAssetItemOf: .video)
+                //registering custom video cell to demonstrate how to use custom cells
+                //please note that custom asset cells must conform to  ImagePickerAssetCell protocol
+                imagePicker.cellRegistrator.register(nib: UINib(nibName: "CustomVideoCell", bundle: nil), forAssetItemOf: .video)
                 imagePicker.assetsFetchResultBlock = {
                     guard let collection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumVideos, options: nil).firstObject else {
                         return nil //you can return nil if you did not find desired fetch result, default fetch result will be used.
@@ -184,7 +193,9 @@ class ViewController: UITableViewController {
                     return PHAsset.fetchAssets(in: collection, options: nil)
                 }
             case .onlySelfies:
-                imagePicker.cellRegistrator.registerNibForAssetItems(UINib(nibName: "ImageCell", bundle: nil))
+                //registering custom image cell to demonstrate how to use custom cells
+                //please note that custom asset cells must conform to  ImagePickerAssetCell protocol
+                imagePicker.cellRegistrator.registerNibForAssetItems(UINib(nibName: "CustomImageCell", bundle: nil))
                 imagePicker.assetsFetchResultBlock = {
                     guard let collection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumSelfPortraits, options: nil).firstObject else {
                         return nil
@@ -200,12 +211,19 @@ class ViewController: UITableViewController {
             switch captureMode {
             case .photo:
                 imagePicker.captureSettings.cameraMode = .photo
+                //if you wish to use your own cell for capturing photos register it here:
+                //please note that custom cell must sublcass `CameraCollectionViewCell`.
+                //imagePicker.cellRegistrator.registerNibForCameraItem(UINib(nibName: "CustomNibName", bundle: nil))
             case .photoAndLivePhoto:
                 imagePicker.captureSettings.cameraMode = .photoAndLivePhoto
-                imagePicker.cellRegistrator.registerNibForCameraItem(UINib(nibName: "LivePhotoCameraCell", bundle: nil))
+                //if you wish to use your own cell for photo and live photo register it here:
+                //please note that custom cell must sublcass `CameraCollectionViewCell`.
+                //imagePicker.cellRegistrator.registerNibForCameraItem(UINib(nibName: "CustomNibName", bundle: nil))
             case .photoAndVideo:
                 imagePicker.captureSettings.cameraMode = .photoAndVideo
-                imagePicker.cellRegistrator.registerNibForCameraItem(UINib(nibName: "VideoCameraCell", bundle: nil))
+                //if you wish to use your own cell for photo and video register it here:
+                //please note that custom cell must sublcass `CameraCollectionViewCell`.
+                //imagePicker.cellRegistrator.registerNibForCameraItem(UINib(nibName: "CustomNibName", bundle: nil))
             }
             
             // save capture assets to photo library?
@@ -276,6 +294,25 @@ extension ViewController : ImagePickerControllerDelegate {
     
     public func imagePicker(controller: ImagePickerController, didSelectActionItemAt index: Int) {
         print("did select action \(index)")
+        
+        //before we present system image picker, we must update present button
+        //because first responder will be dismissed
+        presentButton.isSelected = false
+        
+        if index == 0 && UIImagePickerController.isSourceTypeAvailable(.camera) {
+            let vc = UIImagePickerController()
+            vc.sourceType = .camera
+            vc.allowsEditing = true
+            if let mediaTypes = UIImagePickerController.availableMediaTypes(for: .camera) {
+                vc.mediaTypes = mediaTypes
+            }
+            navigationController?.visibleViewController?.present(vc, animated: true, completion: nil)
+        }
+        else if index == 1 && UIImagePickerController.isSourceTypeAvailable(.photoLibrary) {
+            let vc = UIImagePickerController()
+            vc.sourceType = .photoLibrary
+            navigationController?.visibleViewController?.present(vc, animated: true, completion: nil)
+        }
     }
     
     public func imagePicker(controller: ImagePickerController, didSelect asset: PHAsset) {
@@ -295,13 +332,14 @@ extension ViewController : ImagePickerControllerDelegate {
     func imagePicker(controller: ImagePickerController, willDisplayActionItem cell: UICollectionViewCell, at index: Int) {
         switch cell {
         case let iconWithTextCell as IconWithTextCell:
+            iconWithTextCell.titleLabel.textColor = UIColor.black
             switch index {
             case 0:
                 iconWithTextCell.titleLabel.text = "Camera"
-                iconWithTextCell.imageView.image = #imageLiteral(resourceName: "ic-camera")
+                iconWithTextCell.imageView.image = #imageLiteral(resourceName: "button-camera")
             case 1:
-                iconWithTextCell.titleLabel.text = "Photo Library"
-                iconWithTextCell.imageView.image = #imageLiteral(resourceName: "ic-photo")
+                iconWithTextCell.titleLabel.text = "Photos"
+                iconWithTextCell.imageView.image = #imageLiteral(resourceName: "button-photo-library")
             default: break
             }
         default:
@@ -312,10 +350,10 @@ extension ViewController : ImagePickerControllerDelegate {
     func imagePicker(controller: ImagePickerController, willDisplayAssetItem cell: ImagePickerAssetCell, asset: PHAsset) {
         switch cell {
         
-        case let videoCell as VideoCell:
+        case let videoCell as CustomVideoCell:
             videoCell.label.text = ViewController.durationFormatter.string(from: asset.duration)
         
-        case let imageCell as ImageCell:
+        case let imageCell as CustomImageCell:
             if asset.mediaSubtypes.contains(.photoLive) {
                 imageCell.subtypeImageView.image = #imageLiteral(resourceName: "icon-live")
             }

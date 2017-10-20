@@ -9,7 +9,7 @@
 import UIKit
 import ImagePicker
 
-class VideoCell: UICollectionViewCell, ImagePickerAssetCell {
+class CustomVideoCell: UICollectionViewCell, ImagePickerAssetCell {
     
     @IBOutlet weak var imageView: UIImageView!
     
@@ -21,5 +21,4 @@ class VideoCell: UICollectionViewCell, ImagePickerAssetCell {
         super.awakeFromNib()
         // Initialization code
     }
-
 }

@@ -41,6 +41,7 @@ final class ImagePickerDataSource : NSObject, UICollectionViewDataSource {
             fatalError("cells registrator must be set at this moment")
         }
         
+        //TODO: change these hardcoded section numbers to those defined in layoutModel.layoutConfiguration
         switch indexPath.section {
         case 0:
             guard let id = cellsRegistrator.cellIdentifier(forActionItemAt: indexPath.row) else {

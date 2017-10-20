@@ -11,7 +11,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="ki2-gi-o6k" customClass="IconWithTextCell" customModule="Image_Picker" customModuleProvider="target">
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="ki2-gi-o6k" customClass="ActionCell" customModule="ImagePicker" customModuleProvider="target">
             <rect key="frame" x="0.0" y="0.0" width="139" height="181"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
@@ -21,7 +21,7 @@
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bVr-oh-tyw" userLabel="Container">
                         <rect key="frame" x="6" y="9" width="127" height="167"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="background-rounded" translatesAutoresizingMaskIntoConstraints="NO" id="2Y0-M9-BCi">
+                            <imageView opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="background-rounded" translatesAutoresizingMaskIntoConstraints="NO" id="2Y0-M9-BCi">
                                 <rect key="frame" x="0.0" y="0.0" width="127" height="167"/>
                                 <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             </imageView>
@@ -65,10 +65,12 @@
             </constraints>
             <size key="customSize" width="139" height="181"/>
             <connections>
-                <outlet property="bottomOffset" destination="ilP-SX-9Wg" id="qNi-Su-YId"/>
-                <outlet property="imageView" destination="QFV-TK-kB2" id="fJi-8h-Qb5"/>
-                <outlet property="titleLabel" destination="fTM-DB-qg8" id="YY2-xP-27A"/>
-                <outlet property="topOffset" destination="Amb-iR-O9X" id="huv-jt-DUQ"/>
+                <outlet property="bottomOffset" destination="ilP-SX-9Wg" id="aCE-hQ-56s"/>
+                <outlet property="imageView" destination="QFV-TK-kB2" id="Akb-F7-fN9"/>
+                <outlet property="leadingOffset" destination="wms-ci-rUR" id="AdH-mA-mIG"/>
+                <outlet property="titleLabel" destination="fTM-DB-qg8" id="XcC-QK-rav"/>
+                <outlet property="topOffset" destination="Amb-iR-O9X" id="nb7-7v-O0D"/>
+                <outlet property="trailingOffset" destination="DFS-RJ-T7h" id="X6e-MX-fgr"/>
             </connections>
             <point key="canvasLocation" x="-311.5" y="-40.5"/>
         </collectionViewCell>

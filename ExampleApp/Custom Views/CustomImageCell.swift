@@ -10,7 +10,7 @@ import Foundation
 import UIKit
 import ImagePicker
 
-class ImageCell : UICollectionViewCell, ImagePickerAssetCell {
+class CustomImageCell : UICollectionViewCell, ImagePickerAssetCell {
     
     @IBOutlet weak var imageView: UIImageView!
     

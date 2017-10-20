@@ -297,7 +297,7 @@ open class ImagePickerController : UIViewController {
         view.addGestureRecognizer(recognizer)
         
         //apply cell registrator to collection view
-        collectionView.apply(registrator: cellRegistrator)
+        collectionView.apply(registrator: cellRegistrator, cameraMode: captureSettings.cameraMode)
         
         //connect all remaining objects as needed
         collectionViewDataSource.cellRegistrator = cellRegistrator
@@ -456,11 +456,22 @@ extension ImagePickerController : ImagePickerDelegateDelegate {
     }
     
     func imagePicker(delegate: ImagePickerDelegate, willDisplayActionCell cell: UICollectionViewCell, at index: Int) {
+        
+        if let defaultCell = cell as? ActionCell {
+            defaultCell.update(withIndex: index, layoutConfiguration: layoutConfiguration)
+        }
         self.delegate?.imagePicker(controller: self, willDisplayActionItem: cell, at: index)
     }
     
     func imagePicker(delegate: ImagePickerDelegate, willDisplayAssetCell cell: ImagePickerAssetCell, at index: Int) {
-        self.delegate?.imagePicker(controller: self, willDisplayAssetItem: cell, asset: asset(at: index))
+        let theAsset = asset(at: index)
+        
+        //if the cell is default cell provided by Image Picker, it's our responsibility
+        //to update the cell with the asset.
+        if let defaultCell = cell as? VideoAssetCell {
+            defaultCell.update(with: theAsset)
+        }
+        self.delegate?.imagePicker(controller: self, willDisplayAssetItem: cell, asset: theAsset)
     }
     
     func imagePicker(delegate: ImagePickerDelegate, willDisplayCameraCell cell: CameraCollectionViewCell) {
@@ -481,6 +492,11 @@ extension ImagePickerController : ImagePickerDelegateDelegate {
                 cell.isVisualEffectViewUsedForBlurring = true
             }
             
+        }
+        
+        //if cell is default LivePhotoCameraCell, we must update it based on camera config
+        if let liveCameraCell = cell as? LivePhotoCameraCell {
+            liveCameraCell.updateWithCameraMode(captureSettings.cameraMode)
         }
         
         //update live photos
@@ -510,19 +526,19 @@ extension ImagePickerController : ImagePickerDelegateDelegate {
         //susped session only if not recording video, otherwise the recording would be stopped.
         if isRecordingVideo == false {
             captureSession?.suspend()
-        }
-        
-        // blur cell asap
-        DispatchQueue.global(qos: .userInteractive).async {
-            if let image = self.captureSession?.latestVideoBufferImage {
-                let blurred = UIImageEffects.imageByApplyingLightEffect(to: image)
-                DispatchQueue.main.async {
-                    cell.blurIfNeeded(blurImage: blurred, animated: false, completion: nil)
+            
+            // blur cell asap
+            DispatchQueue.global(qos: .userInteractive).async {
+                if let image = self.captureSession?.latestVideoBufferImage {
+                    let blurred = UIImageEffects.imageByApplyingLightEffect(to: image)
+                    DispatchQueue.main.async {
+                        cell.blurIfNeeded(blurImage: blurred, animated: false, completion: nil)
+                    }
                 }
-            }
-            else {
-                DispatchQueue.main.async {
-                    cell.blurIfNeeded(blurImage: nil, animated: false, completion: nil)
+                else {
+                    DispatchQueue.main.async {
+                        cell.blurIfNeeded(blurImage: nil, animated: false, completion: nil)
+                    }
                 }
             }
         }

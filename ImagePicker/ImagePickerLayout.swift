@@ -55,19 +55,19 @@ final class ImagePickerLayout {
         let layoutModel = LayoutModel(configuration: configuration, assets: 0)
         
         switch indexPath.section {
-        case 0:
+        case configuration.sectionIndexForActions:
             //this will make sure that action item is either square if there are 2 items,
             //or a recatangle if there is only 1 item
             let width = sizeForItem(numberOfItemsInRow: 2, preferredWidthOrHeight: nil, collectionView: collectionView, scrollDirection: layout.scrollDirection).width
-            return sizeForItem(numberOfItemsInRow: layoutModel.numberOfItems(in: 0), preferredWidthOrHeight: width, collectionView: collectionView, scrollDirection: layout.scrollDirection)
+            return sizeForItem(numberOfItemsInRow: layoutModel.numberOfItems(in: configuration.sectionIndexForActions), preferredWidthOrHeight: width, collectionView: collectionView, scrollDirection: layout.scrollDirection)
             
-        case 1:
+        case configuration.sectionIndexForCamera:
             //lets keep this ratio so camera item is a nice rectangle
             let ratio: CGFloat = 0.734
             let width: CGFloat = collectionView.frame.height * ratio
-            return sizeForItem(numberOfItemsInRow: layoutModel.numberOfItems(in: 1), preferredWidthOrHeight: width, collectionView: collectionView, scrollDirection: layout.scrollDirection)
+            return sizeForItem(numberOfItemsInRow: layoutModel.numberOfItems(in: configuration.sectionIndexForCamera), preferredWidthOrHeight: width, collectionView: collectionView, scrollDirection: layout.scrollDirection)
             
-        case 2:
+        case configuration.sectionIndexForAssets:
             //make sure there is at least 1 item, othewise invalid layout
             assert(configuration.numberOfAssetItemsInRow > 0, "invalid layout - numberOfAssetItemsInRow must be > 0, check your layout configuration ")
             return sizeForItem(numberOfItemsInRow: configuration.numberOfAssetItemsInRow, preferredWidthOrHeight: nil, collectionView: collectionView, scrollDirection: layout.scrollDirection)

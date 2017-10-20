@@ -25,9 +25,9 @@ struct LayoutModel {
     init(configuration: LayoutConfiguration, assets: Int) {
         var actionItems: Int = configuration.showsFirstActionItem ? 1 : 0
         actionItems += configuration.showsSecondActionItem ? 1 : 0
-        sections[0] = actionItems
-        sections[1] = configuration.showsCameraItem ? 1 : 0
-        sections[2] = assets
+        sections[configuration.sectionIndexForActions] = actionItems
+        sections[configuration.sectionIndexForCamera] = configuration.showsCameraItem ? 1 : 0
+        sections[configuration.sectionIndexForAssets] = assets
     }
     
     var numberOfSections: Int {

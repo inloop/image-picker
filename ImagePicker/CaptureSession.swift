@@ -334,6 +334,12 @@ final class CaptureSession : NSObject {
                 // In some cases where users break their phones, the back wide angle camera is not available. In this case, we should default to the front wide angle camera.
                 defaultVideoDevice = frontCameraDevice
             }
+            else {
+                log("capture session: could not create capture device")
+                setupResult = .configurationFailed
+                session.commitConfiguration()
+                return
+            }
             
             let videoDeviceInput = try AVCaptureDeviceInput(device: defaultVideoDevice!)
             
