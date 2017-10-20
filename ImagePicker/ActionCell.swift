@@ -13,6 +13,9 @@ final class ActionCell : UICollectionViewCell {
     
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var imageView: UIImageView!
+    
+    @IBOutlet var leadingOffset: NSLayoutConstraint!
+    @IBOutlet var trailingOffset: NSLayoutConstraint!
     @IBOutlet var topOffset: NSLayoutConstraint!
     @IBOutlet var bottomOffset: NSLayoutConstraint!
     
@@ -25,7 +28,10 @@ final class ActionCell : UICollectionViewCell {
 
 extension ActionCell {
     
-    func update(withIndex index: Int, outOf: Int) {
+    func update(withIndex index: Int, layoutConfiguration: LayoutConfiguration) {
+        
+        let layoutModel = LayoutModel(configuration: layoutConfiguration, assets: 0)
+        let actionCount = layoutModel.numberOfItems(in: layoutConfiguration.sectionIndexForActions)
         
         titleLabel.textColor = UIColor.black
         switch index {
@@ -39,10 +45,21 @@ extension ActionCell {
         }
         
         let isFirst = index == 0
-        topOffset.constant = isFirst ? 10 : 5
+        let isLast = index == actionCount - 1
         
-        let isLast = index == outOf - 1
-        bottomOffset.constant = isLast ? 10 : 5
+        switch layoutConfiguration.scrollDirection {
+        case .horizontal:
+            topOffset.constant = isFirst ? 10 : 5
+            bottomOffset.constant = isLast ? 10 : 5
+            leadingOffset.constant = 5
+            trailingOffset.constant = 5
+        case .vertical:
+            topOffset.constant = 5
+            bottomOffset.constant = 5
+            leadingOffset.constant = isFirst ? 10 : 5
+            trailingOffset.constant = isLast ? 10 : 5
+        }
+        
     }
     
 }

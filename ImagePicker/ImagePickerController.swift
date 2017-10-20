@@ -458,9 +458,7 @@ extension ImagePickerController : ImagePickerDelegateDelegate {
     func imagePicker(delegate: ImagePickerDelegate, willDisplayActionCell cell: UICollectionViewCell, at index: Int) {
         
         if let defaultCell = cell as? ActionCell {
-            let layoutModel = LayoutModel(configuration: layoutConfiguration, assets: 0)
-            let actionCount = layoutModel.numberOfItems(in: layoutConfiguration.sectionIndexForActions)
-            defaultCell.update(withIndex: index, outOf: actionCount)
+            defaultCell.update(withIndex: index, layoutConfiguration: layoutConfiguration)
         }
         self.delegate?.imagePicker(controller: self, willDisplayActionItem: cell, at: index)
     }

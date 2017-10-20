@@ -67,8 +67,10 @@
             <connections>
                 <outlet property="bottomOffset" destination="ilP-SX-9Wg" id="aCE-hQ-56s"/>
                 <outlet property="imageView" destination="QFV-TK-kB2" id="Akb-F7-fN9"/>
+                <outlet property="leadingOffset" destination="wms-ci-rUR" id="AdH-mA-mIG"/>
                 <outlet property="titleLabel" destination="fTM-DB-qg8" id="XcC-QK-rav"/>
                 <outlet property="topOffset" destination="Amb-iR-O9X" id="nb7-7v-O0D"/>
+                <outlet property="trailingOffset" destination="DFS-RJ-T7h" id="X6e-MX-fgr"/>
             </connections>
             <point key="canvasLocation" x="-311.5" y="-40.5"/>
         </collectionViewCell>
