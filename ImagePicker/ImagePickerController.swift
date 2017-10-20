@@ -526,19 +526,19 @@ extension ImagePickerController : ImagePickerDelegateDelegate {
         //susped session only if not recording video, otherwise the recording would be stopped.
         if isRecordingVideo == false {
             captureSession?.suspend()
-        }
-        
-        // blur cell asap
-        DispatchQueue.global(qos: .userInteractive).async {
-            if let image = self.captureSession?.latestVideoBufferImage {
-                let blurred = UIImageEffects.imageByApplyingLightEffect(to: image)
-                DispatchQueue.main.async {
-                    cell.blurIfNeeded(blurImage: blurred, animated: false, completion: nil)
+            
+            // blur cell asap
+            DispatchQueue.global(qos: .userInteractive).async {
+                if let image = self.captureSession?.latestVideoBufferImage {
+                    let blurred = UIImageEffects.imageByApplyingLightEffect(to: image)
+                    DispatchQueue.main.async {
+                        cell.blurIfNeeded(blurImage: blurred, animated: false, completion: nil)
+                    }
                 }
-            }
-            else {
-                DispatchQueue.main.async {
-                    cell.blurIfNeeded(blurImage: nil, animated: false, completion: nil)
+                else {
+                    DispatchQueue.main.async {
+                        cell.blurIfNeeded(blurImage: nil, animated: false, completion: nil)
+                    }
                 }
             }
         }
