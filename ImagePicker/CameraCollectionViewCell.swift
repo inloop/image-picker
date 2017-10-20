@@ -28,7 +28,11 @@ open class CameraCollectionViewCell : UICollectionViewCell {
     }
     
     /// contains video preview layer
-    var previewView = AVPreviewView(frame: .zero)
+    var previewView: AVPreviewView = {
+        let view = AVPreviewView(frame: .zero)
+        view.backgroundColor = UIColor.black
+        return view
+    }()
     
     ///
     /// holds static image that is above blur view to achieve nicer presentation
