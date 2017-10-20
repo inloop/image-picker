@@ -294,6 +294,25 @@ extension ViewController : ImagePickerControllerDelegate {
     
     public func imagePicker(controller: ImagePickerController, didSelectActionItemAt index: Int) {
         print("did select action \(index)")
+        
+        //before we present system image picker, we must update present button
+        //because first responder will be dismissed
+        presentButton.isSelected = false
+        
+        if index == 0 && UIImagePickerController.isSourceTypeAvailable(.camera) {
+            let vc = UIImagePickerController()
+            vc.sourceType = .camera
+            vc.allowsEditing = true
+            if let mediaTypes = UIImagePickerController.availableMediaTypes(for: .camera) {
+                vc.mediaTypes = mediaTypes
+            }
+            navigationController?.visibleViewController?.present(vc, animated: true, completion: nil)
+        }
+        else if index == 1 && UIImagePickerController.isSourceTypeAvailable(.photoLibrary) {
+            let vc = UIImagePickerController()
+            vc.sourceType = .photoLibrary
+            navigationController?.visibleViewController?.present(vc, animated: true, completion: nil)
+        }
     }
     
     public func imagePicker(controller: ImagePickerController, didSelect asset: PHAsset) {
