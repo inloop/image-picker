@@ -65,7 +65,31 @@ final class ImagePickerLayout {
             
         case configuration.sectionIndexForCamera:
             //lets keep this ratio so camera item is a nice rectangle
-            let ratio: CGFloat = 0.734
+            
+            let traitCollection = collectionView.traitCollection
+            
+            var ratio: CGFloat = 160/212
+            
+            //for iphone in landscape we need different ratio
+            switch traitCollection.userInterfaceIdiom {
+            case .phone:
+                switch (traitCollection.horizontalSizeClass, traitCollection.verticalSizeClass) {
+                //iphones in landscape
+                case (.unspecified, .compact):
+                    fallthrough
+                //iphones+ in landscape
+                case (.regular, .compact):
+                    fallthrough
+                //iphones in landscape except iphone +
+                case (.compact, .compact):
+                    ratio = 1/ratio
+                default: break
+                }
+                
+            default:
+                break
+            }
+            
             let widthOrHeight: CGFloat = collectionView.frame.height * ratio
             return sizeForItem(numberOfItemsInRow: layoutModel.numberOfItems(in: configuration.sectionIndexForCamera), preferredWidthOrHeight: widthOrHeight, collectionView: collectionView, scrollDirection: layout.scrollDirection)
             

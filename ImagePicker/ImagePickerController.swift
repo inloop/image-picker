@@ -303,7 +303,7 @@ open class ImagePickerController : UIViewController {
         collectionViewDataSource.cellRegistrator = cellRegistrator
         collectionViewDelegate.delegate = self
         collectionViewDelegate.layout = ImagePickerLayout(configuration: layoutConfiguration)
-
+        
         //register for photo library updates - this is needed when changing permissions to photo library
         //TODO: this is expensive (loading library for the first time)
         PHPhotoLibrary.shared().register(self)
