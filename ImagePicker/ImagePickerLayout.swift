@@ -58,14 +58,16 @@ final class ImagePickerLayout {
         case configuration.sectionIndexForActions:
             //this will make sure that action item is either square if there are 2 items,
             //or a recatangle if there is only 1 item
-            let width = sizeForItem(numberOfItemsInRow: 2, preferredWidthOrHeight: nil, collectionView: collectionView, scrollDirection: layout.scrollDirection).width
+            //let width = sizeForItem(numberOfItemsInRow: 2, preferredWidthOrHeight: nil, collectionView: collectionView, scrollDirection: layout.scrollDirection).width
+            let ratio: CGFloat = 0.25
+            let width = collectionView.frame.width * ratio
             return sizeForItem(numberOfItemsInRow: layoutModel.numberOfItems(in: configuration.sectionIndexForActions), preferredWidthOrHeight: width, collectionView: collectionView, scrollDirection: layout.scrollDirection)
             
         case configuration.sectionIndexForCamera:
             //lets keep this ratio so camera item is a nice rectangle
             let ratio: CGFloat = 0.734
-            let width: CGFloat = collectionView.frame.height * ratio
-            return sizeForItem(numberOfItemsInRow: layoutModel.numberOfItems(in: configuration.sectionIndexForCamera), preferredWidthOrHeight: width, collectionView: collectionView, scrollDirection: layout.scrollDirection)
+            let widthOrHeight: CGFloat = collectionView.frame.height * ratio
+            return sizeForItem(numberOfItemsInRow: layoutModel.numberOfItems(in: configuration.sectionIndexForCamera), preferredWidthOrHeight: widthOrHeight, collectionView: collectionView, scrollDirection: layout.scrollDirection)
             
         case configuration.sectionIndexForAssets:
             //make sure there is at least 1 item, othewise invalid layout
