@@ -230,11 +230,11 @@
 				427925FF1F963E9B00B6D55F /* LivePhotoCameraCell.swift */,
 				427926001F963E9C00B6D55F /* LivePhotoCameraCell.xib */,
 				427925F61F96388000B6D55F /* RecordButton.swift */,
+				42990DBE1FA07AF7001658C4 /* RecordDurationLabel.swift */,
 				427925F41F96381400B6D55F /* ShutterButton.swift */,
 				427925F21F9636D700B6D55F /* StationaryButton.swift */,
 				427925FB1F963A8C00B6D55F /* VideoCameraCell.swift */,
 				427925FC1F963A8C00B6D55F /* VideoCameraCell.xib */,
-				42990DBE1FA07AF7001658C4 /* RecordDurationLabel.swift */,
 			);
 			name = Views;
 			sourceTree = "<group>";
