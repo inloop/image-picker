@@ -81,7 +81,7 @@
                 <outlet property="liveIndicator" destination="XdY-d9-qdX" id="hDU-5n-Uz6"/>
                 <outlet property="snapButton" destination="XWp-o0-bWK" id="aaa-7B-lyl"/>
             </connections>
-            <point key="canvasLocation" x="-431" y="-224"/>
+            <point key="canvasLocation" x="-614" y="-257"/>
         </collectionViewCell>
     </objects>
     <resources>
