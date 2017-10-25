@@ -20,7 +20,7 @@ final class RecordDurationLabel : UILabel {
         layer.backgroundColor = UIColor(red: 234/255, green: 53/255, blue: 52/255, alpha: 1).cgColor
         layer.frame.size = CGSize(width: 6, height: 6)
         layer.cornerRadius = layer.frame.width/2
-        layer.opacity = 0
+        layer.opacity = 0 //by default hidden
         return layer
     }()
     
@@ -40,31 +40,48 @@ final class RecordDurationLabel : UILabel {
     }
     
     // MARK: Public Methods
-    
-    private var timer: Timer?
+
     private var backingSeconds: TimeInterval = 10000 {
-        didSet { updateLabel() }
+        didSet {
+            updateLabel()
+        }
     }
     
     func start() {
         
-        guard timer == nil else {
+        guard secondTimer == nil else {
             return
         }
         
-        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { [weak self] (timer) in
+        secondTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { [weak self] (timer) in
             self?.backingSeconds += 1
         })
-        timer?.tolerance = 0.1
+        secondTimer?.tolerance = 0.1
+        
+        indicatorTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { [weak self] (timer) in
+            self?.updateIndicator(appearDelay: 0.2)
+        })
+        indicatorTimer?.tolerance = 0.1
+        
+        updateIndicator(appearDelay: 0)
     }
     
     func stop() {
-        timer?.invalidate()
-        timer = nil
+        secondTimer?.invalidate()
+        secondTimer = nil
         backingSeconds = 0
+        updateLabel()
+        
+        indicatorTimer?.invalidate()
+        indicatorTimer = nil
+        indicatorLayer.removeAllAnimations()
+        indicatorLayer.opacity = 0
     }
     
     // MARK: Private Methods
+    
+    private var secondTimer: Timer?
+    private var indicatorTimer: Timer?
     
     private func updateLabel() {
         
@@ -76,22 +93,45 @@ final class RecordDurationLabel : UILabel {
         text = String(format:"%02i:%02i:%02i", hours, minutes, seconds)
     }
     
+    private func updateIndicator(appearDelay: CFTimeInterval = 0) {
+
+        let disappearDelay: CFTimeInterval = 0.25
+        
+        let appear = appearAnimation(delay: appearDelay)
+        let disappear = disappearAnimation(delay: appear.beginTime + appear.duration + disappearDelay)
+        
+        let animation = CAAnimationGroup()
+        animation.animations = [appear, disappear]
+        animation.duration = appear.duration + disappear.duration + appearDelay + disappearDelay
+        animation.isRemovedOnCompletion = true
+        
+        indicatorLayer.add(animation, forKey: "blinkAnimationKey")
+    }
+    
     private func commonInit() {
         layer.addSublayer(indicatorLayer)
         clipsToBounds = false
     }
     
-    private func fadeAnimation(fromValue: CGFloat, toValue: CGFloat, duration: CFTimeInterval) -> CAAnimation {
-        let animation = CABasicAnimation()
-        animation.keyPath = "opacity"
-        animation.fromValue = fromValue
-        animation.toValue = toValue
-        animation.duration = duration
-        animation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseOut)
-        animation.beginTime = CACurrentMediaTime()
-        animation.fillMode = kCAFillModeForwards
-        animation.isRemovedOnCompletion = false
-        return animation
+    private func appearAnimation(delay: CFTimeInterval = 0) -> CAAnimation {
+        let appear = CABasicAnimation(keyPath: "opacity")
+        appear.fromValue = indicatorLayer.presentation()?.opacity
+        appear.toValue = 1
+        appear.duration = 0.15
+        appear.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseOut)
+        appear.beginTime = delay
+        appear.fillMode = kCAFillModeForwards
+        return appear
+    }
+    
+    private func disappearAnimation(delay: CFTimeInterval = 0) -> CAAnimation {
+        let disappear = CABasicAnimation(keyPath: "opacity")
+        disappear.fromValue = indicatorLayer.presentation()?.opacity
+        disappear.toValue = 0
+        disappear.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseIn)
+        disappear.beginTime = delay
+        disappear.duration = 0.25
+        return disappear
     }
     
 }
