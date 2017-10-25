@@ -30,10 +30,10 @@
                         <state key="selected" image="icon-live-on"/>
                     </button>
                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XWp-o0-bWK" customClass="ShutterButton" customModule="ImagePicker">
-                        <rect key="frame" x="79.5" y="194" width="60" height="60"/>
+                        <rect key="frame" x="87.5" y="210" width="44" height="44"/>
                         <constraints>
-                            <constraint firstAttribute="width" constant="60" id="Lmu-Ph-K0b"/>
-                            <constraint firstAttribute="height" constant="60" id="j1o-Y6-ONi"/>
+                            <constraint firstAttribute="width" constant="44" id="Lmu-Ph-K0b"/>
+                            <constraint firstAttribute="height" constant="44" id="j1o-Y6-ONi"/>
                         </constraints>
                         <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <connections>
