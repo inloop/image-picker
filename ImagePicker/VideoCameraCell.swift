@@ -42,6 +42,9 @@ class VideoCameraCell : CameraCollectionViewCell {
         //update button state
         recordButton.isSelected = isRecording
         
+        //update duration label
+        isRecording ? recordLabel.start() : recordLabel.stop()
+        
         //update other buttons
         let updates: () -> Void = {
             self.flipButton.alpha = isRecording ? 0 : 1
