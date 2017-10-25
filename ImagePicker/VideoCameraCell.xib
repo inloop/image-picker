@@ -31,7 +31,7 @@
                         </connections>
                     </button>
                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eXx-j7-0BW">
-                        <rect key="frame" x="170" y="10" width="44" height="44"/>
+                        <rect key="frame" x="170" y="215" width="44" height="44"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="44" id="Dep-n0-2cB"/>
                             <constraint firstAttribute="width" constant="44" id="Z3c-vo-O1a"/>
@@ -42,21 +42,40 @@
                             <action selector="flipButtonTapped:" destination="KUc-Pb-VFJ" eventType="touchUpInside" id="FCR-qc-tDX"/>
                         </connections>
                     </button>
+                    <view alpha="0.29999999999999999" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="NxU-ed-Ve1">
+                        <rect key="frame" x="0.0" y="0.0" width="219" height="25"/>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="25" id="dau-9d-OYJ"/>
+                        </constraints>
+                    </view>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="00:00:00" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsLetterSpacingToFitWidth="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hdc-1X-egq" customClass="RecordDurationLabel" customModule="ImagePicker" customModuleProvider="target">
+                        <rect key="frame" x="81" y="4" width="58.5" height="16"/>
+                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="13"/>
+                        <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <nil key="highlightedColor"/>
+                    </label>
                 </subviews>
             </view>
             <constraints>
-                <constraint firstItem="eXx-j7-0BW" firstAttribute="top" secondItem="hhB-fB-d84" secondAttribute="top" constant="10" id="ZHC-yM-3is"/>
+                <constraint firstItem="hhB-fB-d84" firstAttribute="bottom" secondItem="eXx-j7-0BW" secondAttribute="bottom" id="829-5v-ypi"/>
+                <constraint firstItem="NxU-ed-Ve1" firstAttribute="leading" secondItem="KUc-Pb-VFJ" secondAttribute="leading" id="Mz6-md-rEB"/>
+                <constraint firstAttribute="trailing" secondItem="NxU-ed-Ve1" secondAttribute="trailing" id="UkG-ct-cfc"/>
+                <constraint firstItem="hdc-1X-egq" firstAttribute="top" secondItem="hhB-fB-d84" secondAttribute="top" constant="4" id="XeI-Tf-LkS"/>
                 <constraint firstItem="hhB-fB-d84" firstAttribute="trailing" secondItem="eXx-j7-0BW" secondAttribute="trailing" constant="5" id="bRl-6l-azU"/>
+                <constraint firstItem="NxU-ed-Ve1" firstAttribute="top" secondItem="KUc-Pb-VFJ" secondAttribute="top" id="cJb-fF-cQm"/>
                 <constraint firstItem="XWp-o0-bWK" firstAttribute="centerX" secondItem="hhB-fB-d84" secondAttribute="centerX" id="dfw-m3-rzI"/>
                 <constraint firstItem="hhB-fB-d84" firstAttribute="bottom" secondItem="XWp-o0-bWK" secondAttribute="bottom" constant="5" id="m3s-9a-T9V"/>
+                <constraint firstItem="hdc-1X-egq" firstAttribute="centerX" secondItem="hhB-fB-d84" secondAttribute="centerX" id="ode-NG-eW0"/>
             </constraints>
             <viewLayoutGuide key="safeArea" id="hhB-fB-d84"/>
             <size key="customSize" width="219" height="259"/>
             <connections>
                 <outlet property="flipButton" destination="eXx-j7-0BW" id="qBh-fh-kex"/>
                 <outlet property="recordButton" destination="XWp-o0-bWK" id="ph4-SO-vgL"/>
+                <outlet property="recordLabel" destination="hdc-1X-egq" id="RQO-UM-Yfm"/>
             </connections>
-            <point key="canvasLocation" x="-420" y="-179"/>
+            <point key="canvasLocation" x="-501.5" y="-180.5"/>
         </collectionViewCell>
     </objects>
     <resources>

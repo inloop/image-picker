@@ -40,6 +40,7 @@
 		427925FE1F963B2800B6D55F /* VideoCameraCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 427925FC1F963A8C00B6D55F /* VideoCameraCell.xib */; };
 		427926011F963E9C00B6D55F /* LivePhotoCameraCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 427925FF1F963E9B00B6D55F /* LivePhotoCameraCell.swift */; };
 		427926021F96407900B6D55F /* LivePhotoCameraCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 427926001F963E9C00B6D55F /* LivePhotoCameraCell.xib */; };
+		42990DBF1FA07AF7001658C4 /* RecordDurationLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42990DBE1FA07AF7001658C4 /* RecordDurationLabel.swift */; };
 		429BFDAA1F68161D00029440 /* ImagePickerAssetModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 429BFDA91F68161D00029440 /* ImagePickerAssetModel.swift */; };
 		42A037E01F66C9E700534350 /* CustomVideoCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 42A037DF1F66C9E700534350 /* CustomVideoCell.xib */; };
 		42D097991F7BD6E200A66E33 /* UIImageEffects.m in Sources */ = {isa = PBXBuildFile; fileRef = 42D097971F7BD6E100A66E33 /* UIImageEffects.m */; };
@@ -117,6 +118,7 @@
 		427925FC1F963A8C00B6D55F /* VideoCameraCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = VideoCameraCell.xib; sourceTree = "<group>"; };
 		427925FF1F963E9B00B6D55F /* LivePhotoCameraCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LivePhotoCameraCell.swift; sourceTree = "<group>"; };
 		427926001F963E9C00B6D55F /* LivePhotoCameraCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LivePhotoCameraCell.xib; sourceTree = "<group>"; };
+		42990DBE1FA07AF7001658C4 /* RecordDurationLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordDurationLabel.swift; sourceTree = "<group>"; };
 		429BFDA91F68161D00029440 /* ImagePickerAssetModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePickerAssetModel.swift; sourceTree = "<group>"; };
 		42A037DF1F66C9E700534350 /* CustomVideoCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CustomVideoCell.xib; sourceTree = "<group>"; };
 		42D097971F7BD6E100A66E33 /* UIImageEffects.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UIImageEffects.m; sourceTree = "<group>"; };
@@ -232,6 +234,7 @@
 				427925F21F9636D700B6D55F /* StationaryButton.swift */,
 				427925FB1F963A8C00B6D55F /* VideoCameraCell.swift */,
 				427925FC1F963A8C00B6D55F /* VideoCameraCell.xib */,
+				42990DBE1FA07AF7001658C4 /* RecordDurationLabel.swift */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -407,6 +410,7 @@
 				42E736521F8510B70060E24D /* VideoCaptureDelegate.swift in Sources */,
 				429BFDAA1F68161D00029440 /* ImagePickerAssetModel.swift in Sources */,
 				42D7036B1F7908B10057D557 /* CaptureSettings.swift in Sources */,
+				42990DBF1FA07AF7001658C4 /* RecordDurationLabel.swift in Sources */,
 				42EDD41A1F716F6300EAD2F5 /* PhotoCaptureDelegate.swift in Sources */,
 				420C24341F5DA022008935D4 /* ImagePickerDelegate.swift in Sources */,
 				420C24281F5D925A008935D4 /* ImagePickerDataSource.swift in Sources */,
