@@ -13,14 +13,6 @@ import UIKit
 /// duration in general.
 ///
 final class RecordDurationLabel : UILabel {
-
-    private static let durationFormatter: DateComponentsFormatter = {
-        let formatter = DateComponentsFormatter()
-        formatter.unitsStyle = .positional
-        formatter.allowedUnits = [.minute, .second]
-        formatter.zeroFormattingBehavior = .pad
-        return formatter
-    }()
     
     private var indicatorLayer: CALayer = {
         let layer = CALayer()
@@ -50,7 +42,7 @@ final class RecordDurationLabel : UILabel {
     // MARK: Public Methods
     
     private var timer: Timer?
-    private var backingSeconds: TimeInterval = 0 {
+    private var backingSeconds: TimeInterval = 10000 {
         didSet { updateLabel() }
     }
     
@@ -75,7 +67,13 @@ final class RecordDurationLabel : UILabel {
     // MARK: Private Methods
     
     private func updateLabel() {
-        text = RecordDurationLabel.durationFormatter.string(from: backingSeconds)
+        
+        //we are not using DateComponentsFormatter because it does not pad zero to hours component
+        //so it regurns pattern 0:00:00, we need 00:00:00
+        let hours = Int(backingSeconds) / 3600
+        let minutes = Int(backingSeconds) / 60 % 60
+        let seconds = Int(backingSeconds) % 60
+        text = String(format:"%02i:%02i:%02i", hours, minutes, seconds)
     }
     
     private func commonInit() {
