@@ -19,15 +19,17 @@ fileprivate typealias TextAttributes = [NSAttributedStringKey: Any]
 final class CarvedLabel : UIView {
 
     @IBInspectable var text: String? {
-        didSet { setNeedsDisplay() }
+        didSet {
+            invalidateIntrinsicContentSize()
+            setNeedsDisplay()
+        }
     }
     
     var font: UIFont? {
-        didSet { setNeedsDisplay() }
-    }
-    
-    var alignment: NSTextAlignment? {
-        didSet { setNeedsDisplay() }
+        didSet {
+            invalidateIntrinsicContentSize()
+            setNeedsDisplay()
+        }
     }
     
     @IBInspectable var cornerRadius: CGFloat = 0 {
@@ -35,11 +37,18 @@ final class CarvedLabel : UIView {
     }
     
     @IBInspectable var verticalInset: CGFloat = 0 {
-        didSet { setNeedsDisplay() }
+        didSet {
+            invalidateIntrinsicContentSize()
+            setNeedsDisplay()
+        }
     }
     
     @IBInspectable var horizontalInset: CGFloat = 0 {
-        didSet { setNeedsDisplay() }
+        didSet {
+            invalidateIntrinsicContentSize()
+            setNeedsDisplay()
+        }
+
     }
     
     override init(frame: CGRect) {
@@ -60,7 +69,7 @@ final class CarvedLabel : UIView {
     }
     
     fileprivate var textAttributes: TextAttributes {
-        let activeFont = font ?? UIFont.systemFont(ofSize: 17, weight: .regular)
+        let activeFont = font ?? UIFont.systemFont(ofSize: 12, weight: .regular)
         return [
             NSAttributedStringKey.font: activeFont
         ]
@@ -94,31 +103,11 @@ final class CarvedLabel : UIView {
     }
     
     override func sizeThatFits(_ size: CGSize) -> CGSize {
-//        let stringSize = attributedString.size()
-//        return CGSize(width: stringSize.width + horizontalInset, height: stringSize.height + verticalInset)
-        return CGSize(width: 40, height: 40)
+        let stringSize = attributedString.size()
+        return CGSize(width: stringSize.width + horizontalInset*2, height: stringSize.height + verticalInset*2)
     }
 
-}
-
-extension CarvedLabel {
-    
-    //    private var textSize: CGSize {
-    //        return self.text.textSizeForAttributes(self.attributes)
-    //    }
-    
-    fileprivate func lineSizeForAttributes(_ attributes: TextAttributes) -> CGSize {
-        
-        return attributedString.size()
-        //" ".textSizeForAttributes(attributes)
+    override var intrinsicContentSize: CGSize {
+        return sizeThatFits(.zero)
     }
-    
-//    static func lineWidthForAttributes(_ attributes: TextAttributes) -> CGFloat {
-//        return lineSizeForAttributes(attributes).width
-//    }
-//
-//    static func lineHeightForAttributes(_ attributes: TextAttributes) -> CGFloat {
-//        return lineSizeForAttributes(attributes).height
-//    }
-    
 }
