@@ -306,7 +306,9 @@ Optionaly, before presenting image picker, you can check if user has granted acc
 
 ## Accessing, selecting and deselecting asset items
 
-Image Picker has several convinience methods to work with asset items.
+All user actions such as selecting/deselecting of assets, taking new photos or livephotos or capturing vides are advertised using `ImagePickerControllerDelegate` delegate methods. For list and more detail explanation please see public header.
+
+Sometimes you will need to manage selected assets programatically. Image Picker provides several convinience methods to work with asset items.
 
 - `selectedAssets` property returns an array of currently selected `PHAsset` items
 - to access asset items at certain indexes, use `assets(at:)` and `asset(at:)`
@@ -314,20 +316,6 @@ Image Picker has several convinience methods to work with asset items.
 - to programatically deselect an asset item use `deselectAsset(at:animated:)`
 - to programatically deselect all selected items use `deselectAllAssets(_:)`
 
-## Features to add
-
-1. landscape layout for camera cell - video is already in landscape but cell must be wider to properly display it
-2. [ok] flip cameras
-3. [ok] blur/unblur camera cell video layer when capture session is suspended/unsuspended
-4. [ok] blur/unblur camera cell video layer when capture session is interrupted, failed or app goes to background/unactive
-5. [ok] add public API for recording videos
-6. [ok] add public API for enabling/disabling live photos
-7. [ok] add public API for setting if taken pictures should be saved in camera roll or just directly provided through delegate
-8. [ok] when user denies access to camera,  show that access is denied
-9. implement image pre-caching based on visible rectangle bounds
-10. [ok] add default features for base CameraCollectionViewCell - tap to take photo
-11. [ok] support styling through appearance
-12. [ok] configuration-less default implementation
 
 ## Known Issues
 
@@ -338,13 +326,13 @@ Image Picker has several convinience methods to work with asset items.
     2. taking screenshot of AVVideoPreviewLayer is not possible - it returns transparent empty image
     used solution: use image buffer from AVVideoCaptureOutupt, blur it and add it as subview to the cell
     [fixed] need to transform image from front camera horizontally - it's mirrored so the blurring effect is not 100% nice when flipping camera
-4. [fixed] when camera cell will be blurred first time it lags - need to use instruments to find out why it's lagging
+4. when camera cell will be blurred first time it lags - need to use instruments to find out why it's lagging
     reproduce: simple scroll camera cell so it's not visible, you will notice a lag (iPhone SE), this lag might be caused by Photos framework when loading first buch of images
 5. when rotating device, there is a little lag in video when changing orientation of outputs - it should be smooth though
 6. [fixed] when flipping from front camera to back camera, latest sample buffer image that is used does not have proper transform, you can see that it is rotated horizontally so it creates unpleasant effect durring unblur animation when flipping cameras
 7. [fixed] when user defines layout configuration without camera - image picker still initializes capture session wich asks for permissions, crashes if no privacy key in info.plist is set and this is all not necessary
-8. when `video` preset is used, blurring of camera cell is turned off because capture session does not support both video data output and movie file output at the same time
-    possible solution: only use movie file output when recording is about to begin and remove it when it ended
+8. [fixed] when `video` preset is used, blurring of camera cell is turned off because capture session does not support both video data output and movie file output at the same time
+    used solution: for this case, UIVisualEffect view with blur effect is used
 
 ## Technologies used
 
