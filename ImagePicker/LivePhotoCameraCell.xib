@@ -54,14 +54,14 @@
                     </button>
                     <view opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="OHT-YT-HK2" customClass="CarvedLabel" customModule="ImagePicker" customModuleProvider="target">
                         <rect key="frame" x="92" y="53" width="35" height="18.5"/>
+                        <accessibility key="accessibilityConfiguration">
+                            <accessibilityTraits key="traits" notEnabled="YES"/>
+                        </accessibility>
                         <userDefinedRuntimeAttributes>
                             <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
                                 <real key="value" value="2"/>
                             </userDefinedRuntimeAttribute>
                             <userDefinedRuntimeAttribute type="string" keyPath="text" value="LIVE"/>
-                            <userDefinedRuntimeAttribute type="number" keyPath="padding">
-                                <real key="value" value="3"/>
-                            </userDefinedRuntimeAttribute>
                             <userDefinedRuntimeAttribute type="number" keyPath="horizontalInset">
                                 <real key="value" value="5"/>
                             </userDefinedRuntimeAttribute>

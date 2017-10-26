@@ -323,7 +323,6 @@ open class ImagePickerController : UIViewController {
             let session = CaptureSession()
             captureSession = session
             session.presetConfiguration = captureSettings.cameraMode.captureSessionPresetConfiguration
-            session.saveCapturedAssetsToPhotoLibrary = captureSettings.savesCapturedAssetToPhotoLibrary
             session.videoOrientation = UIApplication.shared.statusBarOrientation.captureVideoOrientation
             session.delegate = self
             session.videoRecordingDelegate = self
@@ -685,15 +684,15 @@ extension ImagePickerController : CaptureSessionVideoRecordingDelegate {
 extension ImagePickerController: CameraCollectionViewCellDelegate {
     
     func takePicture() {
-        captureSession?.capturePhoto(livePhotoMode: .off)
+        captureSession?.capturePhoto(livePhotoMode: .off, saveToPhotoLibrary: captureSettings.savesCapturedPhotosToPhotoLibrary)
     }
     
     func takeLivePhoto() {
-        captureSession?.capturePhoto(livePhotoMode: .on)
+        captureSession?.capturePhoto(livePhotoMode: .on, saveToPhotoLibrary: captureSettings.savesCapturedLivePhotosToPhotoLibrary)
     }
     
     func startVideoRecording() {
-        captureSession?.startVideoRecording()
+        captureSession?.startVideoRecording(saveToPhotoLibrary: captureSettings.savesCapturedVideosToPhotoLibrary)
     }
     
     func stopVideoRecording() {

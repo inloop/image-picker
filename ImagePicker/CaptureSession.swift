@@ -107,11 +107,6 @@ final class CaptureSession : NSObject {
     var presetConfiguration: SessionPresetConfiguration = .photos
     
     ///
-    /// Save assets to library or not. Appropriate delegate is called in all cases.
-    ///
-    var saveCapturedAssetsToPhotoLibrary = false
-    
-    ///
     /// Set this method to orientation that mathches UI orientation before `prepare()`
     /// method is called. If you need to update orientation when session is running,
     /// use `updateVideoOrientation()` method instead
@@ -699,7 +694,7 @@ extension CaptureSession {
 
 extension CaptureSession {
     
-    func capturePhoto(livePhotoMode: LivePhotoMode) {
+    func capturePhoto(livePhotoMode: LivePhotoMode, saveToPhotoLibrary: Bool) {
         /*
          Retrieve the video preview layer's video orientation on the main queue before
          entering the session queue. We do this to ensure UI elements are accessed on
@@ -795,7 +790,7 @@ extension CaptureSession {
                 }
             })
             
-            photoCaptureDelegate.savesPhotoToLibrary = self.saveCapturedAssetsToPhotoLibrary
+            photoCaptureDelegate.savesPhotoToLibrary = saveToPhotoLibrary
             
             /*
              The Photo Output keeps a weak reference to the photo capture delegate so
@@ -811,7 +806,7 @@ extension CaptureSession {
 
 extension CaptureSession {
     
-    func startVideoRecording() {
+    func startVideoRecording(saveToPhotoLibrary: Bool) {
         
         guard let movieFileOutput = self.videoFileOutput else {
             return log("capture session: trying to record a video but no movie file output is set")
@@ -884,7 +879,7 @@ extension CaptureSession {
                     }
                 }
             })
-            recordingDelegate.savesPhotoToLibrary = strongSelf.saveCapturedAssetsToPhotoLibrary
+            recordingDelegate.savesVideoToLibrary = saveToPhotoLibrary
             
             // start recording
             movieFileOutput.startRecording(to: outputURL, recordingDelegate: recordingDelegate)

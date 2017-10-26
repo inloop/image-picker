@@ -71,14 +71,14 @@ Currently Image Picker supports capturing *photos*, *live photos* and *videos*.
 
 To configure Image Picker to support desired media type use `CaptureSettings` struct. Use property `cameraMode` to specify what kind of output you are interested in. If you don't intend to support live photos at all, please use value `photo`, otherwise `photoAndLivePhoto`. If you wish to capture photos and videos use `photoAndVideo`. Capturing videos and live photos at the same time is not supported and you nor can't switch between presets after it's been configrued.
 
-By default, all captured assets are not saved to photo library but rather provided to you by the delegate right away. However if you wish to save assets to photo library set `savesCapturedAssetToPhotoLibrary` to *true*. 
+By default, all captured photos are not saved to Photo Library but rather provided to you by the delegate right away. However if you wish to save photos to photo library set `savesCapturedPhotosToPhotoLibrary` to *true*. Live photos and videos are saved to Photo Library automatically.
 
 An example of configuration for taking photos and live photos and saving them to photo library:
 
 ```swift
 let imagePicker = ImagePickerController()
 imagePicker.captureSettings.cameraMode = .photoAndLivePhoto
-imagePicker.captureSettings.savesCapturedAssetToPhotoLibrary = true
+imagePicker.captureSettings.savesCapturedPhotosToPhotoLibrary = true
 ```
 
 Please refer to `CaptureSettings` public header for more information.
