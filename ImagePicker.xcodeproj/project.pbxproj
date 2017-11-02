@@ -33,6 +33,7 @@
 		425777531F98D110000824F0 /* ActionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 425777511F98D10F000824F0 /* ActionCell.swift */; };
 		425777541F98D119000824F0 /* ActionCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 425777521F98D10F000824F0 /* ActionCell.xib */; };
 		425BEC851F7D351A0091D008 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 425BEC841F7D351A0091D008 /* Assets.xcassets */; };
+		427271701FA1D304008AC2B4 /* CarvedLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4272716F1FA1D304008AC2B4 /* CarvedLabel.swift */; };
 		427925F31F9636D700B6D55F /* StationaryButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 427925F21F9636D700B6D55F /* StationaryButton.swift */; };
 		427925F51F96381400B6D55F /* ShutterButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 427925F41F96381400B6D55F /* ShutterButton.swift */; };
 		427925F71F96388000B6D55F /* RecordButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 427925F61F96388000B6D55F /* RecordButton.swift */; };
@@ -40,6 +41,7 @@
 		427925FE1F963B2800B6D55F /* VideoCameraCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 427925FC1F963A8C00B6D55F /* VideoCameraCell.xib */; };
 		427926011F963E9C00B6D55F /* LivePhotoCameraCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 427925FF1F963E9B00B6D55F /* LivePhotoCameraCell.swift */; };
 		427926021F96407900B6D55F /* LivePhotoCameraCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 427926001F963E9C00B6D55F /* LivePhotoCameraCell.xib */; };
+		42990DBF1FA07AF7001658C4 /* RecordDurationLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42990DBE1FA07AF7001658C4 /* RecordDurationLabel.swift */; };
 		429BFDAA1F68161D00029440 /* ImagePickerAssetModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 429BFDA91F68161D00029440 /* ImagePickerAssetModel.swift */; };
 		42A037E01F66C9E700534350 /* CustomVideoCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 42A037DF1F66C9E700534350 /* CustomVideoCell.xib */; };
 		42D097991F7BD6E200A66E33 /* UIImageEffects.m in Sources */ = {isa = PBXBuildFile; fileRef = 42D097971F7BD6E100A66E33 /* UIImageEffects.m */; };
@@ -110,6 +112,7 @@
 		425777511F98D10F000824F0 /* ActionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionCell.swift; sourceTree = "<group>"; };
 		425777521F98D10F000824F0 /* ActionCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ActionCell.xib; sourceTree = "<group>"; };
 		425BEC841F7D351A0091D008 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		4272716F1FA1D304008AC2B4 /* CarvedLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarvedLabel.swift; sourceTree = "<group>"; };
 		427925F21F9636D700B6D55F /* StationaryButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StationaryButton.swift; sourceTree = "<group>"; };
 		427925F41F96381400B6D55F /* ShutterButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShutterButton.swift; sourceTree = "<group>"; };
 		427925F61F96388000B6D55F /* RecordButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordButton.swift; sourceTree = "<group>"; };
@@ -117,6 +120,7 @@
 		427925FC1F963A8C00B6D55F /* VideoCameraCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = VideoCameraCell.xib; sourceTree = "<group>"; };
 		427925FF1F963E9B00B6D55F /* LivePhotoCameraCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LivePhotoCameraCell.swift; sourceTree = "<group>"; };
 		427926001F963E9C00B6D55F /* LivePhotoCameraCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LivePhotoCameraCell.xib; sourceTree = "<group>"; };
+		42990DBE1FA07AF7001658C4 /* RecordDurationLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordDurationLabel.swift; sourceTree = "<group>"; };
 		429BFDA91F68161D00029440 /* ImagePickerAssetModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePickerAssetModel.swift; sourceTree = "<group>"; };
 		42A037DF1F66C9E700534350 /* CustomVideoCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CustomVideoCell.xib; sourceTree = "<group>"; };
 		42D097971F7BD6E100A66E33 /* UIImageEffects.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UIImageEffects.m; sourceTree = "<group>"; };
@@ -190,6 +194,7 @@
 				420C24181F5D82F9008935D4 /* ImagePicker.h */,
 				42D7036F1F7909100057D557 /* Public */,
 				42D703701F790A3F0057D557 /* Media */,
+				42990DBD1FA07A6C001658C4 /* Views */,
 				420C24351F5ED4AA008935D4 /* ImagePickerLayout.swift */,
 				429BFDA91F68161D00029440 /* ImagePickerAssetModel.swift */,
 				420C24271F5D925A008935D4 /* ImagePickerDataSource.swift */,
@@ -197,16 +202,6 @@
 				420C243E1F5EEA19008935D4 /* LayoutModel.swift */,
 				4214426E1F604498006BA45A /* ImagePickerSelectionPolicy.swift */,
 				42EDD4151F712B2A00EAD2F5 /* Miscellaneous.swift */,
-				42D0979B1F7BF6B300A66E33 /* AssetCell.swift */,
-				427925F21F9636D700B6D55F /* StationaryButton.swift */,
-				427925F41F96381400B6D55F /* ShutterButton.swift */,
-				427925F61F96388000B6D55F /* RecordButton.swift */,
-				427925FB1F963A8C00B6D55F /* VideoCameraCell.swift */,
-				427925FC1F963A8C00B6D55F /* VideoCameraCell.xib */,
-				427925FF1F963E9B00B6D55F /* LivePhotoCameraCell.swift */,
-				427926001F963E9C00B6D55F /* LivePhotoCameraCell.xib */,
-				425777511F98D10F000824F0 /* ActionCell.swift */,
-				425777521F98D10F000824F0 /* ActionCell.xib */,
 				425BEC841F7D351A0091D008 /* Assets.xcassets */,
 				42D097981F7BD6E100A66E33 /* UIImageEffects.h */,
 				42D097971F7BD6E100A66E33 /* UIImageEffects.m */,
@@ -226,6 +221,25 @@
 				421442701F604993006BA45A /* IconWithTextCell.swift */,
 			);
 			path = "Custom Views";
+			sourceTree = "<group>";
+		};
+		42990DBD1FA07A6C001658C4 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				425777511F98D10F000824F0 /* ActionCell.swift */,
+				425777521F98D10F000824F0 /* ActionCell.xib */,
+				42D0979B1F7BF6B300A66E33 /* AssetCell.swift */,
+				427925FF1F963E9B00B6D55F /* LivePhotoCameraCell.swift */,
+				427926001F963E9C00B6D55F /* LivePhotoCameraCell.xib */,
+				427925F61F96388000B6D55F /* RecordButton.swift */,
+				42990DBE1FA07AF7001658C4 /* RecordDurationLabel.swift */,
+				427925F41F96381400B6D55F /* ShutterButton.swift */,
+				427925F21F9636D700B6D55F /* StationaryButton.swift */,
+				427925FB1F963A8C00B6D55F /* VideoCameraCell.swift */,
+				427925FC1F963A8C00B6D55F /* VideoCameraCell.xib */,
+				4272716F1FA1D304008AC2B4 /* CarvedLabel.swift */,
+			);
+			name = Views;
 			sourceTree = "<group>";
 		};
 		42D7036F1F7909100057D557 /* Public */ = {
@@ -399,6 +413,7 @@
 				42E736521F8510B70060E24D /* VideoCaptureDelegate.swift in Sources */,
 				429BFDAA1F68161D00029440 /* ImagePickerAssetModel.swift in Sources */,
 				42D7036B1F7908B10057D557 /* CaptureSettings.swift in Sources */,
+				42990DBF1FA07AF7001658C4 /* RecordDurationLabel.swift in Sources */,
 				42EDD41A1F716F6300EAD2F5 /* PhotoCaptureDelegate.swift in Sources */,
 				420C24341F5DA022008935D4 /* ImagePickerDelegate.swift in Sources */,
 				420C24281F5D925A008935D4 /* ImagePickerDataSource.swift in Sources */,
@@ -413,6 +428,7 @@
 				42EDD4161F712B2A00EAD2F5 /* Miscellaneous.swift in Sources */,
 				427926011F963E9C00B6D55F /* LivePhotoCameraCell.swift in Sources */,
 				42311FFC1F73DBBF00B1AEB4 /* VideoOuptutSampleBufferDelegate.swift in Sources */,
+				427271701FA1D304008AC2B4 /* CarvedLabel.swift in Sources */,
 				42F7D8011F7A5B72009D378A /* Appearance.swift in Sources */,
 				420C24261F5D8393008935D4 /* ImagePickerController.swift in Sources */,
 				42EDD4051F7125C700EAD2F5 /* CaptureSession.swift in Sources */,

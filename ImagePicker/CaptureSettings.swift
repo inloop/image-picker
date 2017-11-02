@@ -36,16 +36,23 @@ public struct CaptureSettings {
     public var cameraMode: CameraMode
     
     ///
-    /// Return true if captured assets will be saved to photo library. Image picker
-    /// will prompt user with request for permisssions when needed. Default value is false.
+    /// Return true if captured photos will be saved to photo library. Image picker
+    /// will prompt user with request for permisssions when needed. Default value is false
+    /// for photos. Live photos and videos are always true.
     ///
-    public var savesCapturedAssetToPhotoLibrary: Bool
+    /// - note: please note, that at current implementation this applies to photos only. For
+    /// live photos and videos this is always true.
+    ///
+    public var savesCapturedPhotosToPhotoLibrary: Bool
+    
+    let savesCapturedLivePhotosToPhotoLibrary: Bool = true
+    let savesCapturedVideosToPhotoLibrary: Bool = true
     
     /// Default configuration
     public static var `default`: CaptureSettings {
         return CaptureSettings(
             cameraMode: .photo,
-            savesCapturedAssetToPhotoLibrary: false
+            savesCapturedPhotosToPhotoLibrary: false
         )
     }
 }

@@ -52,7 +52,7 @@ let sectionsData: [(String?, String?)] = [
     ("Assets Source", nil),
     ("Asset Items in a row", nil),
     ("Capture mode", nil),
-    ("Save Assets", "Assets will be saved to Photo Library")
+    ("Save Assets", "Assets will be saved to Photo Library. This applies to photos only. Live photos and videos are always saved.")
 ]
 
 ///
@@ -227,7 +227,7 @@ class ViewController: UITableViewController {
             }
             
             // save capture assets to photo library?
-            imagePicker.captureSettings.savesCapturedAssetToPhotoLibrary = savesCapturedAssets
+            imagePicker.captureSettings.savesCapturedPhotosToPhotoLibrary = savesCapturedAssets
             
             // presentation
             // before we present VC we can ask for authorization to photo library,

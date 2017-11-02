@@ -30,10 +30,10 @@
                         <state key="selected" image="icon-live-on"/>
                     </button>
                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XWp-o0-bWK" customClass="ShutterButton" customModule="ImagePicker">
-                        <rect key="frame" x="79.5" y="194" width="60" height="60"/>
+                        <rect key="frame" x="87.5" y="210" width="44" height="44"/>
                         <constraints>
-                            <constraint firstAttribute="width" constant="60" id="Lmu-Ph-K0b"/>
-                            <constraint firstAttribute="height" constant="60" id="j1o-Y6-ONi"/>
+                            <constraint firstAttribute="width" constant="44" id="Lmu-Ph-K0b"/>
+                            <constraint firstAttribute="height" constant="44" id="j1o-Y6-ONi"/>
                         </constraints>
                         <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <connections>
@@ -52,36 +52,44 @@
                             <action selector="flipButtonTapped:" destination="KUc-Pb-VFJ" eventType="touchUpInside" id="FCR-qc-tDX"/>
                         </connections>
                     </button>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Live" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XdY-d9-qdX">
-                        <rect key="frame" x="89.5" y="56" width="40" height="18"/>
-                        <color key="backgroundColor" red="0.94509803920000002" green="0.72941176470000002" blue="0.062745098040000002" alpha="1" colorSpace="calibratedRGB"/>
-                        <constraints>
-                            <constraint firstAttribute="width" constant="40" id="xkt-ug-ngF"/>
-                        </constraints>
-                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                        <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <nil key="highlightedColor"/>
-                    </label>
+                    <view opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="OHT-YT-HK2" customClass="CarvedLabel" customModule="ImagePicker" customModuleProvider="target">
+                        <rect key="frame" x="92" y="53" width="35" height="18.5"/>
+                        <accessibility key="accessibilityConfiguration">
+                            <accessibilityTraits key="traits" notEnabled="YES"/>
+                        </accessibility>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                <real key="value" value="2"/>
+                            </userDefinedRuntimeAttribute>
+                            <userDefinedRuntimeAttribute type="string" keyPath="text" value="LIVE"/>
+                            <userDefinedRuntimeAttribute type="number" keyPath="horizontalInset">
+                                <real key="value" value="5"/>
+                            </userDefinedRuntimeAttribute>
+                            <userDefinedRuntimeAttribute type="number" keyPath="verticalInset">
+                                <real key="value" value="2"/>
+                            </userDefinedRuntimeAttribute>
+                        </userDefinedRuntimeAttributes>
+                    </view>
                 </subviews>
             </view>
             <constraints>
-                <constraint firstItem="XdY-d9-qdX" firstAttribute="centerX" secondItem="hhB-fB-d84" secondAttribute="centerX" id="CZI-2L-qth"/>
                 <constraint firstItem="eMk-y2-nzd" firstAttribute="centerX" secondItem="hhB-fB-d84" secondAttribute="centerX" id="DzQ-dN-G13"/>
                 <constraint firstItem="eMk-y2-nzd" firstAttribute="top" secondItem="hhB-fB-d84" secondAttribute="top" constant="12" id="LWL-KC-Ix6"/>
                 <constraint firstItem="eXx-j7-0BW" firstAttribute="top" secondItem="hhB-fB-d84" secondAttribute="top" constant="10" id="ZHC-yM-3is"/>
-                <constraint firstItem="XdY-d9-qdX" firstAttribute="top" secondItem="eMk-y2-nzd" secondAttribute="bottom" id="aBr-Bk-SLB"/>
                 <constraint firstItem="hhB-fB-d84" firstAttribute="trailing" secondItem="eXx-j7-0BW" secondAttribute="trailing" constant="5" id="bRl-6l-azU"/>
+                <constraint firstItem="OHT-YT-HK2" firstAttribute="centerX" secondItem="hhB-fB-d84" secondAttribute="centerX" id="dDC-I0-T69"/>
                 <constraint firstItem="XWp-o0-bWK" firstAttribute="centerX" secondItem="hhB-fB-d84" secondAttribute="centerX" id="dfw-m3-rzI"/>
                 <constraint firstItem="hhB-fB-d84" firstAttribute="bottom" secondItem="XWp-o0-bWK" secondAttribute="bottom" constant="5" id="m3s-9a-T9V"/>
+                <constraint firstItem="OHT-YT-HK2" firstAttribute="top" secondItem="eMk-y2-nzd" secondAttribute="bottom" constant="-3" id="osN-cA-OHa"/>
             </constraints>
             <viewLayoutGuide key="safeArea" id="hhB-fB-d84"/>
             <size key="customSize" width="219" height="259"/>
             <connections>
                 <outlet property="enableLivePhotosButton" destination="eMk-y2-nzd" id="KOJ-XO-gwK"/>
-                <outlet property="liveIndicator" destination="XdY-d9-qdX" id="hDU-5n-Uz6"/>
+                <outlet property="liveIndicator" destination="OHT-YT-HK2" id="wLM-3v-OhR"/>
                 <outlet property="snapButton" destination="XWp-o0-bWK" id="aaa-7B-lyl"/>
             </connections>
-            <point key="canvasLocation" x="-431" y="-224"/>
+            <point key="canvasLocation" x="-614.5" y="-257.5"/>
         </collectionViewCell>
     </objects>
     <resources>

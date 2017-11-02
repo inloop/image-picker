@@ -13,26 +13,12 @@ class LivePhotoCameraCell : CameraCollectionViewCell {
     
     @IBOutlet weak var snapButton: UIButton!
     @IBOutlet weak var enableLivePhotosButton: StationaryButton!
-    @IBOutlet weak var liveIndicator: UILabel!
+    @IBOutlet weak var liveIndicator: CarvedLabel!
     
     override func awakeFromNib() {
         super.awakeFromNib()
         liveIndicator.alpha = 0
-        liveIndicator.layer.cornerRadius = 2
-        liveIndicator.layer.masksToBounds = true
-        liveIndicator.textColor = liveIndicator.backgroundColor
-        
-        //TODO: we need to do text layer reversed, it appears that best way is to
-        //render in image mask using core graphics
-        let textMask = CATextLayer()
-        textMask.contentsScale = UIScreen.main.scale
-        textMask.frame = liveIndicator.bounds
-        textMask.foregroundColor = UIColor.white.cgColor
-        textMask.string = "Live"
-        textMask.font = UIFont.systemFont(ofSize: UIFont.smallSystemFontSize, weight: .medium)
-        textMask.fontSize = UIFont.smallSystemFontSize
-        textMask.alignmentMode = kCAAlignmentCenter
-        liveIndicator.layer.mask = textMask
+        liveIndicator.tintColor = UIColor(red: 245/255, green: 203/255, blue: 47/255, alpha: 1)
         
         enableLivePhotosButton.unselectedTintColor = UIColor.white
         enableLivePhotosButton.selectedTintColor = UIColor(red: 245/255, green: 203/255, blue: 47/255, alpha: 1)

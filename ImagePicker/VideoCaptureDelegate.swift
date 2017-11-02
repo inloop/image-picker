@@ -17,8 +17,8 @@ final class VideoCaptureDelegate: NSObject, AVCaptureFileOutputRecordingDelegate
     
     // MARK: Public Methods
     
-    /// set this to false if you dont wish to save taken picture to photo library
-    var savesPhotoToLibrary = true
+    /// set this to false if you dont wish to save video to photo library
+    var savesVideoToLibrary = true
     
     /// true if user manually requested to cancel recording (stop without saving)
     var isBeingCancelled = false
@@ -56,6 +56,22 @@ final class VideoCaptureDelegate: NSObject, AVCaptureFileOutputRecordingDelegate
     
     private func cleanUp(deleteFile: Bool, saveToAssets: Bool, outputFileURL: URL) {
         
+        func deleteFileIfNeeded() {
+            
+            guard deleteFile == true else { return }
+            
+            let path = outputFileURL.path
+            if FileManager.default.fileExists(atPath: path) {
+                do {
+                    try FileManager.default.removeItem(atPath: path)
+                }
+                catch let error {
+                    log("capture session: could not remove recording at url: \(outputFileURL)")
+                    log("capture session: error: \(error)")
+                }
+            }
+        }
+        
         if let currentBackgroundRecordingID = backgroundRecordingID {
             backgroundRecordingID = UIBackgroundTaskInvalid
             if currentBackgroundRecordingID != UIBackgroundTaskInvalid {
@@ -69,30 +85,22 @@ final class VideoCaptureDelegate: NSObject, AVCaptureFileOutputRecordingDelegate
                     PHPhotoLibrary.shared().performChanges({
                         let creationRequest = PHAssetCreationRequest.forAsset()
                         let videoResourceOptions = PHAssetResourceCreationOptions()
-                        videoResourceOptions.shouldMoveFile = false
+                        videoResourceOptions.shouldMoveFile = true
                         creationRequest.addResource(with: .video, fileURL: outputFileURL, options: videoResourceOptions)
                     }, completionHandler: { success, error in
                         if let error = error {
                             log("capture session: Error occurered while saving video to photo library: \(error)")
+                            deleteFileIfNeeded()
                         }
-                    }
-                    )
+                    })
+                }
+                else {
+                    deleteFileIfNeeded()
                 }
             }
         }
-        
-        if deleteFile {
-            let path = outputFileURL.path
-            if FileManager.default.fileExists(atPath: path) {
-                do {
-                    try FileManager.default.removeItem(atPath: path)
-                }
-                catch let error {
-                    log("capture session: could not remove recording at url: \(outputFileURL)")
-                    log("capture session: error: \(error)")
-                }
-            }
-            
+        else {
+            deleteFileIfNeeded()
         }
     }
     
@@ -114,7 +122,7 @@ final class VideoCaptureDelegate: NSObject, AVCaptureFileOutputRecordingDelegate
             
             if successfullyFinished {
                 recordingWasInterrupted = true
-                cleanUp(deleteFile: false, saveToAssets: savesPhotoToLibrary, outputFileURL: outputFileURL)
+                cleanUp(deleteFile: true, saveToAssets: savesVideoToLibrary, outputFileURL: outputFileURL)
                 didFail(self, error)
             }
             else {
@@ -127,7 +135,7 @@ final class VideoCaptureDelegate: NSObject, AVCaptureFileOutputRecordingDelegate
             didFinish(self)
         }
         else {
-            cleanUp(deleteFile: false, saveToAssets: savesPhotoToLibrary, outputFileURL: outputFileURL)
+            cleanUp(deleteFile: true, saveToAssets: savesVideoToLibrary, outputFileURL: outputFileURL)
             didFinish(self)
         }
         

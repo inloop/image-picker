@@ -12,6 +12,7 @@ import UIKit
 //TODO: add a recording indicator (red dot with timer)
 class VideoCameraCell : CameraCollectionViewCell {
     
+    @IBOutlet weak var recordLabel: RecordDurationLabel!
     @IBOutlet weak var recordButton: RecordVideoButton!
     @IBOutlet weak var flipButton: UIButton!
     
@@ -40,6 +41,9 @@ class VideoCameraCell : CameraCollectionViewCell {
 
         //update button state
         recordButton.isSelected = isRecording
+        
+        //update duration label
+        isRecording ? recordLabel.start() : recordLabel.stop()
         
         //update other buttons
         let updates: () -> Void = {

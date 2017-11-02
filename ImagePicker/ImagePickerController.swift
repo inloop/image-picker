@@ -36,6 +36,13 @@ public protocol ImagePickerControllerDelegate : class {
     func imagePicker(controller: ImagePickerController, didTake image: UIImage)
     
     ///
+    /// Called when user takes new photo.
+    ///
+    //TODO:
+    //func imagePicker(controller: ImagePickerController, didCaptureVideo url: UIImage)
+    //func imagePicker(controller: ImagePickerController, didTake livePhoto: UIImage, videoUrl: UIImage)
+    
+    ///
     /// Called right before an action item collection view cell is displayed. Use this method
     /// to configure your cell.
     ///
@@ -303,7 +310,7 @@ open class ImagePickerController : UIViewController {
         collectionViewDataSource.cellRegistrator = cellRegistrator
         collectionViewDelegate.delegate = self
         collectionViewDelegate.layout = ImagePickerLayout(configuration: layoutConfiguration)
-
+        
         //register for photo library updates - this is needed when changing permissions to photo library
         //TODO: this is expensive (loading library for the first time)
         PHPhotoLibrary.shared().register(self)
@@ -316,7 +323,6 @@ open class ImagePickerController : UIViewController {
             let session = CaptureSession()
             captureSession = session
             session.presetConfiguration = captureSettings.cameraMode.captureSessionPresetConfiguration
-            session.saveCapturedAssetsToPhotoLibrary = captureSettings.savesCapturedAssetToPhotoLibrary
             session.videoOrientation = UIApplication.shared.statusBarOrientation.captureVideoOrientation
             session.delegate = self
             session.videoRecordingDelegate = self
@@ -678,15 +684,15 @@ extension ImagePickerController : CaptureSessionVideoRecordingDelegate {
 extension ImagePickerController: CameraCollectionViewCellDelegate {
     
     func takePicture() {
-        captureSession?.capturePhoto(livePhotoMode: .off)
+        captureSession?.capturePhoto(livePhotoMode: .off, saveToPhotoLibrary: captureSettings.savesCapturedPhotosToPhotoLibrary)
     }
     
     func takeLivePhoto() {
-        captureSession?.capturePhoto(livePhotoMode: .on)
+        captureSession?.capturePhoto(livePhotoMode: .on, saveToPhotoLibrary: captureSettings.savesCapturedLivePhotosToPhotoLibrary)
     }
     
     func startVideoRecording() {
-        captureSession?.startVideoRecording()
+        captureSession?.startVideoRecording(saveToPhotoLibrary: captureSettings.savesCapturedVideosToPhotoLibrary)
     }
     
     func stopVideoRecording() {
