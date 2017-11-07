@@ -45,11 +45,6 @@ public struct LayoutConfiguration {
     /// Spacing between camera section and assets section
     ///
     public var cameraSectionSpacing: CGFloat = 10
-    
-    ///
-    /// Content inset of the underlaying collection view.
-    ///
-    public var contentInset: UIEdgeInsets = .zero
 }
 
 extension LayoutConfiguration {
