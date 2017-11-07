@@ -304,7 +304,6 @@ open class ImagePickerController : UIViewController {
         //finish configuring collection view
         collectionView.dataSource = self.collectionViewDataSource
         collectionView.delegate = self.collectionViewDelegate
-        collectionView.contentInset = layoutConfiguration.contentInset
         collectionView.allowsMultipleSelection = true
         collectionView.showsVerticalScrollIndicator = false
         collectionView.showsHorizontalScrollIndicator = false

@@ -35,7 +35,6 @@ final class ImagePickerLayout {
             itemHeight -= (collectionView.contentInset.top + collectionView.contentInset.bottom)
             itemHeight -= (CGFloat(numberOfItemsInRow) - 1) * configuration.interitemSpacing
             itemHeight /= CGFloat(numberOfItemsInRow)
-            log("h: \(itemHeight), ch: \(collectionView.frame.height)")
             return CGSize(width: preferredWidthOrHeight ?? itemHeight, height: itemHeight)
             
         case .vertical:
