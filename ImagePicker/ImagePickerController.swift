@@ -229,8 +229,16 @@ open class ImagePickerController : UIViewController {
         let cellSize = layout.sizeForItem(numberOfItemsInRow: itemsInRow, preferredWidthOrHeight: nil, collectionView: collectionView, scrollDirection: scrollDirection)
         let scale = UIScreen.main.scale
         let thumbnailSize = CGSize(width: cellSize.width * scale, height: cellSize.height * scale)
-        log("ts: \(thumbnailSize)")
         self.collectionViewDataSource.assetsModel.thumbnailSize = thumbnailSize
+        
+        //TODO: we need to purge all image asset caches if item size changed
+    }
+    
+    private func updateContentInset() {
+        if #available(iOS 11.0, *) {
+            collectionView.contentInset.left = view.safeAreaInsets.left
+            collectionView.contentInset.right = view.safeAreaInsets.right
+        }
     }
     
     /// View is used when there is a need for an overlay view over whole image picker
@@ -350,16 +358,11 @@ open class ImagePickerController : UIViewController {
     
     open override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-        
-        self.collectionView.collectionViewLayout.invalidateLayout()
-        
-        if #available(iOS 11.0, *) {
-            log("frame with insets: \(collectionView.frame), bottom: \(view.bounds.height - collectionView.safeAreaInsets.bottom)")
-        }
+        updateContentInset()
+        collectionView.collectionViewLayout.invalidateLayout()
     }
     
     //this will make sure that collection view layout is reloaded when interface rotates/changes
-    //TODO: we need to reload thumbnail sizes and purge all image asset caches
     open override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         
         super.viewWillTransition(to: size, with: coordinator)
@@ -368,6 +371,7 @@ open class ImagePickerController : UIViewController {
         captureSession?.updateVideoOrientation(new: UIApplication.shared.statusBarOrientation.captureVideoOrientation)
         
         coordinator.animate(alongsideTransition: { (context) in
+            self.updateContentInset()
         }) { (context) in
             self.updateItemSize()
         }
