@@ -293,6 +293,7 @@ open class ImagePickerController : UIViewController {
         
         //apply appearance
         let appearance = instanceAppearanceProxy ?? ImagePickerController.classAppearanceProxy
+        imagePickerView.backgroundColor = appearance.backgroundColor
         collectionView.backgroundColor = appearance.backgroundColor
         
         //configure flow layout
