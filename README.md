@@ -6,15 +6,12 @@ An easy to use drop-in framework providing user interface for taking pictures an
 
 **Features:**
 - [x] presentation designed for chat apps as well as regular view controllers
-- [x] portrait and landscape modes
+- [x] portrait and landscape modes (support for iPhone X)
 - [x] capturing assets (photos, live photos, videos)
 - [x] saving captured assets to Photo Library
 - [x] flipping camera to front/rear
 - [x] turning on/off live photos
 - [x] highly customisable layout and UI
-
-**Features to add:**
-- [x] support for iPhone X
 
 **Requirements**
 - iOS 10.1+
