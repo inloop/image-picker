@@ -203,14 +203,15 @@ open class ImagePickerController : UIViewController {
     ///
     /// A collection view that is used for displaying content.
     ///
-    public lazy var collectionView: UICollectionView = {
-        let view = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
-        view.dataSource = self.collectionViewDataSource
-        view.delegate = self.collectionViewDelegate
-        return view
-    }()
+    public var collectionView: UICollectionView! {
+        return imagePickerView.collectionView
+    }
     
     // MARK: Private Methods
+    
+    fileprivate var imagePickerView: ImagePickerView! {
+        return view as! ImagePickerView
+    }
     
     fileprivate var collectionViewDataSource = ImagePickerDataSource(assetsModel: ImagePickerAssetModel())
     fileprivate var collectionViewDelegate = ImagePickerDelegate()
@@ -228,6 +229,7 @@ open class ImagePickerController : UIViewController {
         let cellSize = layout.sizeForItem(numberOfItemsInRow: itemsInRow, preferredWidthOrHeight: nil, collectionView: collectionView, scrollDirection: scrollDirection)
         let scale = UIScreen.main.scale
         let thumbnailSize = CGSize(width: cellSize.width * scale, height: cellSize.height * scale)
+        log("ts: \(thumbnailSize)")
         self.collectionViewDataSource.assetsModel.thumbnailSize = thumbnailSize
     }
     
@@ -274,7 +276,8 @@ open class ImagePickerController : UIViewController {
     // MARK: View Lifecycle
     
     open override func loadView() {
-        self.view = collectionView
+        let nib = UINib(nibName: "ImagePickerView", bundle: Bundle(for: ImagePickerView.self))
+        view = nib.instantiate(withOwner: nil, options: nil)[0] as! ImagePickerView
     }
     
     open override func viewDidLoad() {
@@ -291,16 +294,20 @@ open class ImagePickerController : UIViewController {
         collectionViewLayout.minimumLineSpacing = layoutConfiguration.interitemSpacing
         
         //finish configuring collection view
+        collectionView.dataSource = self.collectionViewDataSource
+        collectionView.delegate = self.collectionViewDelegate
         collectionView.contentInset = layoutConfiguration.contentInset
         collectionView.allowsMultipleSelection = true
+        collectionView.showsVerticalScrollIndicator = false
+        collectionView.showsHorizontalScrollIndicator = false
         switch layoutConfiguration.scrollDirection {
         case .horizontal: collectionView.alwaysBounceHorizontal = true
         case .vertical: collectionView.alwaysBounceVertical = true
         }
-
-//        if #available(iOS 11.0, *) {
-//            collectionView.contentInsetAdjustmentBehavior = .never
-//        }
+        
+        if #available(iOS 11.0, *) {
+            collectionView.contentInsetAdjustmentBehavior = .never
+        }
         
         //gesture recognizer to detect taps on a camera cell (selection is disabled)
         let recognizer = UITapGestureRecognizer(target: self, action: #selector(tapGestureRecognized(sender:)))
@@ -343,31 +350,28 @@ open class ImagePickerController : UIViewController {
     
     open override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-        //TODO: this is called each time content offset is changed via scrolling,
-        //I am not sure if it's proper behavior, need to find out
-        updateItemSize()
+        
+        self.collectionView.collectionViewLayout.invalidateLayout()
+        
+        if #available(iOS 11.0, *) {
+            log("frame with insets: \(collectionView.frame), bottom: \(view.bounds.height - collectionView.safeAreaInsets.bottom)")
+        }
     }
     
     //this will make sure that collection view layout is reloaded when interface rotates/changes
     //TODO: we need to reload thumbnail sizes and purge all image asset caches
     open override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         
+        super.viewWillTransition(to: size, with: coordinator)
+        
         //update capture session with new interface orientation
         captureSession?.updateVideoOrientation(new: UIApplication.shared.statusBarOrientation.captureVideoOrientation)
         
-        //TODO: add support for upadating safe area and content inset when rotating, this is
-        //problem because at this point of execution safe are does not have new values
-        //update safe area insets only once
-//        if #available(iOS 11.0, *) {
-//            self.collectionView.contentInset = self.view.safeAreaInsets
-//        }
-        
         coordinator.animate(alongsideTransition: { (context) in
-            self.collectionView.collectionViewLayout.invalidateLayout()
         }) { (context) in
-            
+            self.updateItemSize()
         }
-        super.viewWillTransition(to: size, with: coordinator)
+        
     }
     
     // MARK: Private Methods

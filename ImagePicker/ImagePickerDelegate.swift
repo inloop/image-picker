@@ -109,4 +109,9 @@ final class ImagePickerDelegate : NSObject, UICollectionViewDelegateFlowLayout {
         delegate?.imagePicker(delegate: self, didScroll: scrollView)
     }
     
+    @available(iOS 11.0, *)
+    func scrollViewDidChangeAdjustedContentInset(_ scrollView: UIScrollView) {
+        log("XXX: \(scrollView.adjustedContentInset)")
+    }
+    
 }

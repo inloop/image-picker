@@ -44,6 +44,8 @@
 		42990DBF1FA07AF7001658C4 /* RecordDurationLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42990DBE1FA07AF7001658C4 /* RecordDurationLabel.swift */; };
 		429BFDAA1F68161D00029440 /* ImagePickerAssetModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 429BFDA91F68161D00029440 /* ImagePickerAssetModel.swift */; };
 		42A037E01F66C9E700534350 /* CustomVideoCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 42A037DF1F66C9E700534350 /* CustomVideoCell.xib */; };
+		42B296A91FB1CC3200590260 /* ImagePickerView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 42B296A81FB1CC3200590260 /* ImagePickerView.xib */; };
+		42B296AB1FB1CC7400590260 /* ImagePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42B296AA1FB1CC7400590260 /* ImagePickerView.swift */; };
 		42D097991F7BD6E200A66E33 /* UIImageEffects.m in Sources */ = {isa = PBXBuildFile; fileRef = 42D097971F7BD6E100A66E33 /* UIImageEffects.m */; };
 		42D0979A1F7BD7C500A66E33 /* UIImageEffects.h in Headers */ = {isa = PBXBuildFile; fileRef = 42D097981F7BD6E100A66E33 /* UIImageEffects.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		42D0979C1F7BF6B300A66E33 /* AssetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42D0979B1F7BF6B300A66E33 /* AssetCell.swift */; };
@@ -123,6 +125,8 @@
 		42990DBE1FA07AF7001658C4 /* RecordDurationLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordDurationLabel.swift; sourceTree = "<group>"; };
 		429BFDA91F68161D00029440 /* ImagePickerAssetModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePickerAssetModel.swift; sourceTree = "<group>"; };
 		42A037DF1F66C9E700534350 /* CustomVideoCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CustomVideoCell.xib; sourceTree = "<group>"; };
+		42B296A81FB1CC3200590260 /* ImagePickerView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ImagePickerView.xib; sourceTree = "<group>"; };
+		42B296AA1FB1CC7400590260 /* ImagePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePickerView.swift; sourceTree = "<group>"; };
 		42D097971F7BD6E100A66E33 /* UIImageEffects.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UIImageEffects.m; sourceTree = "<group>"; };
 		42D097981F7BD6E100A66E33 /* UIImageEffects.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIImageEffects.h; sourceTree = "<group>"; };
 		42D0979B1F7BF6B300A66E33 /* AssetCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetCell.swift; sourceTree = "<group>"; };
@@ -238,6 +242,8 @@
 				427925FB1F963A8C00B6D55F /* VideoCameraCell.swift */,
 				427925FC1F963A8C00B6D55F /* VideoCameraCell.xib */,
 				4272716F1FA1D304008AC2B4 /* CarvedLabel.swift */,
+				42B296AA1FB1CC7400590260 /* ImagePickerView.swift */,
+				42B296A81FB1CC3200590260 /* ImagePickerView.xib */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -383,6 +389,7 @@
 				427925FE1F963B2800B6D55F /* VideoCameraCell.xib in Resources */,
 				425BEC851F7D351A0091D008 /* Assets.xcassets in Resources */,
 				427926021F96407900B6D55F /* LivePhotoCameraCell.xib in Resources */,
+				42B296A91FB1CC3200590260 /* ImagePickerView.xib in Resources */,
 				425777541F98D119000824F0 /* ActionCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -430,6 +437,7 @@
 				42311FFC1F73DBBF00B1AEB4 /* VideoOuptutSampleBufferDelegate.swift in Sources */,
 				427271701FA1D304008AC2B4 /* CarvedLabel.swift in Sources */,
 				42F7D8011F7A5B72009D378A /* Appearance.swift in Sources */,
+				42B296AB1FB1CC7400590260 /* ImagePickerView.swift in Sources */,
 				420C24261F5D8393008935D4 /* ImagePickerController.swift in Sources */,
 				42EDD4051F7125C700EAD2F5 /* CaptureSession.swift in Sources */,
 				427925F71F96388000B6D55F /* RecordButton.swift in Sources */,
