@@ -32,6 +32,9 @@ final class ImagePickerLayout {
         switch scrollDirection {
         case .horizontal:
             var itemHeight = collectionView.frame.height
+            if #available(iOS 11.0, *) {
+                itemHeight -= collectionView.adjustedContentInset.top + collectionView.adjustedContentInset.bottom
+            }
             itemHeight -= (collectionView.contentInset.top + collectionView.contentInset.bottom)
             itemHeight -= (CGFloat(numberOfItemsInRow) - 1) * configuration.interitemSpacing
             itemHeight /= CGFloat(numberOfItemsInRow)
@@ -39,6 +42,9 @@ final class ImagePickerLayout {
             
         case .vertical:
             var itemWidth = collectionView.frame.width
+            if #available(iOS 11.0, *) {
+                itemWidth -= collectionView.adjustedContentInset.left + collectionView.adjustedContentInset.right
+            }
             itemWidth -= (collectionView.contentInset.left + collectionView.contentInset.right)
             itemWidth -= (CGFloat(numberOfItemsInRow) - 1) * configuration.interitemSpacing
             itemWidth /= CGFloat(numberOfItemsInRow)

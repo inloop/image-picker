@@ -61,9 +61,16 @@ let sectionsData: [(String?, String?)] = [
 class ViewController: UITableViewController {
     
     var currentInputView: UIView?
-    var presentButton: UIButton = {
+    
+    lazy var presentButton: UIButton = {
+        
         let button = UIButton(type: .custom)
-        button.frame.size = CGSize(width: 0, height: 44)
+        var bottomAdjustment: CGFloat = 0
+        if #available(iOS 11.0, *) {
+           bottomAdjustment = self.tableView.adjustedContentInset.bottom
+        }
+        button.frame.size = CGSize(width: 0, height: 44 + bottomAdjustment)
+        button.contentEdgeInsets.bottom = bottomAdjustment/2
         button.backgroundColor = UIColor(red: 208/255, green: 2/255, blue: 27/255, alpha: 1)
         button.setTitle("Present", for: .normal)
         button.setTitle("Dismiss", for: .selected)
@@ -100,7 +107,6 @@ class ViewController: UITableViewController {
         //ImagePickerController.appearance().backgroundColor = UIColor.black
         
         navigationItem.title = "Image Picker"
-        
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cellId")
         tableView.keyboardDismissMode = .none
     }
