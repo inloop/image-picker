@@ -86,7 +86,7 @@ final class CarvedLabel : UIView {
         let path = UIBezierPath(roundedRect: rect, cornerRadius: cornerRadius)
         path.fill()
         
-        guard let context = UIGraphicsGetCurrentContext(), (text?.characters.count ?? 0) > 0 else {
+        guard let context = UIGraphicsGetCurrentContext(), (text?.count ?? 0) > 0 else {
             return
         }
         
