@@ -418,33 +418,8 @@ extension ImagePickerController: PHPhotoLibraryChangeObserver {
             //update layout model because it changed
             collectionViewDataSource.layoutModel = LayoutModel(configuration: layoutConfiguration, assets: collectionViewDataSource.assetsModel.fetchResult.count)
             
-            if changes.hasIncrementalChanges {
-                
-                let assetItemsSection = layoutConfiguration.sectionIndexForAssets
-                
-                // If we have incremental diffs, animate them in the collection view
-                self.collectionView.performBatchUpdates({
-                    
-                    // For indexes to make sense, updates must be in this order:
-                    // delete, insert, reload, move
-                    if let removed = changes.removedIndexes, removed.isEmpty == false {
-                        self.collectionView.deleteItems(at: removed.map({ IndexPath(item: $0, section: assetItemsSection) }))
-                    }
-                    if let inserted = changes.insertedIndexes, inserted.isEmpty == false {
-                        self.collectionView.insertItems(at: inserted.map({ IndexPath(item: $0, section: assetItemsSection) }))
-                    }
-                    if let changed = changes.changedIndexes, changed.isEmpty == false {
-                        self.collectionView.reloadItems(at: changed.map({ IndexPath(item: $0, section: assetItemsSection) }))
-                    }
-                    changes.enumerateMoves { fromIndex, toIndex in
-                        self.collectionView.moveItem(at: IndexPath(item: fromIndex, section: assetItemsSection), to: IndexPath(item: toIndex, section: assetItemsSection))
-                    }
-                })
-            }
-            else {
-                // Reload the collection view if incremental diffs are not available.
-                collectionView.reloadData()
-            }
+            // Reload the collection view if incremental diffs are not available.
+            collectionView.reloadData()
             //resetCachedAssets()
         }
     }
