@@ -37,10 +37,10 @@ extension ActionCell {
         switch index {
         case 0:
             titleLabel.text = "Camera"
-            imageView.image = #imageLiteral(resourceName: "button-camera")
+            imageView.image = UIImage(named: "button-camera", in: Bundle(for: type(of: self)), compatibleWith: nil)
         case 1:
             titleLabel.text = "Photos"
-            imageView.image = #imageLiteral(resourceName: "button-photo-library")
+            imageView.image = UIImage(named: "button-photo-library", in: Bundle(for: type(of: self)), compatibleWith: nil)
         default: break
         }
         
