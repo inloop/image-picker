@@ -59,7 +59,7 @@ public protocol ImagePickerControllerDelegate : class {
 extension ImagePickerControllerDelegate {
     public func imagePicker(controller: ImagePickerController, didSelectActionItemAt index: Int) {}
     public func imagePicker(controller: ImagePickerController, didSelect asset: PHAsset) {}
-    public func imagePicker(controller: ImagePickerController, didUnselect asset: PHAsset) {}
+    public func imagePicker(controller: ImagePickerController, didDeselect asset: PHAsset) {}
     public func imagePicker(controller: ImagePickerController, didTake image: UIImage) {}
     public func imagePicker(controller: ImagePickerController, willDisplayActionItem cell: UICollectionViewCell, at index: Int) {}
     public func imagePicker(controller: ImagePickerController, willDisplayAssetItem cell: ImagePickerAssetCell, asset: PHAsset) {}
