@@ -209,6 +209,8 @@ open class ImagePickerController : UIViewController {
     
     // MARK: Private Methods
     
+    private var collectionViewCoordinator: CollectionViewUpdatesCoordinator!
+    
     fileprivate var imagePickerView: ImagePickerView! {
         return view as! ImagePickerView
     }
@@ -294,6 +296,9 @@ open class ImagePickerController : UIViewController {
         //apply appearance
         let appearance = instanceAppearanceProxy ?? ImagePickerController.classAppearanceProxy
         collectionView.backgroundColor = appearance.backgroundColor
+        
+        //create animator
+        collectionViewCoordinator = CollectionViewUpdatesCoordinator(collectionView: collectionView)
         
         //configure flow layout
         let collectionViewLayout = self.collectionView.collectionViewLayout as! UICollectionViewFlowLayout
@@ -408,18 +413,17 @@ extension ImagePickerController: PHPhotoLibraryChangeObserver {
             return
         }
         
-        DispatchQueue.main.sync {
-        
-            //update old fetch result with these updates
-            collectionViewDataSource.assetsModel.fetchResult = changes.fetchResultAfterChanges
-
-            //update layout model because it changed
-            collectionViewDataSource.layoutModel = LayoutModel(configuration: layoutConfiguration, assets: collectionViewDataSource.assetsModel.fetchResult.count)
+        collectionViewCoordinator.performDataSourceUpdate { [unowned self] in
             
-            // Reload the collection view if incremental diffs are not available.
-            collectionView.reloadData()
-            //resetCachedAssets()
+            //update old fetch result with these updates
+            self.collectionViewDataSource.assetsModel.fetchResult = changes.fetchResultAfterChanges
+            
+            //update layout model because it changed
+            self.collectionViewDataSource.layoutModel = LayoutModel(configuration: self.layoutConfiguration, assets: self.collectionViewDataSource.assetsModel.fetchResult.count)
         }
+        
+        //perform update animations
+        collectionViewCoordinator.performChanges(changes, inSection: layoutConfiguration.sectionIndexForAssets)
     }
 }
 
