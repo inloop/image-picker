@@ -404,14 +404,12 @@ extension ImagePickerController: PHPhotoLibraryChangeObserver {
             return
         }
         
+        guard let changes = changeInstance.changeDetails(for: fetchResult) else {
+            return
+        }
+        
         DispatchQueue.main.sync {
         
-            guard let changes = changeInstance.changeDetails(for: fetchResult) else {
-                //reload collection view
-                self.collectionView.reloadData()
-                return
-            }
-            
             //update old fetch result with these updates
             collectionViewDataSource.assetsModel.fetchResult = changes.fetchResultAfterChanges
 
