@@ -36,7 +36,6 @@ class AsynchronousOperation : Foundation.Operation {
     }
     
     override func main() {
-        
         if isCancelled {
             completeOperation()
         }
@@ -51,7 +50,6 @@ class AsynchronousOperation : Foundation.Operation {
     }
     
     func completeOperation() {
-        
         if self.stateExecuting == true {
             self.stateExecuting = false
         }
@@ -60,5 +58,4 @@ class AsynchronousOperation : Foundation.Operation {
             self.stateFinished = true
         }
     }
-    
 }
