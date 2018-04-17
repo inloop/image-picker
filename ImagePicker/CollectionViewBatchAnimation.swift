@@ -13,7 +13,6 @@ import Photos
 /// Wraps collectionView's `performBatchUpdates` block into AsynchronousOperation.
 ///
 final class CollectionViewBatchAnimation<ObjectType> : AsynchronousOperation where ObjectType : PHObject {
-    
     private let collectionView: UICollectionView
     private let sectionIndex: Int
     private let changes: PHFetchResultChangeDetails<ObjectType>
@@ -25,7 +24,6 @@ final class CollectionViewBatchAnimation<ObjectType> : AsynchronousOperation whe
     }
     
     override func execute() {
-        
         // If we have incremental diffs, animate them in the collection view
         collectionView.performBatchUpdates({ [unowned self] in
             
@@ -46,7 +44,5 @@ final class CollectionViewBatchAnimation<ObjectType> : AsynchronousOperation whe
             }, completion: { finished in
                 self.completeOperation()
         })
-        
     }
-    
 }

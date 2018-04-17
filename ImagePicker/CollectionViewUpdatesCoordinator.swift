@@ -15,7 +15,6 @@ import Photos
 /// will prevent collection view from crashing on internal incosistency.
 ///
 final class CollectionViewUpdatesCoordinator {
-    
     deinit {
         log("deinit: \(String(describing: self))")
     }
@@ -40,7 +39,6 @@ final class CollectionViewUpdatesCoordinator {
     
     /// Updates collection view.
     func performChanges<PHAsset>(_ changes: PHFetchResultChangeDetails<PHAsset>, inSection: Int) {
-        
         if changes.hasIncrementalChanges {
             let operation = CollectionViewBatchAnimation(collectionView: collectionView, sectionIndex: inSection, changes: changes)
             serialMainQueue.addOperation(operation)
@@ -51,5 +49,4 @@ final class CollectionViewUpdatesCoordinator {
             }
         }
     }
-    
 }
