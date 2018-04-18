@@ -21,7 +21,6 @@
     "author" : "xcode"
   },
   "properties" : {
-    "compression-type" : "gpu-optimized-smallest",
     "template-rendering-intent" : "original"
   }
 }

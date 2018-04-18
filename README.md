@@ -2,7 +2,7 @@
 
 An easy to use drop-in framework providing user interface for taking pictures and videos and pick assets from Photo Library. User interface is designed to support `inputView` "keyboard-like" presentation for conversation user interfaces. Project is written in Swift4.
 
-![Demo](https://user-images.githubusercontent.com/500145/31496397-766f626e-af5b-11e7-9d6f-c0c5dda93086.gif)
+![Demo](https://user-images.githubusercontent.com/500145/38921876-13fda7b4-42f7-11e8-81d4-173f6a09fe22.gif)
 
 **Features:**
 - [x] presentation designed for chat apps as well as regular view controllers

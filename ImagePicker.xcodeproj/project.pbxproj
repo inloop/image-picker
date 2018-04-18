@@ -43,6 +43,9 @@
 		427926021F96407900B6D55F /* LivePhotoCameraCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 427926001F963E9C00B6D55F /* LivePhotoCameraCell.xib */; };
 		42990DBF1FA07AF7001658C4 /* RecordDurationLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42990DBE1FA07AF7001658C4 /* RecordDurationLabel.swift */; };
 		429BFDAA1F68161D00029440 /* ImagePickerAssetModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 429BFDA91F68161D00029440 /* ImagePickerAssetModel.swift */; };
+		429CCBD02080D62F0050078B /* AsynchronousOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 429CCBCF2080D62F0050078B /* AsynchronousOperation.swift */; };
+		429CCBD22080D6620050078B /* CollectionViewBatchAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 429CCBD12080D6620050078B /* CollectionViewBatchAnimation.swift */; };
+		429CCBD42080D6AE0050078B /* CollectionViewUpdatesCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 429CCBD32080D6AE0050078B /* CollectionViewUpdatesCoordinator.swift */; };
 		42A037E01F66C9E700534350 /* CustomVideoCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 42A037DF1F66C9E700534350 /* CustomVideoCell.xib */; };
 		42B296A91FB1CC3200590260 /* ImagePickerView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 42B296A81FB1CC3200590260 /* ImagePickerView.xib */; };
 		42B296AB1FB1CC7400590260 /* ImagePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42B296AA1FB1CC7400590260 /* ImagePickerView.swift */; };
@@ -124,6 +127,9 @@
 		427926001F963E9C00B6D55F /* LivePhotoCameraCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LivePhotoCameraCell.xib; sourceTree = "<group>"; };
 		42990DBE1FA07AF7001658C4 /* RecordDurationLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordDurationLabel.swift; sourceTree = "<group>"; };
 		429BFDA91F68161D00029440 /* ImagePickerAssetModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePickerAssetModel.swift; sourceTree = "<group>"; };
+		429CCBCF2080D62F0050078B /* AsynchronousOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsynchronousOperation.swift; sourceTree = "<group>"; };
+		429CCBD12080D6620050078B /* CollectionViewBatchAnimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewBatchAnimation.swift; sourceTree = "<group>"; };
+		429CCBD32080D6AE0050078B /* CollectionViewUpdatesCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewUpdatesCoordinator.swift; sourceTree = "<group>"; };
 		42A037DF1F66C9E700534350 /* CustomVideoCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CustomVideoCell.xib; sourceTree = "<group>"; };
 		42B296A81FB1CC3200590260 /* ImagePickerView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ImagePickerView.xib; sourceTree = "<group>"; };
 		42B296AA1FB1CC7400590260 /* ImagePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePickerView.swift; sourceTree = "<group>"; };
@@ -196,6 +202,7 @@
 			isa = PBXGroup;
 			children = (
 				420C24181F5D82F9008935D4 /* ImagePicker.h */,
+				42887C072080D5D200194155 /* Operations */,
 				42D7036F1F7909100057D557 /* Public */,
 				42D703701F790A3F0057D557 /* Media */,
 				42990DBD1FA07A6C001658C4 /* Views */,
@@ -225,6 +232,16 @@
 				421442701F604993006BA45A /* IconWithTextCell.swift */,
 			);
 			path = "Custom Views";
+			sourceTree = "<group>";
+		};
+		42887C072080D5D200194155 /* Operations */ = {
+			isa = PBXGroup;
+			children = (
+				429CCBCF2080D62F0050078B /* AsynchronousOperation.swift */,
+				429CCBD12080D6620050078B /* CollectionViewBatchAnimation.swift */,
+				429CCBD32080D6AE0050078B /* CollectionViewUpdatesCoordinator.swift */,
+			);
+			name = Operations;
 			sourceTree = "<group>";
 		};
 		42990DBD1FA07A6C001658C4 /* Views */ = {
@@ -332,7 +349,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0830;
-				LastUpgradeCheck = 0900;
+				LastUpgradeCheck = 0930;
 				ORGANIZATIONNAME = Inloop;
 				TargetAttributes = {
 					420C23FB1F5D82C6008935D4 = {
@@ -415,6 +432,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				421442631F6014B3006BA45A /* CellRegistrator.swift in Sources */,
+				429CCBD22080D6620050078B /* CollectionViewBatchAnimation.swift in Sources */,
+				429CCBD42080D6AE0050078B /* CollectionViewUpdatesCoordinator.swift in Sources */,
 				420C24361F5ED4AB008935D4 /* ImagePickerLayout.swift in Sources */,
 				42D0979C1F7BF6B300A66E33 /* AssetCell.swift in Sources */,
 				42E736521F8510B70060E24D /* VideoCaptureDelegate.swift in Sources */,
@@ -431,6 +450,7 @@
 				427925F51F96381400B6D55F /* ShutterButton.swift in Sources */,
 				42EDD4061F71261600EAD2F5 /* AVPreviewView.swift in Sources */,
 				420C24411F5EEA3C008935D4 /* LayoutConfiguration.swift in Sources */,
+				429CCBD02080D62F0050078B /* AsynchronousOperation.swift in Sources */,
 				427925FD1F963A8D00B6D55F /* VideoCameraCell.swift in Sources */,
 				42EDD4161F712B2A00EAD2F5 /* Miscellaneous.swift in Sources */,
 				427926011F963E9C00B6D55F /* LivePhotoCameraCell.swift in Sources */,
@@ -490,6 +510,7 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -497,6 +518,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -546,6 +568,7 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -553,6 +576,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;

@@ -209,6 +209,8 @@ open class ImagePickerController : UIViewController {
     
     // MARK: Private Methods
     
+    private var collectionViewCoordinator: CollectionViewUpdatesCoordinator!
+    
     fileprivate var imagePickerView: ImagePickerView! {
         return view as! ImagePickerView
     }
@@ -295,6 +297,9 @@ open class ImagePickerController : UIViewController {
         let appearance = instanceAppearanceProxy ?? ImagePickerController.classAppearanceProxy
         imagePickerView.backgroundColor = appearance.backgroundColor
         collectionView.backgroundColor = appearance.backgroundColor
+        
+        //create animator
+        collectionViewCoordinator = CollectionViewUpdatesCoordinator(collectionView: collectionView)
         
         //configure flow layout
         let collectionViewLayout = self.collectionView.collectionViewLayout as! UICollectionViewFlowLayout
@@ -401,53 +406,21 @@ extension ImagePickerController: PHPhotoLibraryChangeObserver {
     
     public func photoLibraryDidChange(_ changeInstance: PHChange) {
         
-        guard let fetchResult = collectionViewDataSource.assetsModel.fetchResult else {
+        guard let fetchResult = collectionViewDataSource.assetsModel.fetchResult, let changes = changeInstance.changeDetails(for: fetchResult) else {
             return
         }
         
-        DispatchQueue.main.sync {
-        
-            guard let changes = changeInstance.changeDetails(for: fetchResult) else {
-                //reload collection view
-                self.collectionView.reloadData()
-                return
-            }
+        collectionViewCoordinator.performDataSourceUpdate { [unowned self] in
             
             //update old fetch result with these updates
-            collectionViewDataSource.assetsModel.fetchResult = changes.fetchResultAfterChanges
-
-            //update layout model because it changed
-            collectionViewDataSource.layoutModel = LayoutModel(configuration: layoutConfiguration, assets: collectionViewDataSource.assetsModel.fetchResult.count)
+            self.collectionViewDataSource.assetsModel.fetchResult = changes.fetchResultAfterChanges
             
-            if changes.hasIncrementalChanges {
-                
-                let assetItemsSection = layoutConfiguration.sectionIndexForAssets
-                
-                // If we have incremental diffs, animate them in the collection view
-                self.collectionView.performBatchUpdates({
-                    
-                    // For indexes to make sense, updates must be in this order:
-                    // delete, insert, reload, move
-                    if let removed = changes.removedIndexes, removed.isEmpty == false {
-                        self.collectionView.deleteItems(at: removed.map({ IndexPath(item: $0, section: assetItemsSection) }))
-                    }
-                    if let inserted = changes.insertedIndexes, inserted.isEmpty == false {
-                        self.collectionView.insertItems(at: inserted.map({ IndexPath(item: $0, section: assetItemsSection) }))
-                    }
-                    if let changed = changes.changedIndexes, changed.isEmpty == false {
-                        self.collectionView.reloadItems(at: changed.map({ IndexPath(item: $0, section: assetItemsSection) }))
-                    }
-                    changes.enumerateMoves { fromIndex, toIndex in
-                        self.collectionView.moveItem(at: IndexPath(item: fromIndex, section: assetItemsSection), to: IndexPath(item: toIndex, section: assetItemsSection))
-                    }
-                })
-            }
-            else {
-                // Reload the collection view if incremental diffs are not available.
-                collectionView.reloadData()
-            }
-            //resetCachedAssets()
+            //update layout model because it changed
+            self.collectionViewDataSource.layoutModel = LayoutModel(configuration: self.layoutConfiguration, assets: self.collectionViewDataSource.assetsModel.fetchResult.count)
         }
+        
+        //perform update animations
+        collectionViewCoordinator.performChanges(changes, inSection: layoutConfiguration.sectionIndexForAssets)
     }
 }
 
