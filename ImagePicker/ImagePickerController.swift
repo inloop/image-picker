@@ -144,7 +144,7 @@ open class ImagePickerController : UIViewController {
     public var selectedAssets: [PHAsset] {
         get {
             let selectedIndexPaths = collectionView.indexPathsForSelectedItems ?? []
-            let selectedAssets = selectedIndexPaths.flatMap { indexPath in
+            let selectedAssets = selectedIndexPaths.compactMap { indexPath in
                 return asset(at: indexPath.row)
             }
             return selectedAssets
@@ -253,7 +253,7 @@ open class ImagePickerController : UIViewController {
         case .authorized:
             collectionViewDataSource.assetsModel.fetchResult = assetsFetchResultBlock?()
             collectionViewDataSource.layoutModel = LayoutModel(configuration: layoutConfiguration, assets: collectionViewDataSource.assetsModel.fetchResult.count)
-            
+            collectionView.reloadData()
         case .restricted, .denied:
             if let view = overlayView ?? dataSource?.imagePicker(controller: self, viewForAuthorizationStatus: status), view.superview != collectionView {
                 collectionView.backgroundView = view
