@@ -10,84 +10,15 @@ import Foundation
 import UIKit
 import Photos
 
-///
-/// Group of methods informing what image picker is currently doing
-///
-public protocol ImagePickerControllerDelegate : class {
-    
-    ///
-    /// Called when user taps on an action item, index is either 0 or 1 depending which was tapped
-    ///
-    func imagePicker(controller: ImagePickerController, didSelectActionItemAt index: Int)
-    
-    ///
-    /// Called when user select an asset.
-    ///
-    func imagePicker(controller: ImagePickerController, didSelect asset: PHAsset)
-    
-    ///
-    /// Called when user unselect previously selected asset.
-    ///
-    func imagePicker(controller: ImagePickerController, didDeselect asset: PHAsset)
-    
-    ///
-    /// Called when user takes new photo.
-    ///
-    func imagePicker(controller: ImagePickerController, didTake image: UIImage)
-    
-    ///
-    /// Called when user takes new photo.
-    ///
-    //TODO:
-    //func imagePicker(controller: ImagePickerController, didCaptureVideo url: UIImage)
-    //func imagePicker(controller: ImagePickerController, didTake livePhoto: UIImage, videoUrl: UIImage)
-    
-    ///
-    /// Called right before an action item collection view cell is displayed. Use this method
-    /// to configure your cell.
-    ///
-    func imagePicker(controller: ImagePickerController, willDisplayActionItem cell: UICollectionViewCell, at index: Int)
-    
-    ///
-    /// Called right before an asset item collection view cell is displayed. Use this method
-    /// to configure your cell based on asset media type, subtype, etc.
-    ///
-    func imagePicker(controller: ImagePickerController, willDisplayAssetItem cell: ImagePickerAssetCell, asset: PHAsset)
-}
-
-//this will make sure all delegate methods are optional
-extension ImagePickerControllerDelegate {
-    public func imagePicker(controller: ImagePickerController, didSelectActionItemAt index: Int) {}
-    public func imagePicker(controller: ImagePickerController, didSelect asset: PHAsset) {}
-    public func imagePicker(controller: ImagePickerController, didUnselect asset: PHAsset) {}
-    public func imagePicker(controller: ImagePickerController, didTake image: UIImage) {}
-    public func imagePicker(controller: ImagePickerController, willDisplayActionItem cell: UICollectionViewCell, at index: Int) {}
-    public func imagePicker(controller: ImagePickerController, willDisplayAssetItem cell: ImagePickerAssetCell, asset: PHAsset) {}
-}
-
-
-///
-/// Image picker may ask for additional resources, implement this protocol to fully support
-/// all features.
-///
-public protocol ImagePickerControllerDataSource : class {
-    ///
-    /// Asks for a view that is placed as overlay view with permissions info
-    /// when user did not grant or has restricted access to photo library.
-    ///
-    func imagePicker(controller: ImagePickerController,  viewForAuthorizationStatus status: PHAuthorizationStatus) -> UIView
-}
-
 open class ImagePickerController : UIViewController {
-   
     deinit {
         PHPhotoLibrary.shared().unregisterChangeObserver(self)
         captureSession?.suspend()
         log("deinit: \(String(describing: self))")
     }
     
-    // MARK: Public API
-    
+    // MARK: - Public API
+
     ///
     /// Use this object to configure layout of action, camera and asset items.
     ///
@@ -207,24 +138,19 @@ open class ImagePickerController : UIViewController {
         return imagePickerView.collectionView
     }
     
-    // MARK: Private Methods
-    
+    // MARK: - Private Methods
     private var collectionViewCoordinator: CollectionViewUpdatesCoordinator!
-    
-    fileprivate var imagePickerView: ImagePickerView! {
+    private var imagePickerView: ImagePickerView! {
         return view as! ImagePickerView
     }
     
-    fileprivate var collectionViewDataSource = ImagePickerDataSource(assetsModel: ImagePickerAssetModel())
-    fileprivate var collectionViewDelegate = ImagePickerDelegate()
+    private var collectionViewDataSource = ImagePickerDataSource(assetsModel: ImagePickerAssetModel())
+    private var collectionViewDelegate = ImagePickerDelegate()
     
-    fileprivate var captureSession: CaptureSession?
+    internal var captureSession: CaptureSession?
     
     private func updateItemSize() {
-        
-        guard let layout = self.collectionViewDelegate.layout else {
-            return
-        }
+        guard let layout = self.collectionViewDelegate.layout else { return }
         
         let itemsInRow = layoutConfiguration.numberOfAssetItemsInRow
         let scrollDirection = layoutConfiguration.scrollDirection
@@ -255,25 +181,22 @@ open class ImagePickerController : UIViewController {
             collectionViewDataSource.layoutModel = LayoutModel(configuration: layoutConfiguration, assets: collectionViewDataSource.assetsModel.fetchResult.count)
             collectionView.reloadData()
         case .restricted, .denied:
-            if let view = overlayView ?? dataSource?.imagePicker(controller: self, viewForAuthorizationStatus: status), view.superview != collectionView {
-                collectionView.backgroundView = view
-                overlayView = view
-            }
-            
+            guard let view = overlayView ?? dataSource?.imagePicker(controller: self, viewForAuthorizationStatus: status),
+                view.superview != collectionView else { return }
+            collectionView.backgroundView = view
+            overlayView = view
         case .notDetermined:
-            PHPhotoLibrary.requestAuthorization({ (status) in
+            PHPhotoLibrary.requestAuthorization { status in
                 DispatchQueue.main.async {
                     self.reloadData(basedOnAuthorizationStatus: status)
                 }
-            })
+            }
         }
     }
     
     /// Reload camera cell based on authorization status of camera input device (video)
-    fileprivate func reloadCameraCell(basedOnAuthorizationStatus status: AVAuthorizationStatus) {
-        guard let cameraCell = collectionView.cameraCell(layout: layoutConfiguration) else {
-            return
-        }
+    private func reloadCameraCell(basedOnAuthorizationStatus status: AVAuthorizationStatus) {
+        guard let cameraCell = collectionView.cameraCell(layout: layoutConfiguration) else { return }
         cameraCell.authorizationStatus = status
     }
     
@@ -283,8 +206,7 @@ open class ImagePickerController : UIViewController {
     ///appearance object for an instance
     var instanceAppearanceProxy: Appearance?
     
-    // MARK: View Lifecycle
-    
+    // MARK: - View Lifecycle
     open override func loadView() {
         let nib = UINib(nibName: "ImagePickerView", bundle: Bundle(for: ImagePickerView.self))
         view = nib.instantiate(withOwner: nil, options: nil)[0] as! ImagePickerView
@@ -292,58 +214,13 @@ open class ImagePickerController : UIViewController {
     
     open override func viewDidLoad() {
         super.viewDidLoad()
-        
-        //apply appearance
-        let appearance = instanceAppearanceProxy ?? ImagePickerController.classAppearanceProxy
-        collectionView.backgroundColor = appearance.backgroundColor
-        
-        //create animator
-        collectionViewCoordinator = CollectionViewUpdatesCoordinator(collectionView: collectionView)
-        
-        //configure flow layout
-        let collectionViewLayout = self.collectionView.collectionViewLayout as! UICollectionViewFlowLayout
-        collectionViewLayout.scrollDirection = layoutConfiguration.scrollDirection
-        collectionViewLayout.minimumInteritemSpacing = layoutConfiguration.interitemSpacing
-        collectionViewLayout.minimumLineSpacing = layoutConfiguration.interitemSpacing
-        
-        //finish configuring collection view
-        collectionView.dataSource = self.collectionViewDataSource
-        collectionView.delegate = self.collectionViewDelegate
-        collectionView.allowsMultipleSelection = true
-        collectionView.showsVerticalScrollIndicator = false
-        collectionView.showsHorizontalScrollIndicator = false
-        switch layoutConfiguration.scrollDirection {
-        case .horizontal: collectionView.alwaysBounceHorizontal = true
-        case .vertical: collectionView.alwaysBounceVertical = true
-        }
-        
-        if #available(iOS 11.0, *) {
-            collectionView.contentInsetAdjustmentBehavior = .never
-        }
-        
-        //gesture recognizer to detect taps on a camera cell (selection is disabled)
-        let recognizer = UITapGestureRecognizer(target: self, action: #selector(tapGestureRecognized(sender:)))
-        recognizer.cancelsTouchesInView = false
-        view.addGestureRecognizer(recognizer)
-        
-        //apply cell registrator to collection view
-        collectionView.apply(registrator: cellRegistrator, cameraMode: captureSettings.cameraMode)
-        
-        //connect all remaining objects as needed
-        collectionViewDataSource.cellRegistrator = cellRegistrator
-        collectionViewDelegate.delegate = self
-        collectionViewDelegate.layout = ImagePickerLayout(configuration: layoutConfiguration)
-
-        //configure capture session
-        if layoutConfiguration.showsCameraItem {
-            let session = CaptureSession()
-            captureSession = session
-            session.presetConfiguration = captureSettings.cameraMode.captureSessionPresetConfiguration
-            session.videoOrientation = UIApplication.shared.statusBarOrientation.captureVideoOrientation
-            session.delegate = self
-            session.videoRecordingDelegate = self
-            session.photoCapturingDelegate = self
-        }
+        applyAppearance()
+        createAnimator()
+        configureCollectionViewFlowLayout()
+        configureCollectionView()
+        configureGestureRecognizer()
+        setupDelegates()
+        configureCaptureSessionIfNeeded()
     }
 
     private var isFirstAppear = true
@@ -354,21 +231,9 @@ open class ImagePickerController : UIViewController {
 
     open override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        if isFirstAppear {
-            isFirstAppear = false
-            configureCameraRelatedItems()
-        }
-    }
-
-    private func configureCameraRelatedItems() {
-        //register for photo library updates - this is needed when changing permissions to photo library
-        //TODO: this is expensive (loading library for the first time)
-        PHPhotoLibrary.shared().register(self)
-
-        //determine auth satus and based on that reload UI
-        reloadData(basedOnAuthorizationStatus: PHPhotoLibrary.authorizationStatus())
-
-        captureSession?.prepare()
+        guard isFirstAppear else { return }
+        isFirstAppear = false
+        configureCameraRelatedItems()
     }
 
     open override func viewWillLayoutSubviews() {
@@ -379,49 +244,109 @@ open class ImagePickerController : UIViewController {
     
     //this will make sure that collection view layout is reloaded when interface rotates/changes
     open override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        
         super.viewWillTransition(to: size, with: coordinator)
         
         //update capture session with new interface orientation
         captureSession?.updateVideoOrientation(new: UIApplication.shared.statusBarOrientation.captureVideoOrientation)
-        
-        coordinator.animate(alongsideTransition: { (context) in
+
+        coordinator.animate(alongsideTransition: { _ in
             self.updateContentInset()
-        }) { (context) in
+        }, completion: { _ in
             self.updateItemSize()
-        }
-        
+        })
     }
     
     // MARK: Private Methods
-    
     @objc private func tapGestureRecognized(sender: UIGestureRecognizer) {
-        guard sender.state == .ended else {
-            return
-        }
-        
-        guard let cameraCell = collectionView.cameraCell(layout: layoutConfiguration) else {
-            return
-        }
+        guard sender.state == .ended else { return }
+        guard let cameraCell = collectionView.cameraCell(layout: layoutConfiguration) else { return }
         
         let point = sender.location(in: cameraCell)
         if cameraCell.touchIsCaptureEffective(point: point) {
             takePicture()
         }
     }
-    
 }
 
-extension ImagePickerController: PHPhotoLibraryChangeObserver {
-    
-    public func photoLibraryDidChange(_ changeInstance: PHChange) {
-        
-        guard let fetchResult = collectionViewDataSource.assetsModel.fetchResult, let changes = changeInstance.changeDetails(for: fetchResult) else {
-            return
+// MARK: - Controller setup
+private extension ImagePickerController {
+    func applyAppearance() {
+        let appearance = instanceAppearanceProxy ?? ImagePickerController.classAppearanceProxy
+        collectionView.backgroundColor = appearance.backgroundColor
+    }
+
+    func createAnimator() {
+        collectionViewCoordinator = CollectionViewUpdatesCoordinator(collectionView: collectionView)
+    }
+
+    func configureCollectionView() {
+        collectionView.dataSource = self.collectionViewDataSource
+        collectionView.delegate = self.collectionViewDelegate
+        collectionView.allowsMultipleSelection = true
+        collectionView.showsVerticalScrollIndicator = false
+        collectionView.showsHorizontalScrollIndicator = false
+
+        switch layoutConfiguration.scrollDirection {
+        case .horizontal: collectionView.alwaysBounceHorizontal = true
+        case .vertical: collectionView.alwaysBounceVertical = true
         }
+
+        if #available(iOS 11.0, *) {
+            collectionView.contentInsetAdjustmentBehavior = .never
+        }
+
+        //apply cell registrator to collection view
+        collectionView.apply(registrator: cellRegistrator, cameraMode: captureSettings.cameraMode)
+    }
+
+    func configureCollectionViewFlowLayout() {
+        guard let collectionViewLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout else { return }
+        collectionViewLayout.scrollDirection = layoutConfiguration.scrollDirection
+        collectionViewLayout.minimumInteritemSpacing = layoutConfiguration.interitemSpacing
+        collectionViewLayout.minimumLineSpacing = layoutConfiguration.interitemSpacing
+    }
+
+    func configureGestureRecognizer() {
+        let recognizer = UITapGestureRecognizer(target: self, action: #selector(tapGestureRecognized(sender:)))
+        recognizer.cancelsTouchesInView = false
+        view.addGestureRecognizer(recognizer)
+    }
+
+    func setupDelegates() {
+        collectionViewDataSource.cellRegistrator = cellRegistrator
+        collectionViewDelegate.delegate = self
+        collectionViewDelegate.layout = ImagePickerLayout(configuration: layoutConfiguration)
+    }
+
+    func configureCaptureSessionIfNeeded() {
+        guard layoutConfiguration.showsCameraItem else { return }
+        let session = CaptureSession()
+        captureSession = session
+        session.presetConfiguration = captureSettings.cameraMode.captureSessionPresetConfiguration
+        session.videoOrientation = UIApplication.shared.statusBarOrientation.captureVideoOrientation
+        session.delegate = self
+        session.videoRecordingDelegate = self
+        session.photoCapturingDelegate = self
+    }
+
+    func configureCameraRelatedItems() {
+        //register for photo library updates - this is needed when changing permissions to photo library
+        //TODO: this is expensive (loading library for the first time)
+        PHPhotoLibrary.shared().register(self)
+
+        //determine auth satus and based on that reload UI
+        reloadData(basedOnAuthorizationStatus: PHPhotoLibrary.authorizationStatus())
+
+        captureSession?.prepare()
+    }
+}
+
+// MARK: - PHPhotoLibraryChangeObserver
+extension ImagePickerController: PHPhotoLibraryChangeObserver {
+    public func photoLibraryDidChange(_ changeInstance: PHChange) {
+        guard let fetchResult = collectionViewDataSource.assetsModel.fetchResult, let changes = changeInstance.changeDetails(for: fetchResult) else { return }
         
         collectionViewCoordinator.performDataSourceUpdate { [unowned self] in
-            
             //update old fetch result with these updates
             self.collectionViewDataSource.assetsModel.fetchResult = changes.fetchResultAfterChanges
             
@@ -434,119 +359,8 @@ extension ImagePickerController: PHPhotoLibraryChangeObserver {
     }
 }
 
-extension ImagePickerController : ImagePickerDelegateDelegate {
-    
-    func imagePicker(delegate: ImagePickerDelegate, didSelectActionItemAt index: Int) {
-        self.delegate?.imagePicker(controller: self, didSelectActionItemAt: index)
-    }
-        
-    func imagePicker(delegate: ImagePickerDelegate, didSelectAssetItemAt index: Int) {
-        self.delegate?.imagePicker(controller: self, didSelect: asset(at: index))
-    }
-    
-    func imagePicker(delegate: ImagePickerDelegate, didDeselectAssetItemAt index: Int) {
-        self.delegate?.imagePicker(controller: self, didDeselect: asset(at: index))
-    }
-    
-    func imagePicker(delegate: ImagePickerDelegate, willDisplayActionCell cell: UICollectionViewCell, at index: Int) {
-        
-        if let defaultCell = cell as? ActionCell {
-            defaultCell.update(withIndex: index, layoutConfiguration: layoutConfiguration)
-        }
-        self.delegate?.imagePicker(controller: self, willDisplayActionItem: cell, at: index)
-    }
-    
-    func imagePicker(delegate: ImagePickerDelegate, willDisplayAssetCell cell: ImagePickerAssetCell, at index: Int) {
-        let theAsset = asset(at: index)
-        
-        //if the cell is default cell provided by Image Picker, it's our responsibility
-        //to update the cell with the asset.
-        if let defaultCell = cell as? VideoAssetCell {
-            defaultCell.update(with: theAsset)
-        }
-        self.delegate?.imagePicker(controller: self, willDisplayAssetItem: cell, asset: theAsset)
-    }
-    
-    func imagePicker(delegate: ImagePickerDelegate, willDisplayCameraCell cell: CameraCollectionViewCell) {
-        
-        //setup cell if needed
-        if cell.delegate == nil {
-            cell.delegate = self
-            cell.previewView.session = captureSession?.session
-            captureSession?.previewLayer = cell.previewView.previewLayer
-            
-            //when using videos preset, we are using different technique for
-            //blurring the cell content. If isVisualEffectViewUsedForBlurring is
-            //true, then UIVisualEffectView is used for blurring. In other cases
-            //we manually blur video data output frame (it's faster). Reason why
-            //we have 2 different blurring techniques is that the faster solution
-            //can not be used when we have .video preset configuration.
-            if let config = captureSession?.presetConfiguration, config == .videos {
-                cell.isVisualEffectViewUsedForBlurring = true
-            }
-            
-        }
-        
-        //if cell is default LivePhotoCameraCell, we must update it based on camera config
-        if let liveCameraCell = cell as? LivePhotoCameraCell {
-            liveCameraCell.updateWithCameraMode(captureSettings.cameraMode)
-        }
-        
-        //update live photos
-        let inProgressLivePhotos = captureSession?.inProgressLivePhotoCapturesCount ?? 0
-        cell.updateLivePhotoStatus(isProcessing: inProgressLivePhotos > 0, shouldAnimate: false)
-        
-        //update video recording status
-        let isRecordingVideo = captureSession?.isRecordingVideo ?? false
-        cell.updateRecordingVideoStatus(isRecording: isRecordingVideo, shouldAnimate: false)
-        
-        //update authorization status if it's changed
-        let status = AVCaptureDevice.authorizationStatus(for: .video)
-        if cell.authorizationStatus != status {
-            cell.authorizationStatus = status
-        }
-        
-        //resume session only if not recording video
-        if isRecordingVideo == false {
-            captureSession?.resume()
-        }
-    }
-    
-    func imagePicker(delegate: ImagePickerDelegate, didEndDisplayingCameraCell cell: CameraCollectionViewCell) {
-        
-        let isRecordingVideo = captureSession?.isRecordingVideo ?? false
-        
-        //susped session only if not recording video, otherwise the recording would be stopped.
-        if isRecordingVideo == false {
-            captureSession?.suspend()
-            
-            // blur cell asap
-            DispatchQueue.global(qos: .userInteractive).async {
-                if let image = self.captureSession?.latestVideoBufferImage {
-                    let blurred = UIImageEffects.imageByApplyingLightEffect(to: image)
-                    DispatchQueue.main.async {
-                        cell.blurIfNeeded(blurImage: blurred, animated: false, completion: nil)
-                    }
-                }
-                else {
-                    DispatchQueue.main.async {
-                        cell.blurIfNeeded(blurImage: nil, animated: false, completion: nil)
-                    }
-                }
-            }
-        }
-    }
-    
-    func imagePicker(delegate: ImagePickerDelegate, didScroll scrollView: UIScrollView) {
-        //update only if the view is visible.
-        //TODO: precaching is not enabled for now (it's laggy need to profile)
-        //guard isViewLoaded && view.window != nil else { return }
-        //collectionViewDataSource.assetsModel.updateCachedAssets(collectionView: collectionView)
-    }
-}
-
-extension ImagePickerController : CaptureSessionDelegate {
-    
+// MARK: - CaptureSessionDelegate
+extension ImagePickerController: CaptureSessionDelegate {
     func captureSessionDidResume(_ session: CaptureSession) {
         log("did resume")
         unblurCellIfNeeded(animated: true)
@@ -584,26 +398,20 @@ extension ImagePickerController : CaptureSessionDelegate {
     }
     
     private func blurCellIfNeeded(animated: Bool) {
-        
-        guard let cameraCell = collectionView.cameraCell(layout: layoutConfiguration) else { return }
-        guard let captureSession = captureSession else { return }
+        guard let cameraCell = collectionView.cameraCell(layout: layoutConfiguration),
+            let captureSession = captureSession else { return }
         
         cameraCell.blurIfNeeded(blurImage: captureSession.latestVideoBufferImage, animated: animated, completion: nil)
     }
     
     private func unblurCellIfNeeded(animated: Bool) {
-        
-        guard let cameraCell = collectionView.cameraCell(layout: layoutConfiguration) else {
-            return
-        }
-        
+        guard let cameraCell = collectionView.cameraCell(layout: layoutConfiguration) else { return }
         cameraCell.unblurIfNeeded(unblurImage: nil, animated: animated, completion: nil)
     }
-    
 }
 
+// MARK: - CaptureSessionPhotoCapturingDelegate
 extension ImagePickerController : CaptureSessionPhotoCapturingDelegate {
-    
     func captureSession(_ session: CaptureSession, didCapturePhotoData: Data, with settings: AVCapturePhotoSettings) {
         log("did capture photo \(settings.uniqueID)")
         delegate?.imagePicker(controller: self, didTake: UIImage(data: didCapturePhotoData)!)
@@ -618,18 +426,15 @@ extension ImagePickerController : CaptureSessionPhotoCapturingDelegate {
     }
     
     func captureSessionDidChangeNumberOfProcessingLivePhotos(_ session: CaptureSession) {
-        
-        guard let cameraCell = collectionView.cameraCell(layout: layoutConfiguration) else {
-            return
-        }
+        guard let cameraCell = collectionView.cameraCell(layout: layoutConfiguration) else { return }
         
         let count = session.inProgressLivePhotoCapturesCount
         cameraCell.updateLivePhotoStatus(isProcessing: count > 0, shouldAnimate: true)
     }
 }
 
+// MARK: - CaptureSessionVideoRecordingDelegate
 extension ImagePickerController : CaptureSessionVideoRecordingDelegate {
-    
     func captureSessionDidBecomeReadyForVideoRecording(_ session: CaptureSession) {
         log("ready for video recording")
         guard let cameraCell = collectionView.cameraCell(layout: layoutConfiguration) else { return }
@@ -665,11 +470,10 @@ extension ImagePickerController : CaptureSessionVideoRecordingDelegate {
         guard let cameraCell = collectionView.cameraCell(layout: layoutConfiguration) else { return }
         cameraCell.updateRecordingVideoStatus(isRecording: isRecording, shouldAnimate: animated)
     }
-    
 }
 
+// MARK: - CameraCollectionViewCellDelegate
 extension ImagePickerController: CameraCollectionViewCellDelegate {
-    
     func takePicture() {
         captureSession?.capturePhoto(livePhotoMode: .off, saveToPhotoLibrary: captureSettings.savesCapturedPhotosToPhotoLibrary)
     }
@@ -687,41 +491,28 @@ extension ImagePickerController: CameraCollectionViewCellDelegate {
     }
     
     func flipCamera(_ completion: (() -> Void)? = nil) {
-        
-        guard let captureSession = captureSession else { return  }
+        guard let captureSession = captureSession else { return }
         
         guard let cameraCell = collectionView.cameraCell(layout: layoutConfiguration) else {
             return captureSession.changeCamera(completion: completion)
         }
-        
-        var image = captureSession.latestVideoBufferImage
-        if image != nil {
-            image = UIImageEffects.imageByApplyingLightEffect(to: image!)
-        }
-        
-        // 1. blur cell
-        cameraCell.blurIfNeeded(blurImage: image, animated: true) { _ in
-            
-            // 2. flip camera
-            captureSession.changeCamera(completion: {
-                
-                // 3. flip animation
-                UIView.transition(with: cameraCell.previewView, duration: 0.25, options: [.transitionFlipFromLeft, .allowAnimatedContent], animations: nil) { (finished) in
-                    
-                    //set new image from buffer
-                    var image = captureSession.latestVideoBufferImage
-                    if image != nil {
-                        image = UIImageEffects.imageByApplyingLightEffect(to: image!)
-                    }
-                    
-                    // 4. unblur
-                    cameraCell.unblurIfNeeded(unblurImage: image, animated: true, completion: { _ in
+
+        cameraCell.blurIfNeeded(blurImage: captureSession.lightBufferImage, animated: true) { _ in
+            captureSession.changeCamera {
+                self.flipAnimation(cameraCell.previewView) {
+                    cameraCell.unblurIfNeeded(unblurImage: captureSession.lightBufferImage, animated: true) { _ in
                         completion?()
-                    })
+                    }
                 }
-            })
-            
+            }
         }
     }
-    
+
+    private func flipAnimation(_ view: UIView, completion: (() -> Void)?) {
+        let duration = 0.25
+        let options: UIViewAnimationOptions = [.transitionFlipFromLeft, .allowAnimatedContent]
+        UIView.transition(with: view, duration: duration, options: options, animations: nil) { _ in
+            completion?()
+        }
+    }
 }
