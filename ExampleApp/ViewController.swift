@@ -234,31 +234,21 @@ class ViewController: UITableViewController {
             
             // save capture assets to photo library?
             imagePicker.captureSettings.savesCapturedPhotosToPhotoLibrary = savesCapturedAssets
-            
-            // presentation
-            // before we present VC we can ask for authorization to photo library,
-            // if we dont do it now, Image Picker will ask for it automatically
-            // after it's presented.
-            PHPhotoLibrary.requestAuthorization({ [unowned self] (_) in
-                DispatchQueue.main.async {
-                    // we can present VC regardless of status because we support
-                    // non granted states in Image Picker. Please check `ImagePickerControllerDataSource`
-                    // for more info.
-                    if self.presentsModally {
-                        imagePicker.layoutConfiguration.scrollDirection = .vertical
-                        self.presentPickerModally(imagePicker)
-                    }
-                    else {
-                        imagePicker.layoutConfiguration.scrollDirection = .horizontal
-                        self.presentPickerAsInputView(imagePicker)
-                    }
-                }
-            })
+            presentPicker(imagePicker)
         }
         else {
             updateNavigationItem(with: 0)
             currentInputView = nil
             reloadInputViews()
+        }
+    }
+
+    private func presentPicker(_ imagePicker: ImagePickerController) {
+        imagePicker.layoutConfiguration.scrollDirection = presentsModally ? .vertical : .horizontal
+        if presentsModally {
+            presentPickerModally(imagePicker)
+        } else {
+            presentPickerAsInputView(imagePicker)
         }
     }
     

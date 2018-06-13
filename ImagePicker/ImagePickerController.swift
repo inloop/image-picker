@@ -144,7 +144,7 @@ open class ImagePickerController : UIViewController {
     public var selectedAssets: [PHAsset] {
         get {
             let selectedIndexPaths = collectionView.indexPathsForSelectedItems ?? []
-            let selectedAssets = selectedIndexPaths.flatMap { indexPath in
+            let selectedAssets = selectedIndexPaths.compactMap { indexPath in
                 return asset(at: indexPath.row)
             }
             return selectedAssets
@@ -253,7 +253,7 @@ open class ImagePickerController : UIViewController {
         case .authorized:
             collectionViewDataSource.assetsModel.fetchResult = assetsFetchResultBlock?()
             collectionViewDataSource.layoutModel = LayoutModel(configuration: layoutConfiguration, assets: collectionViewDataSource.assetsModel.fetchResult.count)
-            
+            collectionView.reloadData()
         case .restricted, .denied:
             if let view = overlayView ?? dataSource?.imagePicker(controller: self, viewForAuthorizationStatus: status), view.superview != collectionView {
                 collectionView.backgroundView = view
@@ -333,14 +333,7 @@ open class ImagePickerController : UIViewController {
         collectionViewDataSource.cellRegistrator = cellRegistrator
         collectionViewDelegate.delegate = self
         collectionViewDelegate.layout = ImagePickerLayout(configuration: layoutConfiguration)
-        
-        //register for photo library updates - this is needed when changing permissions to photo library
-        //TODO: this is expensive (loading library for the first time)
-        PHPhotoLibrary.shared().register(self)
-        
-        //determine auth satus and based on that reload UI
-        reloadData(basedOnAuthorizationStatus: PHPhotoLibrary.authorizationStatus())
-        
+
         //configure capture session
         if layoutConfiguration.showsCameraItem {
             let session = CaptureSession()
@@ -350,16 +343,34 @@ open class ImagePickerController : UIViewController {
             session.delegate = self
             session.videoRecordingDelegate = self
             session.photoCapturingDelegate = self
-            session.prepare()
         }
-        
     }
-    
+
+    private var isFirstAppear = true
     open override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         updateItemSize()
     }
-    
+
+    open override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        if isFirstAppear {
+            isFirstAppear = false
+            configureCameraRelatedItems()
+        }
+    }
+
+    private func configureCameraRelatedItems() {
+        //register for photo library updates - this is needed when changing permissions to photo library
+        //TODO: this is expensive (loading library for the first time)
+        PHPhotoLibrary.shared().register(self)
+
+        //determine auth satus and based on that reload UI
+        reloadData(basedOnAuthorizationStatus: PHPhotoLibrary.authorizationStatus())
+
+        captureSession?.prepare()
+    }
+
     open override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
         updateContentInset()
