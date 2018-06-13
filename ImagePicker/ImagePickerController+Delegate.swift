@@ -3,33 +3,32 @@
 //  ImagePicker
 //
 //  Created by Anna Shirokova on 13/06/2018.
-//  Copyright © 2018 Inloop. All rights reserved.
+//  Copyright © 2018 INLOOPX. All rights reserved.
 //
 
-import Foundation
 import  Photos
 
-extension ImagePickerController : ImagePickerDelegateDelegate {
-    func imagePicker(delegate: ImagePickerDelegate, didSelectActionItemAt index: Int) {
-        self.delegate?.imagePicker(controller: self, didSelectActionItemAt: index)
+extension ImagePickerController: ImagePickerDelegateDelegate {
+    func imagePicker(delegate pickerDelegate: ImagePickerDelegate, didSelectActionItemAt index: Int) {
+        delegate?.imagePicker(controller: self, didSelectActionItemAt: index)
     }
 
-    func imagePicker(delegate: ImagePickerDelegate, didSelectAssetItemAt index: Int) {
-        self.delegate?.imagePicker(controller: self, didSelect: asset(at: index))
+    func imagePicker(delegate pickerDelegate: ImagePickerDelegate, didSelectAssetItemAt index: Int) {
+        delegate?.imagePicker(controller: self, didSelect: asset(at: index))
     }
 
-    func imagePicker(delegate: ImagePickerDelegate, didDeselectAssetItemAt index: Int) {
-        self.delegate?.imagePicker(controller: self, didDeselect: asset(at: index))
+    func imagePicker(delegate pickerDelegate: ImagePickerDelegate, didDeselectAssetItemAt index: Int) {
+        delegate?.imagePicker(controller: self, didDeselect: asset(at: index))
     }
 
-    func imagePicker(delegate: ImagePickerDelegate, willDisplayActionCell cell: UICollectionViewCell, at index: Int) {
+    func imagePicker(delegate pickerDelegate: ImagePickerDelegate, willDisplayActionCell cell: UICollectionViewCell, at index: Int) {
         if let defaultCell = cell as? ActionCell {
             defaultCell.update(withIndex: index, layoutConfiguration: layoutConfiguration)
         }
-        self.delegate?.imagePicker(controller: self, willDisplayActionItem: cell, at: index)
+        delegate?.imagePicker(controller: self, willDisplayActionItem: cell, at: index)
     }
 
-    func imagePicker(delegate: ImagePickerDelegate, willDisplayAssetCell cell: ImagePickerAssetCell, at index: Int) {
+    func imagePicker(delegate pickerDelegate: ImagePickerDelegate, willDisplayAssetCell cell: ImagePickerAssetCell, at index: Int) {
         let theAsset = asset(at: index)
 
         //if the cell is default cell provided by Image Picker, it's our responsibility
@@ -37,7 +36,7 @@ extension ImagePickerController : ImagePickerDelegateDelegate {
         if let defaultCell = cell as? VideoAssetCell {
             defaultCell.update(with: theAsset)
         }
-        self.delegate?.imagePicker(controller: self, willDisplayAssetItem: cell, asset: theAsset)
+        delegate?.imagePicker(controller: self, willDisplayAssetItem: cell, asset: theAsset)
     }
 
     func imagePicker(delegate: ImagePickerDelegate, willDisplayCameraCell cell: CameraCollectionViewCell) {
@@ -65,8 +64,6 @@ extension ImagePickerController : ImagePickerDelegateDelegate {
     func imagePicker(delegate: ImagePickerDelegate, didScroll scrollView: UIScrollView) {
         //update only if the view is visible.
         //TODO: precaching is not enabled for now (it's laggy need to profile)
-        //guard isViewLoaded && view.window != nil else { return }
-        //collectionViewDataSource.assetsModel.updateCachedAssets(collectionView: collectionView)
     }
 }
 
