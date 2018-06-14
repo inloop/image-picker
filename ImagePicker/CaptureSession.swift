@@ -6,74 +6,9 @@
 //  Copyright © 2017 Peter Stajger. All rights reserved.
 //
 
-import Foundation
 import AVFoundation
 import Photos
 import UIKit
-
-/// Groups a method that informs a delegate about progress and state of photo capturing.
-protocol CaptureSessionPhotoCapturingDelegate : class {
-    /// called as soon as the photo was taken, use this to update UI - for example show flash animation or live photo icon
-    func captureSession(_ session: CaptureSession, willCapturePhotoWith settings: AVCapturePhotoSettings)
-    
-    /// called when captured photo is processed and ready for use
-    func captureSession(_ session: CaptureSession, didCapturePhotoData: Data, with settings: AVCapturePhotoSettings)
-    
-    /// called when captured photo is processed and ready for use
-    func captureSession(_ session: CaptureSession, didFailCapturingPhotoWith error: Error)
-    
-    /// called when number of processing live photos changed, see inProgressLivePhotoCapturesCount for current count
-    func captureSessionDidChangeNumberOfProcessingLivePhotos(_ session: CaptureSession)
-}
-
-/// Groups a method that informs a delegate about progress and state of video recording.
-protocol CaptureSessionVideoRecordingDelegate : class {
-    ///called when video file recording output is added to the session
-    func captureSessionDidBecomeReadyForVideoRecording(_ session: CaptureSession)
-    
-    ///called when recording started
-    func captureSessionDidStartVideoRecording(_ session: CaptureSession)
-    
-    ///called when cancel recording as a result of calling `cancelVideoRecording` func.
-    func captureSessionDidCancelVideoRecording(_ session: CaptureSession)
-    
-    ///called when a recording was successfully finished
-    func captureSessionDid(_ session: CaptureSession, didFinishVideoRecording videoURL: URL)
-    
-    ///called when a recording was finished prematurely due to a system interruption
-    ///(empty disk, app put on bg, etc). Video is however saved on provided URL or in
-    ///assets library if turned on.
-    func captureSessionDid(_ session: CaptureSession, didInterruptVideoRecording videoURL: URL, reason: Error)
-    
-    ///called when a recording failed
-    func captureSessionDid(_ session: CaptureSession, didFailVideoRecording error: Error)
-}
-
-protocol CaptureSessionDelegate : class {
-    ///called when session is successfully configured and started running
-    func captureSessionDidResume(_ session: CaptureSession)
-    
-    ///called when session is was manually suspended
-    func captureSessionDidSuspend(_ session: CaptureSession)
-    
-    ///capture session was running but did fail due to any AV error reason.
-    func captureSession(_ session: CaptureSession, didFail error: AVError)
-    
-    ///called when creating and configuring session but something failed (e.g. input or output could not be added, etc
-    func captureSessionDidFailConfiguringSession(_ session: CaptureSession)
-    
-    ///called when user denied access to video device when prompte
-    func captureSession(_ session: CaptureSession, authorizationStatusFailed status: AVAuthorizationStatus)
-    
-    ///Called when user grants access to video device when prompted
-    func captureSession(_ session: CaptureSession, authorizationStatusGranted status: AVAuthorizationStatus)
-    
-    ///called when session is interrupted due to various reasons, for example when a phone call or user starts an audio using control center, etc.
-    func captureSession(_ session: CaptureSession, wasInterrupted reason: AVCaptureSession.InterruptionReason)
-    
-    ///called when and interruption is ended and the session was automatically resumed.
-    func captureSessionInterruptionDidEnd(_ session: CaptureSession)
-}
 
 // MARK: - CaptureSessionError
 private enum CaptureSessionError: Error {
@@ -345,8 +280,7 @@ final class CaptureSession : NSObject {
     private var addedObservers = false
     
     private func addObservers() {
-
-        guard addedObservers == false else { return }
+        guard !addedObservers else { return }
         
         session.addObserver(self, forKeyPath: "running", options: .new, context: &sessionRunningObserveContext)
         NotificationCenter.default.addObserver(self, selector: #selector(subjectAreaDidChange), name: Notification.Name("AVCaptureDeviceSubjectAreaDidChangeNotification"), object: videoDeviceInput.device)
@@ -366,8 +300,7 @@ final class CaptureSession : NSObject {
     }
     
     private func removeObservers() {
-        
-        guard addedObservers == true else { return }
+        guard addedObservers else { return }
         
         NotificationCenter.default.removeObserver(self)
         session.removeObserver(self, forKeyPath: "running", context: &sessionRunningObserveContext)
@@ -389,43 +322,42 @@ final class CaptureSession : NSObject {
                     self.delegate?.captureSessionDidSuspend(capturedSelf)
                 }
             }
-        }
-        else {
+        } else {
             super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
         }
     }
-    
+
+    enum RuntimeError: Error {
+        case unableToRestart
+    }
+
     @objc func sessionRuntimeError(notification: NSNotification) {
-        guard let errorValue = notification.userInfo?[AVCaptureSessionErrorKey] as? NSError else {
-            return
-        }
+        guard let errorValue = notification.userInfo?[AVCaptureSessionErrorKey] as? NSError else { return }
         
         let error = AVError(_nsError: errorValue)
         log("capture session: runtime error: \(error)")
-        
+
         /*
          Automatically try to restart the session running if media services were
          reset and the last start running succeeded. Otherwise, enable the user
          to try to resume the session running.
          */
-        if error.code == .mediaServicesWereReset {
-            sessionQueue.async { [capturedSelf = self] in
-                if capturedSelf.isSessionRunning {
-                    capturedSelf.session.startRunning()
-                    capturedSelf.isSessionRunning = capturedSelf.session.isRunning
-                }
-                else {
-                    DispatchQueue.main.async {
-                        capturedSelf.delegate?.captureSession(capturedSelf, didFail: error)
-                    }
+        guard error.code == .mediaServicesWereReset else { return failToRestart(error) }
+
+        sessionQueue.async { [capturedSelf = self] in
+            if capturedSelf.isSessionRunning {
+                capturedSelf.session.startRunning()
+                capturedSelf.isSessionRunning = capturedSelf.session.isRunning
+            } else {
+                DispatchQueue.main.async { [weak self] in
+                    self?.failToRestart(error)
                 }
             }
         }
-        else {
-            DispatchQueue.main.async { [weak self] in
-                self?.delegate?.captureSession(self!, didFail: error)
-            }
-        }
+    }
+
+    private func failToRestart(_ error: AVError) {
+        delegate?.captureSession(self, didFail: error)
     }
     
     @objc func sessionWasInterrupted(notification: NSNotification) {
@@ -440,10 +372,10 @@ final class CaptureSession : NSObject {
         if let userInfoValue = notification.userInfo?[AVCaptureSessionInterruptionReasonKey] as AnyObject?, let reasonIntegerValue = userInfoValue.integerValue, let reason = AVCaptureSession.InterruptionReason(rawValue: reasonIntegerValue) {
             log("capture session: session was interrupted with reason \(reason)")
             DispatchQueue.main.async { [weak self] in
-                self?.delegate?.captureSession(self!, wasInterrupted: reason)
+                guard let `self` = self else { return }
+                self.delegate?.captureSession(self, wasInterrupted: reason)
             }
-        }
-        else {
+        } else {
             log("capture session: session was interrupted due to unknown reason")
         }
     }
