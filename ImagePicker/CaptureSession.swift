@@ -145,6 +145,11 @@ final class CaptureSession : NSObject {
     var latestVideoBufferImage: UIImage? {
         return videoOutpuSampleBufferDelegate.latestImage
     }
+
+    var lightBufferImage: UIImage? {
+        guard let image = latestVideoBufferImage else { return nil }
+        return UIImageEffects.imageByApplyingLightEffect(to: image)
+    }
     
     // MARK: Video Recoding
     
