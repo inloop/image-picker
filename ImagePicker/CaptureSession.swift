@@ -13,7 +13,6 @@ import UIKit
 
 /// Groups a method that informs a delegate about progress and state of photo capturing.
 protocol CaptureSessionPhotoCapturingDelegate : class {
-    
     /// called as soon as the photo was taken, use this to update UI - for example show flash animation or live photo icon
     func captureSession(_ session: CaptureSession, willCapturePhotoWith settings: AVCapturePhotoSettings)
     
@@ -29,7 +28,6 @@ protocol CaptureSessionPhotoCapturingDelegate : class {
 
 /// Groups a method that informs a delegate about progress and state of video recording.
 protocol CaptureSessionVideoRecordingDelegate : class {
- 
     ///called when video file recording output is added to the session
     func captureSessionDidBecomeReadyForVideoRecording(_ session: CaptureSession)
     
@@ -52,7 +50,6 @@ protocol CaptureSessionVideoRecordingDelegate : class {
 }
 
 protocol CaptureSessionDelegate : class {
-    
     ///called when session is successfully configured and started running
     func captureSessionDidResume(_ session: CaptureSession)
     
@@ -82,12 +79,11 @@ protocol CaptureSessionDelegate : class {
 /// Manages AVCaptureSession
 ///
 final class CaptureSession : NSObject {
-    
     deinit {
         log("deinit: \(String(describing: self))")
     }
     
-    fileprivate enum SessionSetupResult {
+    private enum SessionSetupResult {
         case success
         case notAuthorized
         case configurationFailed
@@ -96,6 +92,15 @@ final class CaptureSession : NSObject {
     enum SessionPresetConfiguration {
         case photos, livePhotos
         case videos
+
+        var preset: AVCaptureSession.Preset {
+            switch self {
+            case .livePhotos, .photos:
+                return .photo
+            case .videos:
+                return .high
+            }
+        }
     }
     
     weak var delegate: CaptureSessionDelegate?
@@ -134,12 +139,12 @@ final class CaptureSession : NSObject {
     }
     
     /// Communicate with the session and other session objects on this queue.
-    fileprivate let sessionQueue = DispatchQueue(label: "session queue", attributes: [], target: nil)
-    fileprivate var setupResult: SessionSetupResult = .success
-    fileprivate var videoDeviceInput: AVCaptureDeviceInput!
-    fileprivate lazy var videoDeviceDiscoverySession = AVCaptureDevice.DiscoverySession(deviceTypes: [AVCaptureDevice.DeviceType.builtInWideAngleCamera, AVCaptureDevice.DeviceType.builtInDuoCamera], mediaType: AVMediaType.video, position: .unspecified)
-    fileprivate var videoDataOutput: AVCaptureVideoDataOutput?
-    fileprivate let videoOutpuSampleBufferDelegate = VideoOutputSampleBufferDelegate()
+    private let sessionQueue = DispatchQueue(label: "session queue", attributes: [], target: nil)
+    private var setupResult = SessionSetupResult.success
+    private var videoDeviceInput: AVCaptureDeviceInput!
+    private lazy var videoDeviceDiscoverySession = AVCaptureDevice.DiscoverySession(deviceTypes: [.builtInWideAngleCamera, .builtInDuoCamera], mediaType: .video, position: .unspecified)
+    private var videoDataOutput: AVCaptureVideoDataOutput?
+    private let videoOutpuSampleBufferDelegate = VideoOutputSampleBufferDelegate()
     
     /// returns latest captured image
     var latestVideoBufferImage: UIImage? {
@@ -152,10 +157,9 @@ final class CaptureSession : NSObject {
     }
     
     // MARK: Video Recoding
-    
     weak var videoRecordingDelegate: CaptureSessionVideoRecordingDelegate?
-    fileprivate var videoFileOutput: AVCaptureMovieFileOutput?
-    fileprivate var videoCaptureDelegate: VideoCaptureDelegate?
+    private var videoFileOutput: AVCaptureMovieFileOutput?
+    private var videoCaptureDelegate: VideoCaptureDelegate?
     
     var isReadyForVideoRecording: Bool {
         return videoFileOutput != nil
@@ -165,7 +169,6 @@ final class CaptureSession : NSObject {
     }
     
     // MARK: Photo Capturing
-    
     enum LivePhotoMode {
         case on
         case off
@@ -174,12 +177,11 @@ final class CaptureSession : NSObject {
     weak var photoCapturingDelegate: CaptureSessionPhotoCapturingDelegate?
     
     // this is provided by argument of capturePhoto()
-    //fileprivate var livePhotoMode: LivePhotoMode = .off
-    fileprivate let photoOutput = AVCapturePhotoOutput()
-    fileprivate var inProgressPhotoCaptureDelegates = [Int64 : PhotoCaptureDelegate]()
+    private let photoOutput = AVCapturePhotoOutput()
+    private var inProgressPhotoCaptureDelegates = [Int64 : PhotoCaptureDelegate]()
     
     /// contains number of currently processing live photos
-    fileprivate(set) var inProgressLivePhotoCapturesCount = 0
+    private(set) var inProgressLivePhotoCapturesCount = 0
     
     // MARK: Public Methods
     
@@ -189,12 +191,8 @@ final class CaptureSession : NSObject {
          access is optional. If audio access is denied, audio is not recorded
          during movie recording.
          */
-        let mediaType = AVMediaType.video
-        switch AVCaptureDevice.authorizationStatus(for: mediaType) {
-        case .authorized:
-            // The user has previously granted access to the camera.
-            break
-            
+        switch AVCaptureDevice.authorizationStatus(for: .video) {
+        case .authorized: break
         case .notDetermined:
             /*
              The user has not yet been presented with the option to grant
@@ -205,20 +203,8 @@ final class CaptureSession : NSObject {
              create an AVCaptureDeviceInput for audio during session setup.
              */
             sessionQueue.suspend()
-            AVCaptureDevice.requestAccess(for: AVMediaType.video, completionHandler: { [capturedSelf = self] granted in
-                if granted {
-                    DispatchQueue.main.async {
-                        capturedSelf.delegate?.captureSession(capturedSelf, authorizationStatusGranted: .authorized)
-                    }
-                }
-                else {
-                    capturedSelf.setupResult = .notAuthorized
-                }
-                capturedSelf.sessionQueue.resume()
-            })
-            
-        default:
-            // The user has previously denied access.
+            requestAccessToCaptureDevice()
+        case .restricted, .denied:
             setupResult = .notAuthorized
         }
         
@@ -239,47 +225,19 @@ final class CaptureSession : NSObject {
     
     func resume() {
         sessionQueue.async {
-            
-            guard self.isSessionRunning == false else {
+            guard !self.isSessionRunning else {
                 return log("capture session: warning - trying to resume already running session")
             }
-            
-            switch self.setupResult {
-            case .success:
-                // Only setup observers and start the session running if setup succeeded.
-                self.addObservers()
-                self.session.startRunning()
-                self.isSessionRunning = self.session.isRunning
-                // We are not calling the delegate here explicitly, because we are observing
-                // `running` KVO on session itself.
-                
-            case .notAuthorized:
-                log("capture session: not authorized")
-                DispatchQueue.main.async { [weak self] in
-                    let status = AVCaptureDevice.authorizationStatus(for: AVMediaType.video)
-                    self?.delegate?.captureSession(self!, authorizationStatusFailed: status)
-                }
-                
-            case .configurationFailed:
-                log("capture session: configuration failed")
-                
-                DispatchQueue.main.async { [weak self] in
-                    self?.delegate?.captureSessionDidFailConfiguringSession(self!)
-                }
-            }
+            self.processSetupResult()
         }
     }
-    
+
     func suspend() {
-        
-        guard setupResult == .success else {
-            return
-        }
+        guard setupResult == .success else { return }
         
         //we need to capture self in order to postpone deallocation while
         //session is properly stopped and cleaned up
         sessionQueue.async { [capturedSelf = self] in
-            
             guard self.isSessionRunning == true else {
                 return log("capture session: warning - trying to suspend non running session")
             }
@@ -291,8 +249,58 @@ final class CaptureSession : NSObject {
             //we are KVOing `isRunning` on session itself so it's called from there
         }
     }
-    
-    // MARK: Private Methods
+
+    // MARK: Helpers
+    private func requestAccessToCaptureDevice() {
+        AVCaptureDevice.requestAccess(for: .video) { [capturedSelf = self] granted in
+            if granted {
+                DispatchQueue.main.async {
+                    capturedSelf.delegate?.captureSession(capturedSelf, authorizationStatusGranted: .authorized)
+                }
+            }
+            else {
+                capturedSelf.setupResult = .notAuthorized
+            }
+            capturedSelf.sessionQueue.resume()
+        }
+    }
+
+    private func processSetupResult() {
+        switch setupResult {
+        case .success:
+            processSuccess()
+        case .notAuthorized:
+            log("capture session: not authorized")
+            DispatchQueue.main.async { [weak self] in
+                self?.processNotAuthorized()
+            }
+        case .configurationFailed:
+            log("capture session: configuration failed")
+            DispatchQueue.main.async { [weak self] in
+                self?.processConfigurationFailed()
+            }
+        }
+    }
+
+    private func processSuccess() {
+        // Only setup observers and start the session running if setup succeeded.
+        addObservers()
+        session.startRunning()
+        isSessionRunning = self.session.isRunning
+        // We are not calling the delegate here explicitly, because we are observing
+        // `running` KVO on session itself.
+    }
+
+    private func processNotAuthorized() {
+        let status = AVCaptureDevice.authorizationStatus(for: .video)
+        delegate?.captureSession(self, authorizationStatusFailed: status)
+    }
+
+    private func processConfigurationFailed() {
+        delegate?.captureSessionDidFailConfiguringSession(self)
+    }
+
+    // MARK: - Private Methods
     
     ///
     /// Cinfigures a session before it can be used, following steps are done:
@@ -302,21 +310,13 @@ final class CaptureSession : NSObject {
     /// 4. adds photo output (for capturing photos)
     ///
     private func configureSession() {
-        
-        guard setupResult == .success else {
-            return
-        }
+        guard setupResult == .success else { return }
         
         log("capture session: configuring - adding video input")
         
         session.beginConfiguration()
-        
-        switch presetConfiguration {
-        case .livePhotos, .photos:
-            session.sessionPreset = AVCaptureSession.Preset.photo
-        case .videos:
-            session.sessionPreset = AVCaptureSession.Preset.high
-        }
+
+        session.sessionPreset = presetConfiguration.preset
         
         // Add video input.
         do {
@@ -921,7 +921,6 @@ extension CaptureSession {
 }
 
 extension UIInterfaceOrientation {
-    
     var captureVideoOrientation: AVCaptureVideoOrientation {
         switch self {
         case .portrait, .unknown: return .portrait
@@ -930,5 +929,4 @@ extension UIInterfaceOrientation {
         case .landscapeLeft: return .landscapeLeft
         }
     }
-    
 }
