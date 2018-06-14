@@ -75,6 +75,19 @@ protocol CaptureSessionDelegate : class {
     func captureSessionInterruptionDidEnd(_ session: CaptureSession)
 }
 
+// MARK: - CaptureSessionError
+private enum CaptureSessionError: Error {
+    case failToCreateCaptureDevice
+    case failToAddVideoDeviceInput
+    case failToCreateVideoDeviceInput(Error)
+    case failToAddVideoOutput
+    case failToCreateAudioDevice
+    case failToAddAudioDeviceInput
+    case failToCreateAudioDeviceInput(Error)
+    case failToAddPhotoOutput
+    case failToAddVideoDataOutput
+}
+
 ///
 /// Manages AVCaptureSession
 ///
@@ -102,7 +115,7 @@ final class CaptureSession : NSObject {
             }
         }
     }
-    
+
     weak var delegate: CaptureSessionDelegate?
     
     let session = AVCaptureSession()
@@ -301,7 +314,6 @@ final class CaptureSession : NSObject {
     }
 
     // MARK: - Private Methods
-    
     ///
     /// Cinfigures a session before it can be used, following steps are done:
     /// 1. adds video input
@@ -309,169 +321,24 @@ final class CaptureSession : NSObject {
     /// 3. adds audio input (for video recording with audio)
     /// 4. adds photo output (for capturing photos)
     ///
+
     private func configureSession() {
         guard setupResult == .success else { return }
-        
-        log("capture session: configuring - adding video input")
-        
         session.beginConfiguration()
-
         session.sessionPreset = presetConfiguration.preset
-        
-        // Add video input.
         do {
-            var defaultVideoDevice: AVCaptureDevice?
-            
-            // Choose the back dual camera if available, otherwise default to a wide angle camera.
-            if let dualCameraDevice = AVCaptureDevice.default(AVCaptureDevice.DeviceType.builtInDuoCamera, for: AVMediaType.video, position: .back) {
-                defaultVideoDevice = dualCameraDevice
-            }
-            else if let backCameraDevice = AVCaptureDevice.default(AVCaptureDevice.DeviceType.builtInWideAngleCamera, for: AVMediaType.video, position: .back) {
-                // If the back dual camera is not available, default to the back wide angle camera.
-                defaultVideoDevice = backCameraDevice
-            }
-            else if let frontCameraDevice = AVCaptureDevice.default(AVCaptureDevice.DeviceType.builtInWideAngleCamera, for: AVMediaType.video, position: .front) {
-                // In some cases where users break their phones, the back wide angle camera is not available. In this case, we should default to the front wide angle camera.
-                defaultVideoDevice = frontCameraDevice
-            }
-            else {
-                log("capture session: could not create capture device")
-                setupResult = .configurationFailed
-                session.commitConfiguration()
-                return
-            }
-            
-            let videoDeviceInput = try AVCaptureDeviceInput(device: defaultVideoDevice!)
-            
-            if session.canAddInput(videoDeviceInput) {
-                session.addInput(videoDeviceInput)
-                
-                self.videoDeviceInput = videoDeviceInput
-                
-                DispatchQueue.main.async {
-                    /*
-                     Why are we dispatching this to the main queue?
-                     Because AVCaptureVideoPreviewLayer is the backing layer for PreviewView and UIView
-                     can only be manipulated on the main thread.
-                     Note: As an exception to the above rule, it is not necessary to serialize video orientation changes
-                     on the AVCaptureVideoPreviewLayer’s connection with other session manipulation.
-                     */
-                    self.previewLayer?.connection?.videoOrientation = self.videoOrientation
-                }
-            }
-            else {
-                log("capture session: could not add video device input to the session")
-                setupResult = .configurationFailed
-                session.commitConfiguration()
-                return
-            }
-        }
-        catch {
-            log("capture session: could not create video device input: \(error)")
-            setupResult = .configurationFailed
+            try addVideoInput()
+            try addMovieFileOutputIfNeeded()
+            try addAudioInputIfNeeded()
+            try addPhotoOutputIfNeeded()
+            try addVideoDataOutputIfNeeded()
             session.commitConfiguration()
-            return
+        } catch {
+            guard let error = error as? CaptureSessionError else { return }
+            processCaptureSessionError(error)
         }
-        
-    
-        // Add movie file output.
-        if presetConfiguration == .videos {
-    
-            // A capture session cannot support at the same time:
-            // - Live Photo capture and
-            // - movie file output
-            // - video data output
-            // If your capture session includes an AVCaptureMovieFileOutput object, the
-            // isLivePhotoCaptureSupported property becomes false.
-            
-            log("capture session: configuring - adding movie file input")
-            
-            let movieFileOutput = AVCaptureMovieFileOutput()
-            if self.session.canAddOutput(movieFileOutput) {
-                self.session.addOutput(movieFileOutput)
-                self.videoFileOutput = movieFileOutput
-                
-                DispatchQueue.main.async { [weak self] in
-                    self?.videoRecordingDelegate?.captureSessionDidBecomeReadyForVideoRecording(self!)
-                }
-            }
-            else {
-                log("capture session: could not add video output to the session")
-                setupResult = .configurationFailed
-                session.commitConfiguration()
-                return
-            }
-        }
-        
-        if presetConfiguration == .livePhotos || presetConfiguration == .videos {
-            
-            log("capture session: configuring - adding audio input")
-            
-            // Add audio input, if fails no need to fail whole configuration
-            do {
-                let audioDevice = AVCaptureDevice.default(for: AVMediaType.audio)
-                let audioDeviceInput = try AVCaptureDeviceInput(device: audioDevice!)
-                
-                if session.canAddInput(audioDeviceInput) {
-                    session.addInput(audioDeviceInput)
-                }
-                else {
-                    log("capture session: could not add audio device input to the session")
-                }
-            }
-            catch {
-                log("capture session: could not create audio device input: \(error)")
-            }
-        }
-        
-        if presetConfiguration == .livePhotos || presetConfiguration == .photos || presetConfiguration == .videos {
-            // Add photo output.
-            log("capture session: configuring - adding photo output")
-            
-            if session.canAddOutput(photoOutput) {
-                session.addOutput(photoOutput)
-                photoOutput.isHighResolutionCaptureEnabled = true
-                
-                //enable live photos only if we intend to use it explicitly
-                if presetConfiguration == .livePhotos {
-                    photoOutput.isLivePhotoCaptureEnabled = photoOutput.isLivePhotoCaptureSupported
-                    if photoOutput.isLivePhotoCaptureSupported == false {
-                        log("capture session: configuring - requested live photo mode is not supported by the device")
-                    }
-                }
-                log("capture session: configuring - live photo mode is \(photoOutput.isLivePhotoCaptureEnabled ? "enabled" : "disabled")")
-            }
-            else {
-                log("capture session: could not add photo output to the session")
-                setupResult = .configurationFailed
-                session.commitConfiguration()
-                return
-            }
-        }
-        
-        if presetConfiguration != .videos {
-            // Add video data output - we use this to capture last video sample that is
-            // used when blurring video layer - for example when capture session is suspended, changing configuration etc.
-            // NOTE: video data output can not be connected at the same time as video file output!
-            videoDataOutput = AVCaptureVideoDataOutput()
-            if session.canAddOutput(videoDataOutput!) {
-                session.addOutput(videoDataOutput!)
-                videoDataOutput!.alwaysDiscardsLateVideoFrames = true
-                videoDataOutput!.setSampleBufferDelegate(videoOutpuSampleBufferDelegate, queue: videoOutpuSampleBufferDelegate.processQueue)
-                
-                if let connection = videoDataOutput!.connection(with: AVMediaType.video) {
-                    connection.videoOrientation = self.videoOrientation
-                    connection.automaticallyAdjustsVideoMirroring = false
-                }
-            }
-            else {
-                log("capture session: warning - could not add video data output to the session")
-            }
-        }
-        
-        session.commitConfiguration()
     }
-    
+
     // MARK: KVO and Notifications
     
     private var sessionRunningObserveContext = 0
@@ -589,6 +456,117 @@ final class CaptureSession : NSObject {
         //the UI can be updated
         DispatchQueue.main.async { [weak self] in
             self?.delegate?.captureSessionInterruptionDidEnd(self!)
+        }
+    }
+}
+
+// MARK: - Configure capture session
+private extension CaptureSession {
+    func addVideoInput() throws {
+        log("capture session: configuring - adding video input")
+        guard let defaultVideoDevice = AVCaptureDevice.defaultVideoDevice else { throw CaptureSessionError.failToCreateCaptureDevice }
+
+        let videoDeviceInput: AVCaptureDeviceInput
+        do {
+            videoDeviceInput = try AVCaptureDeviceInput(device: defaultVideoDevice)
+        } catch {
+            throw CaptureSessionError.failToCreateVideoDeviceInput(error)
+        }
+        guard session.canAddInput(videoDeviceInput) else { throw CaptureSessionError.failToAddVideoDeviceInput }
+        session.addInput(videoDeviceInput)
+
+        self.videoDeviceInput = videoDeviceInput
+
+        DispatchQueue.main.async {
+            /*
+             Why are we dispatching this to the main queue?
+             Because AVCaptureVideoPreviewLayer is the backing layer for PreviewView and UIView
+             can only be manipulated on the main thread.
+             Note: As an exception to the above rule, it is not necessary to serialize video orientation changes
+             on the AVCaptureVideoPreviewLayer’s connection with other session manipulation.
+             */
+            self.previewLayer?.connection?.videoOrientation = self.videoOrientation
+        }
+    }
+
+    func addMovieFileOutputIfNeeded() throws {
+        guard presetConfiguration == .videos else { return }
+        // A capture session cannot support at the same time:
+        // - Live Photo capture and
+        // - movie file output
+        // - video data output
+        // If your capture session includes an AVCaptureMovieFileOutput object, the
+        // isLivePhotoCaptureSupported property becomes false.
+        log("capture session: configuring - adding movie file input")
+
+        let movieFileOutput = AVCaptureMovieFileOutput()
+        guard session.canAddOutput(movieFileOutput) else { throw CaptureSessionError.failToAddVideoOutput }
+        session.addOutput(movieFileOutput)
+        videoFileOutput = movieFileOutput
+
+        DispatchQueue.main.async { [weak self] in
+            guard let `self` = self else { return }
+            self.videoRecordingDelegate?.captureSessionDidBecomeReadyForVideoRecording(self)
+        }
+    }
+
+    func addAudioInputIfNeeded() throws {
+        guard presetConfiguration == .livePhotos || presetConfiguration == .videos else { return }
+        log("capture session: configuring - adding audio input")
+        guard let audioDevice = AVCaptureDevice.default(for: .audio) else { throw CaptureSessionError.failToCreateAudioDevice }
+        let audioDeviceInput: AVCaptureDeviceInput
+        do {
+            audioDeviceInput = try AVCaptureDeviceInput(device: audioDevice)
+        } catch {
+            throw CaptureSessionError.failToCreateAudioDeviceInput(error)
+        }
+
+        guard session.canAddInput(audioDeviceInput) else { throw CaptureSessionError.failToAddAudioDeviceInput }
+        session.addInput(audioDeviceInput)
+    }
+
+    func addPhotoOutputIfNeeded() throws {
+        guard presetConfiguration == .livePhotos || presetConfiguration == .photos || presetConfiguration == .videos else { return }
+        log("capture session: configuring - adding photo output")
+        guard session.canAddOutput(photoOutput) else { throw CaptureSessionError.failToAddPhotoOutput }
+        session.addOutput(photoOutput)
+        photoOutput.isHighResolutionCaptureEnabled = true
+        enableLivePhotosIfNeeded()
+        log("capture session: configuring - live photo mode is \(photoOutput.isLivePhotoCaptureEnabled ? "enabled" : "disabled")")
+    }
+
+    func enableLivePhotosIfNeeded() {
+        guard presetConfiguration == .livePhotos else { return }
+        photoOutput.isLivePhotoCaptureEnabled = photoOutput.isLivePhotoCaptureSupported
+        if !photoOutput.isLivePhotoCaptureSupported {
+            log("capture session: configuring - requested live photo mode is not supported by the device")
+        }
+    }
+
+    func addVideoDataOutputIfNeeded() throws {
+        guard presetConfiguration != .videos else { return }
+        // Add video data output - we use this to capture last video sample that is
+        // used when blurring video layer - for example when capture session is suspended, changing configuration etc.
+        // NOTE: video data output can not be connected at the same time as video file output!
+        let videoDataOutput = AVCaptureVideoDataOutput()
+        self.videoDataOutput = videoDataOutput
+        guard session.canAddOutput(videoDataOutput) else { throw CaptureSessionError.failToAddVideoDataOutput }
+        session.addOutput(videoDataOutput)
+
+        videoDataOutput.alwaysDiscardsLateVideoFrames = true
+        videoDataOutput.setSampleBufferDelegate(videoOutpuSampleBufferDelegate, queue: videoOutpuSampleBufferDelegate.processQueue)
+
+        if let connection = videoDataOutput.connection(with: .video) {
+            connection.videoOrientation = videoOrientation
+            connection.automaticallyAdjustsVideoMirroring = false
+        }
+    }
+
+    func processCaptureSessionError(_ error: CaptureSessionError) {
+        error.logError()
+        if !error.isWarning {
+            setupResult = .configurationFailed
+            session.commitConfiguration()
         }
     }
 }
@@ -920,6 +898,33 @@ extension CaptureSession {
     
 }
 
+private extension CaptureSessionError {
+    var isWarning: Bool {
+        switch self {
+        case .failToAddAudioDeviceInput, .failToCreateAudioDeviceInput, .failToCreateAudioDevice, .failToAddVideoDataOutput: return true
+        default: return false
+        }
+    }
+
+    private var description: String {
+        switch self {
+        case .failToCreateCaptureDevice: return "capture session: could not create capture device"
+        case .failToAddVideoDeviceInput: return "capture session: could not add video device input to the session"
+        case let .failToCreateVideoDeviceInput(error): return "capture session: could not create video device input: \(error)"
+        case .failToAddVideoOutput: return "capture session: could not add video output to the session"
+        case .failToCreateAudioDevice: return "capture session: could not create audio device"
+        case .failToAddAudioDeviceInput: return "capture session: could not add audio device input to the session"
+        case let .failToCreateAudioDeviceInput(error): return "capture session: could not create audio device input: \(error)"
+        case .failToAddPhotoOutput: return "capture session: could not add photo output to the session"
+        case .failToAddVideoDataOutput: return "capture session: warning - could not add video data output to the session"
+        }
+    }
+
+    func logError() {
+        log(description)
+    }
+}
+
 extension UIInterfaceOrientation {
     var captureVideoOrientation: AVCaptureVideoOrientation {
         switch self {
@@ -928,5 +933,23 @@ extension UIInterfaceOrientation {
         case .landscapeRight: return .landscapeRight
         case .landscapeLeft: return .landscapeLeft
         }
+    }
+}
+
+private extension AVCaptureDevice {
+    static var defaultVideoDevice: AVCaptureDevice? {
+        return backDualCamera ?? backWideAngleCamera ?? frontWideAngleCamera
+    }
+
+    static var backDualCamera: AVCaptureDevice? {
+        return AVCaptureDevice.default(.builtInDuoCamera, for: .video, position: .back)
+    }
+
+    static var backWideAngleCamera: AVCaptureDevice? {
+        return AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back)
+    }
+
+    static var frontWideAngleCamera: AVCaptureDevice? {
+        return AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front)
     }
 }
