@@ -42,8 +42,7 @@ final class CollectionViewUpdatesCoordinator {
         if changes.hasIncrementalChanges {
             let operation = CollectionViewBatchAnimation(collectionView: collectionView, sectionIndex: inSection, changes: changes)
             serialMainQueue.addOperation(operation)
-        }
-        else {
+        } else {
             serialMainQueue.addOperation { [unowned self] in
                 self.collectionView.reloadData()
             }

@@ -13,7 +13,6 @@ import Foundation
 /// be enqueued in a OperationQueue and run serially.
 ///
 class AsynchronousOperation : Foundation.Operation {
-    
     var stateFinished: Bool = false {
         willSet { willChangeValue(forKey: "isFinished") }
         didSet { didChangeValue(forKey: "isFinished") }
@@ -38,8 +37,7 @@ class AsynchronousOperation : Foundation.Operation {
     override func main() {
         if isCancelled {
             completeOperation()
-        }
-        else {
+        } else {
             stateExecuting = true
             execute()
         }
@@ -50,12 +48,12 @@ class AsynchronousOperation : Foundation.Operation {
     }
     
     func completeOperation() {
-        if self.stateExecuting == true {
-            self.stateExecuting = false
+        if stateExecuting {
+            stateExecuting = false
         }
         
-        if self.stateFinished == false {
-            self.stateFinished = true
+        if !stateFinished {
+            stateFinished = true
         }
     }
 }
