@@ -26,20 +26,20 @@ public final class CellRegistrator {
     
     // MARK: - Private Methods
     private let actionItemIdentifierPrefix = "eu.inloop.action-item.cell-id"
-    fileprivate var actionItemNibsData: [Int: (UINib, String)]?
-    fileprivate var actionItemClassesData: [Int: (UICollectionViewCell.Type, String)]?
+    internal var actionItemNibsData: [Int: (UINib, String)]?
+    internal var actionItemClassesData: [Int: (UICollectionViewCell.Type, String)]?
     
     //camera item has only 1 cell so no need for identifiers
-    fileprivate var cameraItemNib: UINib?
-    fileprivate var cameraItemClass: UICollectionViewCell.Type?
+    internal var cameraItemNib: UINib?
+    internal var cameraItemClass: UICollectionViewCell.Type?
     
     private let assetItemIdentifierPrefix = "eu.inloop.asset-item.cell-id"
-    fileprivate var assetItemNibsData: [PHAssetMediaType: (UINib, String)]?
-    fileprivate var assetItemClassesData: [PHAssetMediaType: (UICollectionViewCell.Type, String)]?
+    internal var assetItemNibsData: [PHAssetMediaType: (UINib, String)]?
+    internal var assetItemClassesData: [PHAssetMediaType: (UICollectionViewCell.Type, String)]?
     
     //we use these if there is no asset media type specified
-    fileprivate var assetItemNib: UINib?
-    fileprivate var assetItemClass: UICollectionViewCell.Type?
+    internal var assetItemNib: UINib?
+    internal var assetItemClass: UICollectionViewCell.Type?
     
     // MARK: Internal Methods
     
@@ -175,92 +175,4 @@ public final class CellRegistrator {
     public func registerNibForAssetItems(_ nib: UINib) {
         assetItemNib = nib
     }
-}
-
-extension UICollectionView {
-    ///
-    /// Used by datasource when registering all cells to the collection view. If user
-    /// did not register custom cells, this method registers default cells
-    ///
-    func apply(registrator: CellRegistrator, cameraMode: CaptureSettings.CameraMode) {
-        registerActionItems(registrator: registrator)
-        registerCameraItem(registrator: registrator, cameraMode: cameraMode)
-        registerAssetItems(registrator: registrator)
-    }
-
-    private func registerActionItems(registrator: CellRegistrator) {
-        if registrator.hasUserRegisteredActionCell {
-            register(nibsData: registrator.actionItemNibsData?.map { $1 })
-            register(classData: registrator.actionItemClassesData?.map { $1 })
-        } else {
-            registerDefaultActionCell(registrator: registrator)
-        }
-    }
-
-    private func registerDefaultActionCell(registrator: CellRegistrator) {
-        registrator.registerCellClassForActionItems(ActionCell.self)
-        guard let identifier = registrator.cellIdentifier(forActionItemAt: Int.max) else {
-            fatalError("Image Picker: unable to register default action item cell")
-        }
-        let nib = UINib(nibName: "ActionCell", bundle: Bundle(for: ActionCell.self))
-        register(nib, forCellWithReuseIdentifier: identifier)
-    }
-
-    private func registerAssetItems(registrator: CellRegistrator) {
-        register(nibsData: registrator.assetItemNibsData?.map { $1 })
-        register(classData: registrator.assetItemClassesData?.map { $1 })
-        switch (registrator.assetItemNib, registrator.assetItemClass) {
-
-        case (nil, nil):
-            //if user did not register all required classes/nibs - register default cells
-            register(VideoAssetCell.self, forCellWithReuseIdentifier: registrator.cellIdentifierForAssetItems)
-        case (let nib, nil):
-            register(nib, forCellWithReuseIdentifier: registrator.cellIdentifierForAssetItems)
-        case (_, let cellClass):
-            register(cellClass, forCellWithReuseIdentifier: registrator.cellIdentifierForAssetItems)
-        }
-    }
-
-    private func registerCameraItem(registrator: CellRegistrator, cameraMode: CaptureSettings.CameraMode) {
-        switch (registrator.cameraItemNib, registrator.cameraItemClass) {
-        case (nil, nil):
-            registerDefaultCell(for: cameraMode, registrator: registrator)
-        case (let nib, nil):
-            register(nib, forCellWithReuseIdentifier: registrator.cellIdentifierForCameraItem)
-        case (_, let cellClass):
-            register(cellClass, forCellWithReuseIdentifier: registrator.cellIdentifierForCameraItem)
-        }
-    }
-
-    private func registerDefaultCell(for cameraMode: CaptureSettings.CameraMode, registrator: CellRegistrator) {
-        switch cameraMode {
-        case .photo, .photoAndLivePhoto:
-            let nib = UINib(nibName: "LivePhotoCameraCell", bundle: Bundle(for: LivePhotoCameraCell.self))
-            register(nib, forCellWithReuseIdentifier: registrator.cellIdentifierForCameraItem)
-        case .photoAndVideo:
-            let nib = UINib(nibName: "VideoCameraCell", bundle: Bundle(for: VideoCameraCell.self))
-            register(nib, forCellWithReuseIdentifier: registrator.cellIdentifierForCameraItem)
-        }
-    }
-
-    ///
-    /// Helper func that takes nib,cellid pair and registers them on a collection view
-    ///
-    private func register(nibsData: [(UINib, String)]?) {
-        guard let nibsData = nibsData else { return }
-        for (nib, cellIdentifier) in nibsData {
-            register(nib, forCellWithReuseIdentifier: cellIdentifier)
-        }
-    }
-    
-    ///
-    /// Helper func that takes nib,cellid pair and registers them on a collection view
-    ///
-    private func register(classData: [(UICollectionViewCell.Type, String)]?) {
-        guard let classData = classData else { return }
-        for (cellType, cellIdentifier) in classData {
-            register(cellType, forCellWithReuseIdentifier: cellIdentifier)
-        }
-    }
-    
 }

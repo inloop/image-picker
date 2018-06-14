@@ -63,6 +63,7 @@
 		85F70C2D20D1393100DC3997 /* ImagePickerControllerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85F70C2C20D1393100DC3997 /* ImagePickerControllerDelegate.swift */; };
 		85F70C2F20D1398600DC3997 /* ImagePickerControllerDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85F70C2E20D1398600DC3997 /* ImagePickerControllerDataSource.swift */; };
 		85F70C3320D1417600DC3997 /* ImagePickerController+Delegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85F70C3220D1417600DC3997 /* ImagePickerController+Delegate.swift */; };
+		85F70C3520D258E900DC3997 /* UICollectionView+CellRegistrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85F70C3420D258E900DC3997 /* UICollectionView+CellRegistrator.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -149,6 +150,7 @@
 		85F70C2C20D1393100DC3997 /* ImagePickerControllerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePickerControllerDelegate.swift; sourceTree = "<group>"; };
 		85F70C2E20D1398600DC3997 /* ImagePickerControllerDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePickerControllerDataSource.swift; sourceTree = "<group>"; };
 		85F70C3220D1417600DC3997 /* ImagePickerController+Delegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ImagePickerController+Delegate.swift"; sourceTree = "<group>"; };
+		85F70C3420D258E900DC3997 /* UICollectionView+CellRegistrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UICollectionView+CellRegistrator.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -279,6 +281,7 @@
 				4217080D1F62D06D000DA508 /* CameraCollectionViewCell.swift */,
 				42D7036A1F7908B00057D557 /* CaptureSettings.swift */,
 				421442621F6014B3006BA45A /* CellRegistrator.swift */,
+				85F70C3420D258E900DC3997 /* UICollectionView+CellRegistrator.swift */,
 				420C24251F5D8393008935D4 /* ImagePickerController.swift */,
 				85F70C3220D1417600DC3997 /* ImagePickerController+Delegate.swift */,
 				420C24401F5EEA3C008935D4 /* LayoutConfiguration.swift */,
@@ -467,6 +470,7 @@
 				4217080E1F62D06D000DA508 /* CameraCollectionViewCell.swift in Sources */,
 				427925F51F96381400B6D55F /* ShutterButton.swift in Sources */,
 				85F70C3320D1417600DC3997 /* ImagePickerController+Delegate.swift in Sources */,
+				85F70C3520D258E900DC3997 /* UICollectionView+CellRegistrator.swift in Sources */,
 				42EDD4061F71261600EAD2F5 /* AVPreviewView.swift in Sources */,
 				420C24411F5EEA3C008935D4 /* LayoutConfiguration.swift in Sources */,
 				85F70C2F20D1398600DC3997 /* ImagePickerControllerDataSource.swift in Sources */,
