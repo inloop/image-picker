@@ -15,5 +15,5 @@ public class Appearance {
     ///
     /// Image picker background color.
     ///
-    public var backgroundColor: UIColor = UIColor(red: 208/255, green: 213/255, blue: 218/255, alpha: 1)
+    public var backgroundColor = UIColor(red: 208/255, green: 213/255, blue: 218/255, alpha: 1)
 }

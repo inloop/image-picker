@@ -406,7 +406,7 @@ extension ImagePickerController: CaptureSessionDelegate {
     
     private func unblurCellIfNeeded(animated: Bool) {
         guard let cameraCell = collectionView.cameraCell(layout: layoutConfiguration) else { return }
-        cameraCell.unblurIfNeeded(unblurImage: nil, animated: animated, completion: nil)
+        cameraCell.unblurIfNeeded(animated: animated, completion: nil)
     }
 }
 
@@ -497,10 +497,10 @@ extension ImagePickerController: CameraCollectionViewCellDelegate {
             return captureSession.changeCamera(completion: completion)
         }
 
-        cameraCell.blurIfNeeded(blurImage: captureSession.lightBufferImage, animated: true) { _ in
+        cameraCell.blurIfNeeded(blurImage: captureSession.blurredBufferImage, animated: true) { _ in
             captureSession.changeCamera {
                 self.flipAnimation(cameraCell.previewView) {
-                    cameraCell.unblurIfNeeded(unblurImage: captureSession.lightBufferImage, animated: true) { _ in
+                    cameraCell.unblurIfNeeded(animated: true) { _ in
                         completion?()
                     }
                 }
