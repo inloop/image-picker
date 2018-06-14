@@ -146,7 +146,7 @@ final class CaptureSession : NSObject {
         return videoOutpuSampleBufferDelegate.latestImage
     }
 
-    var lightBufferImage: UIImage? {
+    var blurredBufferImage: UIImage? {
         guard let image = latestVideoBufferImage else { return nil }
         return UIImageEffects.imageByApplyingLightEffect(to: image)
     }
