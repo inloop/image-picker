@@ -43,10 +43,7 @@ open class CameraCollectionViewCell: UICollectionViewCell {
         view.contentMode = .scaleAspectFill
         return view
     }()
-    lazy var blurView: UIVisualEffectView = {
-        let result = UIVisualEffectView(effect: UIBlurEffect(style: .light))
-        return result
-    }()
+    var blurView: UIVisualEffectView?
     var isVisualEffectViewUsedForBlurring = false
     weak var delegate: CameraCollectionViewCellDelegate?
     
@@ -66,7 +63,7 @@ open class CameraCollectionViewCell: UICollectionViewCell {
     open override func layoutSubviews() {
         super.layoutSubviews()
         imageView.frame = previewView.bounds
-        blurView.frame = previewView.bounds
+        blurView?.frame = previewView.bounds
     }
     
     // MARK: - Public Methods
@@ -145,29 +142,39 @@ open class CameraCollectionViewCell: UICollectionViewCell {
     }
     
     // MARK: Internal Methods
+    private var blurEffectsCanBeApplied: Bool {
+        return isVisualEffectViewUsedForBlurring || imageView.image != nil
+    }
+
     func blurIfNeeded(blurImage: UIImage?, animated: Bool, completion: ((Bool) -> Void)?) {
-        guard let view = configureBlurredView(blurImage: blurImage) else { return }
+        guard blurEffectsCanBeApplied else { return }
+        let view = configureBlurredView(blurImage: blurImage)
         view.alpha = 0
         applyAnimationBlocks(animated: animated, animationBlock: {
             view.alpha = 1
         }, completionBlock: completion)
     }
 
-    private func configureBlurredView(blurImage: UIImage?) -> UIView? {
+    private func configureBlurredView(blurImage: UIImage?) -> UIView {
         let view: UIView
         if !isVisualEffectViewUsedForBlurring {
-            guard imageView.image == nil else { return nil }
             imageView.image = blurImage
             view = imageView
         } else {
-            if blurView.superview == nil {
-                previewView.addSubview(blurView)
-            }
-
-            view = blurView
+            view = getBlurView()
             view.frame = previewView.bounds
         }
         return view
+    }
+
+    private func getBlurView() -> UIVisualEffectView {
+        if let blurView = blurView {
+            return blurView
+        }
+        let result = UIVisualEffectView(effect: UIBlurEffect(style: .light))
+        previewView.addSubview(result)
+        blurView = result
+        return result
     }
 
     private var viewToUnblur: UIView? {
@@ -175,7 +182,7 @@ open class CameraCollectionViewCell: UICollectionViewCell {
     }
 
     func unblurIfNeeded(animated: Bool, completion: ((Bool) -> Void)?) {
-        guard isVisualEffectViewUsedForBlurring || imageView.image != nil else { return }
+        guard blurEffectsCanBeApplied else { return }
         let view = viewToUnblur
         applyAnimationBlocks(animated: animated, animationBlock: {
             view?.alpha = 0
