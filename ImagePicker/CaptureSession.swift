@@ -717,9 +717,7 @@ private extension CaptureSession {
 }
 
 extension CaptureSession {
-    
     func startVideoRecording(saveToPhotoLibrary: Bool) {
-        
         guard let movieFileOutput = self.videoFileOutput else {
             return log("capture session: trying to record a video but no movie file output is set")
         }
@@ -733,69 +731,12 @@ extension CaptureSession {
          before entering the session queue. We do this to ensure UI elements are
          accessed on the main thread and session configuration is done on the session queue.
          */
-        let videoPreviewLayerOrientation = previewLayer.connection?.videoOrientation
+        guard let videoPreviewLayerOrientation = previewLayer.connection?.videoOrientation else {
+            return log("capture session: fail to retrieve video orientation")
+        }
         
         sessionQueue.async { [weak self] in
-            
-            guard let strongSelf = self else {
-                return
-            }
-            
-            // if already recording do nothing
-            guard movieFileOutput.isRecording == false else {
-                return log("capture session: trying to record a video but there is one already being recorded")
-            }
-            
-            // update the orientation on the movie file output video connection before starting recording.
-            let movieFileOutputConnection = strongSelf.videoFileOutput?.connection(with: AVMediaType.video)
-            movieFileOutputConnection?.videoOrientation = videoPreviewLayerOrientation!
-            
-            // start recording to a temporary file.
-            let outputFileName = NSUUID().uuidString
-            let outputURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(outputFileName).appendingPathExtension("mov")
-            
-            // create a recording delegate
-            let recordingDelegate = VideoCaptureDelegate(didStart: {
-                DispatchQueue.main.async { [weak self] in
-                    self?.videoRecordingDelegate?.captureSessionDidStartVideoRecording(self!)
-                }
-            }, didFinish: { (delegate) in
-                
-                // we need to remove reference to the delegate so it can be deallocated
-                self?.sessionQueue.async {
-                    self?.videoCaptureDelegate = nil
-                }
-                
-                DispatchQueue.main.async { [weak self] in
-                    if delegate.isBeingCancelled {
-                        self?.videoRecordingDelegate?.captureSessionDidCancelVideoRecording(self!)
-                    }
-                    else {
-                        self?.videoRecordingDelegate?.captureSessionDid(self!, didFinishVideoRecording: outputURL)
-                    }
-                }
-                
-            }, didFail: { (delegate, error) in
-                
-                // we need to remove reference to the delegate so it can be deallocated
-                self?.sessionQueue.async {
-                    self?.videoCaptureDelegate = nil
-                }
-                
-                DispatchQueue.main.async { [weak self] in
-                    if delegate.recordingWasInterrupted {
-                        self?.videoRecordingDelegate?.captureSessionDid(self!, didInterruptVideoRecording: outputURL, reason: error)
-                    }
-                    else {
-                        self?.videoRecordingDelegate?.captureSessionDid(self!, didFailVideoRecording: error)
-                    }
-                }
-            })
-            recordingDelegate.savesVideoToLibrary = saveToPhotoLibrary
-            
-            // start recording
-            movieFileOutput.startRecording(to: outputURL, recordingDelegate: recordingDelegate)
-            strongSelf.videoCaptureDelegate = recordingDelegate
+            self?.recordVideo(output: movieFileOutput, orientation: videoPreviewLayerOrientation, saveToPhotoLibrary: saveToPhotoLibrary)
         }
     }
 
@@ -805,13 +746,11 @@ extension CaptureSession {
     /// - parameter cancel: if true, recorded file will be deleted and corresponding delegate method will be called.
     ///
     func stopVideoRecording(cancel: Bool = false) {
-    
         guard let movieFileOutput = self.videoFileOutput else {
             return log("capture session: trying to stop a video recording but no movie file output is set")
         }
         
         sessionQueue.async { [capturedSelf = self] in
-            
             guard movieFileOutput.isRecording else {
                 return log("capture session: trying to stop a video recording but no recording is in progress")
             }
@@ -824,5 +763,86 @@ extension CaptureSession {
             movieFileOutput.stopRecording()
         }
     }
-    
+}
+
+// MARK: Video Recording Helpers
+private extension CaptureSession {
+    func recordVideo(output movieFileOutput: AVCaptureMovieFileOutput, orientation videoPreviewLayerOrientation: AVCaptureVideoOrientation, saveToPhotoLibrary: Bool) {
+        // if already recording do nothing
+        guard movieFileOutput.isRecording == false else {
+            return log("capture session: trying to record a video but there is one already being recorded")
+        }
+
+        self.updateVideoOrientation(videoPreviewLayerOrientation)
+        let outputURL = self.temporaryVideoOutputURL
+        let recordingDelegate = self.createVideoRecordingDelegate(outputURL: outputURL, saveToPhotoLibrary: saveToPhotoLibrary)
+        self.startRecording(movieFileOutput: movieFileOutput,
+                            outputURL: outputURL,
+                            recordingDelegate: recordingDelegate)
+    }
+
+    func startRecording(movieFileOutput: AVCaptureMovieFileOutput, outputURL: URL, recordingDelegate: VideoCaptureDelegate) {
+        movieFileOutput.startRecording(to: outputURL, recordingDelegate: recordingDelegate)
+        videoCaptureDelegate = recordingDelegate
+    }
+
+    func updateVideoOrientation(_ videoPreviewLayerOrientation: AVCaptureVideoOrientation) {
+        let movieFileOutputConnection = self.videoFileOutput?.connection(with: AVMediaType.video)
+        movieFileOutputConnection?.videoOrientation = videoPreviewLayerOrientation
+    }
+
+    var temporaryVideoOutputURL: URL {
+        let outputFileName = NSUUID().uuidString
+        return URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(outputFileName).appendingPathExtension("mov")
+    }
+
+    func createVideoRecordingDelegate(outputURL: URL, saveToPhotoLibrary: Bool) -> VideoCaptureDelegate {
+        let recordingDelegate = VideoCaptureDelegate(didStart: {
+            DispatchQueue.main.async { [weak self] in
+                self?.processStartVideoCapturing()
+            }
+        }, didFinish: { [weak self] delegate in
+            self?.processStopVideoCapturing(delegate: delegate, outputURL: outputURL)
+            }, didFail: { [weak self] delegate, error in
+                self?.processFailVideoCapturing(delegate: delegate, outputURL: outputURL, error: error)
+        })
+        recordingDelegate.savesVideoToLibrary = saveToPhotoLibrary
+        return recordingDelegate
+    }
+
+    func processStartVideoCapturing() {
+        videoRecordingDelegate?.captureSessionDidStartVideoRecording(self)
+    }
+
+    func processStopVideoCapturing(delegate: VideoCaptureDelegate, outputURL: URL) {
+        removeReferenceToVideoCaptureDelegate()
+        DispatchQueue.main.async { [weak self] in
+            guard let `self` = self else { return }
+            if delegate.isBeingCancelled {
+                self.videoRecordingDelegate?.captureSessionDidCancelVideoRecording(self)
+            }
+            else {
+                self.videoRecordingDelegate?.captureSessionDid(self, didFinishVideoRecording: outputURL)
+            }
+        }
+    }
+
+    func processFailVideoCapturing(delegate: VideoCaptureDelegate, outputURL: URL, error: Error) {
+        removeReferenceToVideoCaptureDelegate()
+        DispatchQueue.main.async { [weak self] in
+            guard let `self` = self else { return }
+            if delegate.recordingWasInterrupted {
+                self.videoRecordingDelegate?.captureSessionDid(self, didInterruptVideoRecording: outputURL, reason: error)
+            }
+            else {
+                self.videoRecordingDelegate?.captureSessionDid(self, didFailVideoRecording: error)
+            }
+        }
+    }
+
+    func removeReferenceToVideoCaptureDelegate() {
+        sessionQueue.async {
+            self.videoCaptureDelegate = nil
+        }
+    }
 }
