@@ -607,8 +607,8 @@ extension CaptureSession {
     
 }
 
+// MARK: - Capture Photo
 extension CaptureSession {
-    
     func capturePhoto(livePhotoMode: LivePhotoMode, saveToPhotoLibrary: Bool) {
         /*
          Retrieve the video preview layer's video orientation on the main queue before
@@ -620,103 +620,113 @@ extension CaptureSession {
         }
         
         sessionQueue.async {
-            // Update the photo output's connection to match the video orientation of the video preview layer.
-            if let photoOutputConnection = self.photoOutput.connection(with: AVMediaType.video) {
-                photoOutputConnection.videoOrientation = videoPreviewLayerOrientation
-            }
-            
-            // Capture a JPEG photo with flash set to auto and high resolution photo enabled.
-            let photoSettings = AVCapturePhotoSettings()
-            photoSettings.flashMode = .auto
-            photoSettings.isHighResolutionPhotoEnabled = true
-            
-            //TODO: we dont need preview photo, we need thumbnail format, read `previewPhotoFormat` docs
-            //photoSettings.embeddedThumbnailPhotoFormat
-            //if photoSettings.availablePreviewPhotoPixelFormatTypes.count > 0 {
-            //    photoSettings.previewPhotoFormat = [kCVPixelBufferPixelFormatTypeKey as String : photoSettings.availablePreviewPhotoPixelFormatTypes.first!]
-            //}
-            
-            //TODO: I dont know how it works, need to find out
-            if #available(iOS 11.0, *) {
-                if photoSettings.availableEmbeddedThumbnailPhotoCodecTypes.count > 0 {
-                    //TODO: specify thumb size somehow, this does crash!
-                    //let size = CGSize(width: 200, height: 200)
-                    photoSettings.embeddedThumbnailPhotoFormat = [
-                        //kCVPixelBufferWidthKey as String : size.width as CFNumber,
-                        //kCVPixelBufferHeightKey as String : size.height as CFNumber,
-                        AVVideoCodecKey : photoSettings.availableEmbeddedThumbnailPhotoCodecTypes[0]
-                    ]
-                }
-            }
-            
-            if livePhotoMode == .on {
-                if self.presetConfiguration == .livePhotos && self.photoOutput.isLivePhotoCaptureSupported {
-                    let livePhotoMovieFileName = NSUUID().uuidString
-                    let livePhotoMovieFilePath = (NSTemporaryDirectory() as NSString).appendingPathComponent((livePhotoMovieFileName as NSString).appendingPathExtension("mov")!)
-                    photoSettings.livePhotoMovieFileURL = URL(fileURLWithPath: livePhotoMovieFilePath)
-                }
-                else {
-                    log("capture session: warning - trying to capture live photo but it's not supported by current configuration, capturing regular photo instead")
-                }
-            }
-            
-            // Use a separate object for the photo capture delegate to isolate each capture life cycle.
-            let photoCaptureDelegate = PhotoCaptureDelegate(with: photoSettings, willCapturePhotoAnimation: {
-                DispatchQueue.main.async { [unowned self] in
-                    self.photoCapturingDelegate?.captureSession(self, willCapturePhotoWith: photoSettings)
-                }
-            }, capturingLivePhoto: { capturing in
-                /*
-                 Because Live Photo captures can overlap, we need to keep track of the
-                 number of in progress Live Photo captures to ensure that the
-                 Live Photo label stays visible during these captures.
-                 */
-                self.sessionQueue.async { [unowned self] in
-                    if capturing {
-                        self.inProgressLivePhotoCapturesCount += 1
-                    }
-                    else {
-                        self.inProgressLivePhotoCapturesCount -= 1
-                    }
-                    
-                    let inProgressLivePhotoCapturesCount = self.inProgressLivePhotoCapturesCount
-                    DispatchQueue.main.async { [unowned self] in
-                        if inProgressLivePhotoCapturesCount >= 0 {
-                            self.photoCapturingDelegate?.captureSessionDidChangeNumberOfProcessingLivePhotos(self)
-                        }
-                        else {
-                            log("capture session: error - in progress live photo capture count is less than 0");
-                        }
-                    }
-                }
-            }, completed: { [unowned self] delegate in
-                // When the capture is complete, remove a reference to the photo capture delegate so it can be deallocated.
-                self.sessionQueue.async { [unowned self] in
-                    self.inProgressPhotoCaptureDelegates[delegate.requestedPhotoSettings.uniqueID] = nil
-                }
-                
-                DispatchQueue.main.async {
-                    if let data = delegate.photoData {
-                        self.photoCapturingDelegate?.captureSession(self, didCapturePhotoData: data, with: delegate.requestedPhotoSettings)
-                    }
-                    else if let error = delegate.processError {
-                        self.photoCapturingDelegate?.captureSession(self, didFailCapturingPhotoWith: error)
-                    }
-                }
-            })
-            
-            photoCaptureDelegate.savesPhotoToLibrary = saveToPhotoLibrary
-            
-            /*
-             The Photo Output keeps a weak reference to the photo capture delegate so
-             we store it in an array to maintain a strong reference to this object
-             until the capture is completed.
-             */
-            self.inProgressPhotoCaptureDelegates[photoCaptureDelegate.requestedPhotoSettings.uniqueID] = photoCaptureDelegate
+            self.updatePhotoOutputConnection(with:  videoPreviewLayerOrientation)
+            let photoSettings = self.configurePhotoSettings(for: livePhotoMode)
+            let photoCaptureDelegate = self.getCaptureDelegate(for: photoSettings, saveToPhotoLibrary: saveToPhotoLibrary)
+            self.addReferenceToTheCaptureDelegate(photoCaptureDelegate)
             self.photoOutput.capturePhoto(with: photoSettings, delegate: photoCaptureDelegate)
         }
     }
-    
+}
+
+// MARK: - Capture Photo Helper Methods
+private extension CaptureSession {
+    func updatePhotoOutputConnection(with videoPreviewLayerOrientation: AVCaptureVideoOrientation) {
+        guard let photoOutputConnection = photoOutput.connection(with: AVMediaType.video) else { return }
+        photoOutputConnection.videoOrientation = videoPreviewLayerOrientation
+    }
+
+    func updatePhotoSettingsForLiveMode(_ photoSettings: AVCapturePhotoSettings) {
+        guard presetConfiguration == .livePhotos && photoOutput.isLivePhotoCaptureSupported else {
+            return log("capture session: warning - trying to capture live photo but it's not supported by current configuration, capturing regular photo instead")
+        }
+        let livePhotoMovieFileName = NSUUID().uuidString
+        let livePhotoMovieFilePath = (NSTemporaryDirectory() as NSString).appendingPathComponent((livePhotoMovieFileName as NSString).appendingPathExtension("mov")!)
+        photoSettings.livePhotoMovieFileURL = URL(fileURLWithPath: livePhotoMovieFilePath)
+    }
+
+    func capturePhotoAnimation(_ photoSettings: AVCapturePhotoSettings) {
+        DispatchQueue.main.async { [unowned self] in
+            self.photoCapturingDelegate?.captureSession(self, willCapturePhotoWith: photoSettings)
+        }
+    }
+
+    func capturingLivePhoto(_ capturing: Bool) {
+        self.sessionQueue.async { [unowned self] in
+            /*
+             Because Live Photo captures can overlap, we need to keep track of the
+             number of in progress Live Photo captures to ensure that the
+             Live Photo label stays visible during these captures.
+             */
+            let inProgressLivePhotoCapturesCount = self.updateInProgressLivePhotoCapturesCount(for: capturing)
+            DispatchQueue.main.async { [unowned self] in
+                if inProgressLivePhotoCapturesCount >= 0 {
+                    self.photoCapturingDelegate?.captureSessionDidChangeNumberOfProcessingLivePhotos(self)
+                } else {
+                    log("capture session: error - in progress live photo capture count is less than 0");
+                }
+            }
+        }
+    }
+
+    func updateInProgressLivePhotoCapturesCount(for capturing: Bool) -> Int {
+        if capturing {
+            inProgressLivePhotoCapturesCount += 1
+        } else {
+            inProgressLivePhotoCapturesCount -= 1
+        }
+
+        return inProgressLivePhotoCapturesCount
+    }
+
+    func processPhotoCaptureCompletion(delegate: PhotoCaptureDelegate) {
+        removeReferenceToCaptureDelegate(delegate)
+
+        DispatchQueue.main.async {
+            self.finishCaptureSession(delegate: delegate)
+        }
+    }
+
+    func removeReferenceToCaptureDelegate(_ delegate: PhotoCaptureDelegate) {
+        self.sessionQueue.async { [unowned self] in
+            self.inProgressPhotoCaptureDelegates[delegate.requestedPhotoSettings.uniqueID] = nil
+        }
+    }
+
+    func finishCaptureSession(delegate: PhotoCaptureDelegate) {
+        if let data = delegate.photoData {
+            photoCapturingDelegate?.captureSession(self, didCapturePhotoData: data, with: delegate.requestedPhotoSettings)
+        } else if let error = delegate.processError {
+            photoCapturingDelegate?.captureSession(self, didFailCapturingPhotoWith: error)
+        }
+    }
+
+    func addReferenceToTheCaptureDelegate(_ photoCaptureDelegate: PhotoCaptureDelegate) {
+        inProgressPhotoCaptureDelegates[photoCaptureDelegate.requestedPhotoSettings.uniqueID] = photoCaptureDelegate
+    }
+
+    func getCaptureDelegate(for photoSettings: AVCapturePhotoSettings, saveToPhotoLibrary: Bool) -> PhotoCaptureDelegate {
+        let delegate = PhotoCaptureDelegate(with: photoSettings, willCapturePhotoAnimation: {
+            self.capturePhotoAnimation(photoSettings)
+        }, capturingLivePhoto: { capturing in
+            self.capturingLivePhoto(capturing)
+        }, completed: { [unowned self] delegate in
+            self.processPhotoCaptureCompletion(delegate: delegate)
+        })
+
+        delegate.savesPhotoToLibrary = saveToPhotoLibrary
+        return delegate
+    }
+
+    func configurePhotoSettings(for livePhotoMode: LivePhotoMode) -> AVCapturePhotoSettings {
+        let photoSettings = AVCapturePhotoSettings.defaultSettings
+        photoSettings.configureThumbnail()
+
+        if livePhotoMode == .on {
+            updatePhotoSettingsForLiveMode(photoSettings)
+        }
+        return photoSettings
+    }
 }
 
 extension CaptureSession {
@@ -883,5 +893,35 @@ private extension AVCaptureDevice {
 
     static var frontWideAngleCamera: AVCaptureDevice? {
         return AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front)
+    }
+}
+
+private extension AVCapturePhotoSettings {
+    static var defaultSettings: AVCapturePhotoSettings {
+        let photoSettings = AVCapturePhotoSettings()
+        photoSettings.flashMode = .auto
+        photoSettings.isHighResolutionPhotoEnabled = true
+        return photoSettings
+    }
+
+    func configureThumbnail() {
+        //TODO: we dont need preview photo, we need thumbnail format, read `previewPhotoFormat` docs
+        //photoSettings.embeddedThumbnailPhotoFormat
+        //if photoSettings.availablePreviewPhotoPixelFormatTypes.count > 0 {
+        //    photoSettings.previewPhotoFormat = [kCVPixelBufferPixelFormatTypeKey as String : photoSettings.availablePreviewPhotoPixelFormatTypes.first!]
+        //}
+
+        //TODO: I dont know how it works, need to find out
+        if #available(iOS 11.0, *) {
+            if availableEmbeddedThumbnailPhotoCodecTypes.count > 0 {
+                //TODO: specify thumb size somehow, this does crash!
+                //let size = CGSize(width: 200, height: 200)
+                embeddedThumbnailPhotoFormat = [
+                    //kCVPixelBufferWidthKey as String : size.width as CFNumber,
+                    //kCVPixelBufferHeightKey as String : size.height as CFNumber,
+                    AVVideoCodecKey : availableEmbeddedThumbnailPhotoCodecTypes[0]
+                ]
+            }
+        }
     }
 }
