@@ -235,15 +235,7 @@ final class CaptureSession : NSObject {
         delegate?.captureSessionDidFailConfiguringSession(self)
     }
 
-    // MARK: - Private Methods
-    ///
-    /// Cinfigures a session before it can be used, following steps are done:
-    /// 1. adds video input
-    /// 2. adds video output (for recording videos)
-    /// 3. adds audio input (for video recording with audio)
-    /// 4. adds photo output (for capturing photos)
-    ///
-
+    // MARK: - Configure Session
     private func configureSession() {
         guard setupResult == .success else { return }
         session.beginConfiguration()
@@ -265,13 +257,17 @@ final class CaptureSession : NSObject {
     
     private var sessionRunningObserveContext = 0
     private var addedObservers = false
-    
+
+    private let subjectAreaDidChangeNotificationKey = "AVCaptureDeviceSubjectAreaDidChangeNotification"
+    private let runtimeErrorNotificationKey = "AVCaptureSessionRuntimeErrorNotification"
+    private let sessionWasInterruptedNotificationKey = "AVCaptureSessionWasInterruptedNotification"
+    private let interruptionEndedNotificationKey = "AVCaptureSessionInterruptionEndedNotification"
     private func addObservers() {
         guard !addedObservers else { return }
         
         session.addObserver(self, forKeyPath: "running", options: .new, context: &sessionRunningObserveContext)
-        NotificationCenter.default.addObserver(self, selector: #selector(subjectAreaDidChange), name: Notification.Name("AVCaptureDeviceSubjectAreaDidChangeNotification"), object: videoDeviceInput.device)
-        NotificationCenter.default.addObserver(self, selector: #selector(sessionRuntimeError), name: Notification.Name("AVCaptureSessionRuntimeErrorNotification"), object: session)
+        NotificationCenter.default.addObserver(self, selector: #selector(subjectAreaDidChange), name: Notification.Name(subjectAreaDidChangeNotificationKey), object: videoDeviceInput.device)
+        NotificationCenter.default.addObserver(self, selector: #selector(sessionRuntimeError), name: Notification.Name(runtimeErrorNotificationKey), object: session)
         
         /*
          A session can only run when the app is full screen. It will be interrupted
@@ -280,8 +276,8 @@ final class CaptureSession : NSObject {
          interruptions and show a preview is paused message. See the documentation
          of AVCaptureSessionWasInterruptedNotification for other interruption reasons.
          */
-        NotificationCenter.default.addObserver(self, selector: #selector(sessionWasInterrupted), name: Notification.Name("AVCaptureSessionWasInterruptedNotification"), object: session)
-        NotificationCenter.default.addObserver(self, selector: #selector(sessionInterruptionEnded), name: Notification.Name("AVCaptureSessionInterruptionEndedNotification"), object: session)
+        NotificationCenter.default.addObserver(self, selector: #selector(sessionWasInterrupted), name: Notification.Name(sessionWasInterruptedNotificationKey), object: session)
+        NotificationCenter.default.addObserver(self, selector: #selector(sessionInterruptionEnded), name: Notification.Name(interruptionEndedNotificationKey), object: session)
         
         addedObservers = true
     }
@@ -490,108 +486,87 @@ private extension CaptureSession {
     }
 }
 
+// MARK: - Camera Change
 extension CaptureSession {
-    
     @objc func subjectAreaDidChange(notification: NSNotification) {
-//        let devicePoint = CGPoint(x: 0.5, y: 0.5)
-//        focus(with: .autoFocus, exposureMode: .continuousAutoExposure, at: devicePoint, monitorSubjectAreaChange: false)
     }
-    
+
     func changeCamera(completion: (() -> Void)?) {
-        
         guard setupResult == .success else {
             return log("capture session: warning - trying to change camera but capture session setup failed")
         }
-        
+
         sessionQueue.async { [unowned self] in
             let currentVideoDevice = self.videoDeviceInput.device
-            let currentPosition = currentVideoDevice.position
-            
-            let preferredPosition: AVCaptureDevice.Position
-            let preferredDeviceType: AVCaptureDevice.DeviceType
-            
-            switch currentPosition {
-            case .unspecified, .front:
-                preferredPosition = .back
-                preferredDeviceType = AVCaptureDevice.DeviceType.builtInDuoCamera
-                
-            case .back:
-                preferredPosition = .front
-                preferredDeviceType = AVCaptureDevice.DeviceType.builtInWideAngleCamera
-            }
-            
             let devices = self.videoDeviceDiscoverySession.devices
-            var newVideoDevice: AVCaptureDevice? = nil
-            
-            // First, look for a device with both the preferred position and device type. Otherwise, look for a device with only the preferred position.
-            if let device = devices.filter({ $0.position == preferredPosition && $0.deviceType == preferredDeviceType }).first {
-                newVideoDevice = device
+            guard let videoDevice = devices.getPreferredDevice(for: currentVideoDevice) else {
+                return log("capture session: fail to find preferred device")
             }
-            else if let device = devices.filter({ $0.position == preferredPosition }).first {
-                newVideoDevice = device
+            do {
+                try self.configureVideoCapturingSession(for: videoDevice)
+                DispatchQueue.main.async {
+                    completion?()
+                }
             }
-            
-            if let videoDevice = newVideoDevice {
-                do {
-                    let videoDeviceInput = try AVCaptureDeviceInput(device: videoDevice)
-                    
-                    self.session.beginConfiguration()
-                    
-                    // Remove the existing device input first, since using the front and back camera simultaneously is not supported.
-                    self.session.removeInput(self.videoDeviceInput)
-                    
-                    if self.session.canAddInput(videoDeviceInput) {
-                        NotificationCenter.default.removeObserver(self, name: Notification.Name("AVCaptureDeviceSubjectAreaDidChangeNotification"), object: currentVideoDevice)
-                        NotificationCenter.default.addObserver(self, selector: #selector(self.subjectAreaDidChange), name: Notification.Name("AVCaptureDeviceSubjectAreaDidChangeNotification"), object: videoDeviceInput.device)
-                        
-                        self.session.addInput(videoDeviceInput)
-                        self.videoDeviceInput = videoDeviceInput
-                    }
-                    else {
-                        self.session.addInput(self.videoDeviceInput);
-                    }
-                    
-                    if let connection = self.videoFileOutput?.connection(with: AVMediaType.video) {
-                        if connection.isVideoStabilizationSupported {
-                            connection.preferredVideoStabilizationMode = .auto
-                        }
-                    }
-                    
-                    /*
-                     Set Live Photo capture enabled if it is supported. When changing cameras, the
-                     `isLivePhotoCaptureEnabled` property of the AVCapturePhotoOutput gets set to NO when
-                     a video device is disconnected from the session. After the new video device is
-                     added to the session, re-enable Live Photo capture on the AVCapturePhotoOutput if it is supported.
-                     */
-                    self.photoOutput.isLivePhotoCaptureEnabled = self.photoOutput.isLivePhotoCaptureSupported && self.presetConfiguration == .livePhotos;
-                    
-                    // when device is disconnected:
-                    // - video data output connection orientation is reset, so we need to set to new proper value
-                    // - video mirroring is set to true if camera is front, make sure we use no mirroring
-                    if let videoDataOutputConnection = self.videoDataOutput?.connection(with: AVMediaType.video) {
-                        videoDataOutputConnection.videoOrientation = self.videoOrientation
-                        if videoDataOutputConnection.isVideoMirroringSupported {
-                            videoDataOutputConnection.isVideoMirrored = true
-                        }
-                        else {
-                            log("capture session: warning - video mirroring on video data output is not supported")
-                        }
-                        
-                    }
-                    
-                    self.session.commitConfiguration()
-                    
-                    DispatchQueue.main.async { //[unowned self] in
-                        completion?()
-                    }
-                }
-                catch {
-                    print("Error occured while creating video device input: \(error)")
-                }
+            catch {
+                print("Error occured while creating video device input: \(error)")
             }
         }
     }
-    
+}
+
+// MARK: - Camera Change Helpers
+extension CaptureSession {
+    private func configureVideoCapturingSession(for videoDevice: AVCaptureDevice) throws {
+        let videoDeviceInput = try AVCaptureDeviceInput(device: videoDevice)
+
+        session.beginConfiguration()
+
+        updateVideoDeviceInputIfPossible(newVideoDeviceInput: videoDeviceInput)
+        updateStabilizationModeIfPossible()
+        updateLivePhotoStatus()
+        updateVideoDataOutputConnectionIfNeeded()
+
+        session.commitConfiguration()
+    }
+
+    private func updateObserversForDevices(currentDevice: AVCaptureDevice, newDevice: AVCaptureDevice) {
+        NotificationCenter.default.removeObserver(self, name: Notification.Name(subjectAreaDidChangeNotificationKey), object: currentDevice)
+        NotificationCenter.default.addObserver(self, selector: #selector(subjectAreaDidChange), name: Notification.Name(subjectAreaDidChangeNotificationKey), object: newDevice)
+    }
+
+    private func updateVideoDeviceInputIfPossible(newVideoDeviceInput: AVCaptureDeviceInput) {
+        // Remove the existing device input first, since using the front and back camera simultaneously is not supported.
+        session.removeInput(videoDeviceInput)
+
+        if session.canAddInput(self.videoDeviceInput) {
+            updateObserversForDevices(currentDevice: videoDeviceInput.device, newDevice: newVideoDeviceInput.device)
+
+            session.addInput(newVideoDeviceInput)
+            videoDeviceInput = newVideoDeviceInput
+        } else {
+            session.addInput(videoDeviceInput);
+        }
+    }
+
+    private func updateStabilizationModeIfPossible() {
+        guard let connection = self.videoFileOutput?.connection(with: AVMediaType.video), connection.isVideoStabilizationSupported else { return }
+        connection.preferredVideoStabilizationMode = .auto
+    }
+
+    private func updateLivePhotoStatus() {
+        photoOutput.isLivePhotoCaptureEnabled = photoOutput.isLivePhotoCaptureSupported && presetConfiguration == .livePhotos
+    }
+
+    private func updateVideoDataOutputConnectionIfNeeded() {
+        guard let videoDataOutputConnection = videoDataOutput?.connection(with: .video) else { return }
+        videoDataOutputConnection.videoOrientation = videoOrientation
+        if videoDataOutputConnection.isVideoMirroringSupported {
+            videoDataOutputConnection.isVideoMirrored = true
+        } else {
+            log("capture session: warning - video mirroring on video data output is not supported")
+        }
+    }
 }
 
 // MARK: - Capture Photo
@@ -716,6 +691,7 @@ private extension CaptureSession {
     }
 }
 
+// MARK: - Video Recording
 extension CaptureSession {
     func startVideoRecording(saveToPhotoLibrary: Bool) {
         guard let movieFileOutput = self.videoFileOutput else {
@@ -765,7 +741,7 @@ extension CaptureSession {
     }
 }
 
-// MARK: Video Recording Helpers
+// MARK: - Video Recording Helpers
 private extension CaptureSession {
     func recordVideo(output movieFileOutput: AVCaptureMovieFileOutput, orientation videoPreviewLayerOrientation: AVCaptureVideoOrientation, saveToPhotoLibrary: Bool) {
         // if already recording do nothing

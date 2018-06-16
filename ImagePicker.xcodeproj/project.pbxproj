@@ -65,6 +65,7 @@
 		85D6EA8320D573FF00B63486 /* AVCapturePhotoSettings+Default.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85D6EA8220D573FF00B63486 /* AVCapturePhotoSettings+Default.swift */; };
 		85D6EA8520D5742C00B63486 /* UIInterfaceOrientation+AVCaptureVideo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85D6EA8420D5742C00B63486 /* UIInterfaceOrientation+AVCaptureVideo.swift */; };
 		85D6EA8720D5746600B63486 /* CaptureSessionError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85D6EA8620D5746600B63486 /* CaptureSessionError.swift */; };
+		85D6EA8920D57BF700B63486 /* AVCaptureDevice+Preferred.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85D6EA8820D57BF700B63486 /* AVCaptureDevice+Preferred.swift */; };
 		85F70C2D20D1393100DC3997 /* ImagePickerControllerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85F70C2C20D1393100DC3997 /* ImagePickerControllerDelegate.swift */; };
 		85F70C2F20D1398600DC3997 /* ImagePickerControllerDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85F70C2E20D1398600DC3997 /* ImagePickerControllerDataSource.swift */; };
 		85F70C3320D1417600DC3997 /* ImagePickerController+Delegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85F70C3220D1417600DC3997 /* ImagePickerController+Delegate.swift */; };
@@ -157,6 +158,7 @@
 		85D6EA8220D573FF00B63486 /* AVCapturePhotoSettings+Default.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AVCapturePhotoSettings+Default.swift"; sourceTree = "<group>"; };
 		85D6EA8420D5742C00B63486 /* UIInterfaceOrientation+AVCaptureVideo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIInterfaceOrientation+AVCaptureVideo.swift"; sourceTree = "<group>"; };
 		85D6EA8620D5746600B63486 /* CaptureSessionError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureSessionError.swift; sourceTree = "<group>"; };
+		85D6EA8820D57BF700B63486 /* AVCaptureDevice+Preferred.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AVCaptureDevice+Preferred.swift"; sourceTree = "<group>"; };
 		85F70C2C20D1393100DC3997 /* ImagePickerControllerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePickerControllerDelegate.swift; sourceTree = "<group>"; };
 		85F70C2E20D1398600DC3997 /* ImagePickerControllerDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePickerControllerDataSource.swift; sourceTree = "<group>"; };
 		85F70C3220D1417600DC3997 /* ImagePickerController+Delegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ImagePickerController+Delegate.swift"; sourceTree = "<group>"; };
@@ -305,6 +307,7 @@
 				420CBBC01F711E83002288C5 /* AVPreviewView.swift */,
 				420CBBC21F712135002288C5 /* CaptureSession.swift */,
 				85D6EA8620D5746600B63486 /* CaptureSessionError.swift */,
+				85D6EA8820D57BF700B63486 /* AVCaptureDevice+Preferred.swift */,
 				85D6EA8020D573D200B63486 /* AVCaptureDevice+Default.swift */,
 				85D6EA8220D573FF00B63486 /* AVCapturePhotoSettings+Default.swift */,
 				85D6EA8420D5742C00B63486 /* UIInterfaceOrientation+AVCaptureVideo.swift */,
@@ -492,6 +495,7 @@
 				42EDD4061F71261600EAD2F5 /* AVPreviewView.swift in Sources */,
 				420C24411F5EEA3C008935D4 /* LayoutConfiguration.swift in Sources */,
 				85F70C2F20D1398600DC3997 /* ImagePickerControllerDataSource.swift in Sources */,
+				85D6EA8920D57BF700B63486 /* AVCaptureDevice+Preferred.swift in Sources */,
 				429CCBD02080D62F0050078B /* AsynchronousOperation.swift in Sources */,
 				85D6EA8520D5742C00B63486 /* UIInterfaceOrientation+AVCaptureVideo.swift in Sources */,
 				427925FD1F963A8D00B6D55F /* VideoCameraCell.swift in Sources */,
