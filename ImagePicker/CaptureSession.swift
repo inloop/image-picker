@@ -10,19 +10,6 @@ import AVFoundation
 import Photos
 import UIKit
 
-// MARK: - CaptureSessionError
-private enum CaptureSessionError: Error {
-    case failToCreateCaptureDevice
-    case failToAddVideoDeviceInput
-    case failToCreateVideoDeviceInput(Error)
-    case failToAddVideoOutput
-    case failToCreateAudioDevice
-    case failToAddAudioDeviceInput
-    case failToCreateAudioDeviceInput(Error)
-    case failToAddPhotoOutput
-    case failToAddVideoDataOutput
-}
-
 ///
 /// Manages AVCaptureSession
 ///
@@ -838,90 +825,4 @@ extension CaptureSession {
         }
     }
     
-}
-
-private extension CaptureSessionError {
-    var isWarning: Bool {
-        switch self {
-        case .failToAddAudioDeviceInput, .failToCreateAudioDeviceInput, .failToCreateAudioDevice, .failToAddVideoDataOutput: return true
-        default: return false
-        }
-    }
-
-    private var description: String {
-        switch self {
-        case .failToCreateCaptureDevice: return "capture session: could not create capture device"
-        case .failToAddVideoDeviceInput: return "capture session: could not add video device input to the session"
-        case let .failToCreateVideoDeviceInput(error): return "capture session: could not create video device input: \(error)"
-        case .failToAddVideoOutput: return "capture session: could not add video output to the session"
-        case .failToCreateAudioDevice: return "capture session: could not create audio device"
-        case .failToAddAudioDeviceInput: return "capture session: could not add audio device input to the session"
-        case let .failToCreateAudioDeviceInput(error): return "capture session: could not create audio device input: \(error)"
-        case .failToAddPhotoOutput: return "capture session: could not add photo output to the session"
-        case .failToAddVideoDataOutput: return "capture session: warning - could not add video data output to the session"
-        }
-    }
-
-    func logError() {
-        log(description)
-    }
-}
-
-extension UIInterfaceOrientation {
-    var captureVideoOrientation: AVCaptureVideoOrientation {
-        switch self {
-        case .portrait, .unknown: return .portrait
-        case .portraitUpsideDown: return .portraitUpsideDown
-        case .landscapeRight: return .landscapeRight
-        case .landscapeLeft: return .landscapeLeft
-        }
-    }
-}
-
-private extension AVCaptureDevice {
-    static var defaultVideoDevice: AVCaptureDevice? {
-        return backDualCamera ?? backWideAngleCamera ?? frontWideAngleCamera
-    }
-
-    static var backDualCamera: AVCaptureDevice? {
-        return AVCaptureDevice.default(.builtInDuoCamera, for: .video, position: .back)
-    }
-
-    static var backWideAngleCamera: AVCaptureDevice? {
-        return AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back)
-    }
-
-    static var frontWideAngleCamera: AVCaptureDevice? {
-        return AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front)
-    }
-}
-
-private extension AVCapturePhotoSettings {
-    static var defaultSettings: AVCapturePhotoSettings {
-        let photoSettings = AVCapturePhotoSettings()
-        photoSettings.flashMode = .auto
-        photoSettings.isHighResolutionPhotoEnabled = true
-        return photoSettings
-    }
-
-    func configureThumbnail() {
-        //TODO: we dont need preview photo, we need thumbnail format, read `previewPhotoFormat` docs
-        //photoSettings.embeddedThumbnailPhotoFormat
-        //if photoSettings.availablePreviewPhotoPixelFormatTypes.count > 0 {
-        //    photoSettings.previewPhotoFormat = [kCVPixelBufferPixelFormatTypeKey as String : photoSettings.availablePreviewPhotoPixelFormatTypes.first!]
-        //}
-
-        //TODO: I dont know how it works, need to find out
-        if #available(iOS 11.0, *) {
-            if availableEmbeddedThumbnailPhotoCodecTypes.count > 0 {
-                //TODO: specify thumb size somehow, this does crash!
-                //let size = CGSize(width: 200, height: 200)
-                embeddedThumbnailPhotoFormat = [
-                    //kCVPixelBufferWidthKey as String : size.width as CFNumber,
-                    //kCVPixelBufferHeightKey as String : size.height as CFNumber,
-                    AVVideoCodecKey : availableEmbeddedThumbnailPhotoCodecTypes[0]
-                ]
-            }
-        }
-    }
 }
