@@ -147,7 +147,7 @@ open class ImagePickerController : UIViewController {
     private var collectionViewDataSource = ImagePickerDataSource(assetsModel: ImagePickerAssetModel())
     private var collectionViewDelegate = ImagePickerDelegate()
     
-    internal var captureSession: CaptureSession?
+    var captureSession: CaptureSession?
     
     private func updateItemSize() {
         guard let layout = self.collectionViewDelegate.layout else { return }

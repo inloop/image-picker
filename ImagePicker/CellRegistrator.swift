@@ -26,20 +26,20 @@ public final class CellRegistrator {
     
     // MARK: - Private Methods
     private let actionItemIdentifierPrefix = "eu.inloop.action-item.cell-id"
-    internal var actionItemNibsData: [Int: (UINib, String)]?
-    internal var actionItemClassesData: [Int: (UICollectionViewCell.Type, String)]?
+    var actionItemNibsData: [Int: (UINib, String)]?
+    var actionItemClassesData: [Int: (UICollectionViewCell.Type, String)]?
     
     //camera item has only 1 cell so no need for identifiers
-    internal var cameraItemNib: UINib?
-    internal var cameraItemClass: UICollectionViewCell.Type?
+    var cameraItemNib: UINib?
+    var cameraItemClass: UICollectionViewCell.Type?
     
     private let assetItemIdentifierPrefix = "eu.inloop.asset-item.cell-id"
-    internal var assetItemNibsData: [PHAssetMediaType: (UINib, String)]?
-    internal var assetItemClassesData: [PHAssetMediaType: (UICollectionViewCell.Type, String)]?
+    var assetItemNibsData: [PHAssetMediaType: (UINib, String)]?
+    var assetItemClassesData: [PHAssetMediaType: (UICollectionViewCell.Type, String)]?
     
     //we use these if there is no asset media type specified
-    internal var assetItemNib: UINib?
-    internal var assetItemClass: UICollectionViewCell.Type?
+    var assetItemNib: UINib?
+    var assetItemClass: UICollectionViewCell.Type?
     
     // MARK: Internal Methods
     
