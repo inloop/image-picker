@@ -121,6 +121,7 @@ class ViewController: UITableViewController {
     
     @objc func configCameraItem(indexPath: IndexPath) {
         cameraConfig = CameraItemConfig(rawValue: indexPath.row)!
+        imagePickerController?.collectionView.reloadData()
     }
     
     @objc func configAssetsSource(indexPath: IndexPath) {
@@ -143,7 +144,8 @@ class ViewController: UITableViewController {
     @objc func configSavesCapturedAssets(indexPath: IndexPath) {
         savesCapturedAssets = indexPath.row == 1
     }
-    
+
+    private var imagePickerController: ImagePickerController?
     @objc func presentButtonTapped(sender: UIButton) {
         sender.isSelected = !sender.isSelected
         
@@ -151,7 +153,7 @@ class ViewController: UITableViewController {
             
             // create new instance
             let imagePicker = ImagePickerController()
-            
+            imagePickerController = imagePicker
             // set data source and delegate
             imagePicker.delegate = self
             imagePicker.dataSource = self

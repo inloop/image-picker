@@ -48,11 +48,7 @@ extension ImagePickerController: ImagePickerDelegateDelegate {
         //susped session only if not recording video, otherwise the recording would be stopped.
         guard !isRecordingVideo else { return }
         captureSession?.suspend()
-
-        // blur cell asap
-        DispatchQueue.global(qos: .userInteractive).async {
-            self.blurCell(cell)
-        }
+        blurCell(cell)
     }
 
     func imagePicker(delegate: ImagePickerDelegate, didScroll scrollView: UIScrollView) {
@@ -105,9 +101,11 @@ private extension ImagePickerController {
     }
 
     func blurCell(_ cell: CameraCollectionViewCell) {
-        let blurred = captureSession?.lightBufferImage
-        DispatchQueue.main.async {
-            cell.blurIfNeeded(blurImage: blurred, animated: false, completion: nil)
+        DispatchQueue.global(qos: .userInteractive).async {
+            let blurred = self.captureSession?.blurredBufferImage
+            DispatchQueue.main.async {
+                cell.blurIfNeeded(blurImage: blurred, animated: false, completion: nil)
+            }
         }
     }
 }

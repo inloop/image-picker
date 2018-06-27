@@ -21,8 +21,7 @@ protocol CameraCollectionViewCellDelegate : class {
 ///
 /// Each custom camera cell must inherit from this base class.
 ///
-open class CameraCollectionViewCell : UICollectionViewCell {
-
+open class CameraCollectionViewCell: UICollectionViewCell {
     deinit {
         log("deinit: \(String(describing: self))")
     }
@@ -30,7 +29,7 @@ open class CameraCollectionViewCell : UICollectionViewCell {
     /// contains video preview layer
     var previewView: AVPreviewView = {
         let view = AVPreviewView(frame: .zero)
-        view.backgroundColor = UIColor.black
+        view.backgroundColor = .black
         return view
     }()
     
@@ -44,15 +43,11 @@ open class CameraCollectionViewCell : UICollectionViewCell {
         view.contentMode = .scaleAspectFill
         return view
     }()
-    
     var blurView: UIVisualEffectView?
-    
     var isVisualEffectViewUsedForBlurring = false
-    
     weak var delegate: CameraCollectionViewCellDelegate?
     
     // MARK: View Lifecycle Methods
-    
     public override init(frame: CGRect) {
         super.init(frame: frame)
         backgroundView = previewView
@@ -71,8 +66,7 @@ open class CameraCollectionViewCell : UICollectionViewCell {
         blurView?.frame = previewView.bounds
     }
     
-    // MARK: Public Methods
-    
+    // MARK: - Public Methods
     ///
     /// The cell can have multiple visual states based on autorization status. Use
     /// `updateCameraAuthorizationStatus()` func to udate UI.
@@ -148,89 +142,70 @@ open class CameraCollectionViewCell : UICollectionViewCell {
     }
     
     // MARK: Internal Methods
-    
+    private var blurEffectsCanBeApplied: Bool {
+        return isVisualEffectViewUsedForBlurring || imageView.image != nil
+    }
+
     func blurIfNeeded(blurImage: UIImage?, animated: Bool, completion: ((Bool) -> Void)?) {
-        
-        var view: UIView
-        
-        if isVisualEffectViewUsedForBlurring == false {
-        
-            guard imageView.image == nil else {
-                return
-            }
-            
+        guard blurEffectsCanBeApplied else { return }
+        let view = configureBlurredView(blurImage: blurImage)
+        view.alpha = 0
+        applyAnimationBlocks(animated: animated, animationBlock: {
+            view.alpha = 1
+        }, completionBlock: completion)
+    }
+
+    private func configureBlurredView(blurImage: UIImage?) -> UIView {
+        let view: UIView
+        if !isVisualEffectViewUsedForBlurring {
             imageView.image = blurImage
-            
             view = imageView
-        }
-        else {
-            
-            if blurView == nil {
-                blurView = UIVisualEffectView(effect: UIBlurEffect(style: .light))
-                previewView.addSubview(blurView!)
-            }
-            
-            view = blurView!
+        } else {
+            view = getBlurView()
             view.frame = previewView.bounds
         }
-        
-        view.alpha = 0
-
-        if animated == false {
-            view.alpha = 1
-            completion?(true)
-        }
-        else {
-            UIView.animate(withDuration: 0.1, delay: 0, options: .allowAnimatedContent, animations: {
-                view.alpha = 1
-            }, completion: completion)
-        }
+        return view
     }
-    
-    func unblurIfNeeded(unblurImage: UIImage?, animated: Bool, completion: ((Bool) -> Void)?) {
-        
-        var animationBlock: () -> ()
-        var animationCompletionBlock: (Bool) -> ()
-        
-        if isVisualEffectViewUsedForBlurring == false {
-        
-            guard imageView.image != nil else {
-                return
-            }
-            
-            if let image = unblurImage {
-                imageView.image = image
-            }
-            
-            animationBlock = {
-                self.imageView.alpha = 0
-            }
-            
-            animationCompletionBlock = { finished in
-                self.imageView.image = nil
-                completion?(finished)
-            }
-        }
-        else {
-            
-            animationBlock = {
-                self.blurView?.alpha = 0
-            }
-            
-            animationCompletionBlock = { finished in
-                completion?(finished)
-            }
-        }
 
+    private func getBlurView() -> UIVisualEffectView {
+        if let blurView = blurView {
+            return blurView
+        }
+        let result = UIVisualEffectView(effect: UIBlurEffect(style: .light))
+        previewView.addSubview(result)
+        blurView = result
+        return result
+    }
+
+    private var viewToUnblur: UIView? {
+        return isVisualEffectViewUsedForBlurring ? blurView : imageView
+    }
+
+    func unblurIfNeeded(animated: Bool, completion: ((Bool) -> Void)?) {
+        guard blurEffectsCanBeApplied else { return }
+        let view = viewToUnblur
+        applyAnimationBlocks(animated: animated, animationBlock: {
+            view?.alpha = 0
+        }, completionBlock: { finished in
+            (view as? UIImageView)?.image = nil
+            completion?(finished)
+        })
+    }
+
+    private func applyAnimationBlocks(animated: Bool, animationBlock: @escaping () -> (), completionBlock: ((Bool) -> ())?) {
         if animated == false {
             animationBlock()
-            animationCompletionBlock(true)
-        }
-        else {
-            UIView.animate(withDuration: 0.1, delay: 0, options: .allowAnimatedContent, animations: animationBlock, completion: animationCompletionBlock)
+            completionBlock?(true)
+        } else {
+            UIView.animate(
+                withDuration: 0.1,
+                delay: 0,
+                options: .allowAnimatedContent,
+                animations: animationBlock,
+                completion: completionBlock)
         }
     }
-    
+
     ///
     /// When user taps a camera cell this method is called and the result is
     /// used when determining whether the tap should take a photo or not. This
@@ -243,6 +218,4 @@ open class CameraCollectionViewCell : UICollectionViewCell {
         }
         return false
     }
- 
-    
 }
