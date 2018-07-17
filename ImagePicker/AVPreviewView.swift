@@ -24,7 +24,6 @@ enum VideoDisplayMode {
 /// output from a capture session.
 ///
 final class AVPreviewView: UIView {
-    
     deinit {
         log("deinit: \(String(describing: self))")
     }
@@ -36,11 +35,8 @@ final class AVPreviewView: UIView {
     var session: AVCaptureSession? {
         get { return previewLayer.session }
         set {
-            if previewLayer.session === newValue {
-                return
-            }
+            guard previewLayer.session !== newValue else { return }
             previewLayer.session = newValue
-            
         }
     }
     
@@ -63,12 +59,11 @@ final class AVPreviewView: UIView {
     }
     
     // MARK: Private Methods
-    
     private func applyVideoDisplayMode() {
         switch displayMode {
-        case .aspectFill:    previewLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
-        case .aspectFit:    previewLayer.videoGravity = AVLayerVideoGravity.resizeAspect
-        case .resize:       previewLayer.videoGravity = AVLayerVideoGravity.resize
+        case .aspectFill: previewLayer.videoGravity = .resizeAspectFill
+        case .aspectFit: previewLayer.videoGravity = .resizeAspect
+        case .resize: previewLayer.videoGravity = .resize
         }
     }
 }
