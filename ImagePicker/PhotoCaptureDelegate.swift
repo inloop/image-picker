@@ -66,19 +66,6 @@ final class PhotoCaptureDelegate: NSObject, AVCapturePhotoCaptureDelegate {
     func photoOutput(_ captureOutput: AVCapturePhotoOutput, willCapturePhotoFor resolvedSettings: AVCaptureResolvedPhotoSettings) {
 		willCapturePhotoAnimation()
 	}
-
-    // TODO: lets for now use the older deprecated method
-//    @available(iOS 11.0, *)
-//    func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
-//        if let data = photo.fileDataRepresentation() {
-//            photoData = data
-//        }
-//        else if let error = error {
-//            log("photo capture delegate: error capturing photo: \(error)")
-//            processError = error
-//            return
-//        }
-//    }
     
     //this method is not called on iOS 11 if method above is implemented
     func photoOutput(_ captureOutput: AVCapturePhotoOutput, didFinishProcessingPhoto photoSampleBuffer: CMSampleBuffer?, previewPhoto previewPhotoSampleBuffer: CMSampleBuffer?, resolvedSettings: AVCaptureResolvedPhotoSettings, bracketSettings: AVCaptureBracketedStillImageSettings?, error: Error?) {
