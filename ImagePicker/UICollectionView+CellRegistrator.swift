@@ -1,13 +1,6 @@
-//
-//  UICollectionView+CellRegistrator.swift
-//  ImagePicker
-//
-//  Created by Anna Shirokova on 14/06/2018.
-//  Copyright © 2018 Inloop. All rights reserved.
-//
+// Copyright © 2018 INLOOPX. All rights reserved.
 
 import Foundation
-
 
 extension UICollectionView {
     ///
@@ -45,7 +38,6 @@ private extension UICollectionView {
         register(nibsData: registrator.assetItemNibsData?.map { $1 })
         register(classData: registrator.assetItemClassesData?.map { $1 })
         switch (registrator.assetItemNib, registrator.assetItemClass) {
-
         case (nil, nil):
             //if user did not register all required classes/nibs - register default cells
             register(VideoAssetCell.self, forCellWithReuseIdentifier: registrator.cellIdentifierForAssetItems)

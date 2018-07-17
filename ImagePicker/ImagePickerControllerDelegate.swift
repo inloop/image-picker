@@ -1,10 +1,4 @@
-//
-//  ImagePickerControllerDelegate.swift
-//  ImagePicker
-//
-//  Created by Anna Shirokova on 13/06/2018.
-//  Copyright © 2018 INLOOPX. All rights reserved.
-//
+// Copyright © 2018 INLOOPX. All rights reserved.
 
 import Foundation
 import Photos
