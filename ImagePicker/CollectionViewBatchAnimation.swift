@@ -26,23 +26,34 @@ final class CollectionViewBatchAnimation<ObjectType> : AsynchronousOperation whe
     override func execute() {
         // If we have incremental diffs, animate them in the collection view
         collectionView.performBatchUpdates({ [unowned self] in
-            
-            // For indexes to make sense, updates must be in this order:
-            // delete, insert, reload, move
-            if let removed = self.changes.removedIndexes, removed.isEmpty == false {
-                self.collectionView.deleteItems(at: removed.map({ IndexPath(item: $0, section: self.sectionIndex) }))
-            }
-            if let inserted = changes.insertedIndexes, inserted.isEmpty == false {
-                self.collectionView.insertItems(at: inserted.map({ IndexPath(item: $0, section: self.sectionIndex) }))
-            }
-            if let changed = changes.changedIndexes, changed.isEmpty == false {
-                self.collectionView.reloadItems(at: changed.map({ IndexPath(item: $0, section: self.sectionIndex) }))
-            }
-            changes.enumerateMoves { fromIndex, toIndex in
-                self.collectionView.moveItem(at: IndexPath(item: fromIndex, section: self.sectionIndex), to: IndexPath(item: toIndex, section: self.sectionIndex))
-            }
+            self.performUpdates()
             }, completion: { finished in
                 self.completeOperation()
         })
+    }
+
+    private func performUpdates() {
+        // For indexes to make sense, updates must be in this order:
+        // delete, insert, reload, move
+        if let removed = changes.removedIndexes?.getIndexPaths(for: sectionIndex) {
+            collectionView.deleteItems(at: removed)
+        }
+        if let inserted = changes.insertedIndexes?.getIndexPaths(for: sectionIndex) {
+            collectionView.insertItems(at: inserted)
+        }
+        if let changed = changes.changedIndexes?.getIndexPaths(for: sectionIndex) {
+            collectionView.reloadItems(at: changed)
+        }
+        changes.enumerateMoves { fromIndex, toIndex in
+            self.collectionView.moveItem(at: IndexPath(item: fromIndex, section: self.sectionIndex), to: IndexPath(item: toIndex, section: self.sectionIndex))
+        }
+    }
+}
+
+private extension IndexSet {
+    func getIndexPaths(for sectionIndex: Int) -> [IndexPath]? {
+        let result = map { IndexPath(item: $0, section: sectionIndex) }
+        guard !result.isEmpty else { return nil }
+        return result
     }
 }

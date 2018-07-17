@@ -197,12 +197,11 @@ open class CameraCollectionViewCell: UICollectionViewCell {
             animationBlock()
             completionBlock?(true)
         } else {
-            UIView.animate(
-                withDuration: 0.1,
-                delay: 0,
-                options: .allowAnimatedContent,
-                animations: animationBlock,
-                completion: completionBlock)
+            UIView.animate(withDuration: 0.1,
+                           delay: 0,
+                           options: .allowAnimatedContent,
+                           animations: animationBlock,
+                           completion: completionBlock)
         }
     }
 
