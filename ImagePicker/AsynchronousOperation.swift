@@ -1,27 +1,21 @@
-//
-//  AsynchronousOperation.swift
-//  ImagePicker
-//
-//  Created by Peter Stajger on 13/04/2018.
-//  Copyright © 2018 Inloop. All rights reserved.
-//
+// Copyright © 2018 INLOOPX. All rights reserved.
 
 import Foundation
 
-///
 /// Provides primitives for wrapping Operation with asynchronous code that can
 /// be enqueued in a OperationQueue and run serially.
-///
-class AsynchronousOperation : Foundation.Operation {
+
+class AsynchronousOperation: Foundation.Operation {
     var stateFinished: Bool = false {
         willSet { willChangeValue(forKey: "isFinished") }
         didSet { didChangeValue(forKey: "isFinished") }
     }
+    
     var stateExecuting: Bool = false {
         willSet { willChangeValue(forKey: "isExecuting") }
         didSet { didChangeValue(forKey: "isExecuting") }
     }
-    
+
     override var isFinished: Bool {
         return stateFinished
     }
@@ -51,7 +45,7 @@ class AsynchronousOperation : Foundation.Operation {
         if stateExecuting {
             stateExecuting = false
         }
-        
+
         if !stateFinished {
             stateFinished = true
         }

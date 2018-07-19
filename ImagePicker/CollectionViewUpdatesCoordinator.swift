@@ -1,35 +1,24 @@
-//
-//  CollectionViewUpdatesCoordinator.swift
-//  ImagePicker
-//
-//  Created by Peter Stajger on 13/04/2018.
-//  Copyright © 2018 Inloop. All rights reserved.
-//
+// Copyright © 2018 INLOOPX. All rights reserved.
 
-import UIKit
+import Foundation
 import Photos
 
-///
 /// Makes sure that all updates are performed in a serial queue, especially batch animations. This
 /// will make sure that reloadData() will never be called durring batch updates animations, which
 /// will prevent collection view from crashing on internal incosistency.
-///
+
 final class CollectionViewUpdatesCoordinator {
-    deinit {
-        log("deinit: \(String(describing: self))")
-    }
-    
     private let collectionView: UICollectionView
-    
-    private var serialMainQueue: OperationQueue = {
-        let queue = OperationQueue()
-        queue.maxConcurrentOperationCount = 1
-        queue.underlyingQueue = DispatchQueue.main
-        return queue
-    }()
+    private var serialMainQueue = OperationQueue()
     
     init(collectionView: UICollectionView) {
         self.collectionView = collectionView
+        serialMainQueue.maxConcurrentOperationCount = 1
+        serialMainQueue.underlyingQueue = DispatchQueue.main
+    }
+    
+    deinit {
+        log("deinit: \(String(describing: self))")
     }
     
     /// Provides opportunuty to update collectionView's dataSource in underlaying queue.
@@ -43,8 +32,8 @@ final class CollectionViewUpdatesCoordinator {
             let operation = CollectionViewBatchAnimation(collectionView: collectionView, sectionIndex: inSection, changes: changes)
             serialMainQueue.addOperation(operation)
         } else {
-            serialMainQueue.addOperation { [unowned self] in
-                self.collectionView.reloadData()
+            serialMainQueue.addOperation { [weak self] in
+                self?.collectionView.reloadData()
             }
         }
     }
