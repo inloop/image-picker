@@ -1,6 +1,6 @@
 // Copyright © 2018 INLOOPX. All rights reserved.
 
-import  Photos
+import Photos
 
 extension ImagePickerController: ImagePickerDelegateDelegate {
     func imagePicker(delegate pickerDelegate: ImagePickerDelegate, didSelectActionItemAt index: Int) {
@@ -25,8 +25,8 @@ extension ImagePickerController: ImagePickerDelegateDelegate {
     func imagePicker(delegate pickerDelegate: ImagePickerDelegate, willDisplayAssetCell cell: ImagePickerAssetCell, at index: Int) {
         let theAsset = asset(at: index)
 
-        //if the cell is default cell provided by Image Picker, it's our responsibility
-        //to update the cell with the asset.
+        // If the cell is default cell provided by Image Picker, it's our responsibility
+        // To update the cell with the asset.
         if let defaultCell = cell as? VideoAssetCell {
             defaultCell.update(with: theAsset)
         }
@@ -45,14 +45,14 @@ extension ImagePickerController: ImagePickerDelegateDelegate {
     }
 
     func imagePicker(delegate: ImagePickerDelegate, didEndDisplayingCameraCell cell: CameraCollectionViewCell) {
-        //susped session only if not recording video, otherwise the recording would be stopped.
+        // Susped session only if not recording video, otherwise the recording would be stopped.
         guard !isRecordingVideo else { return }
         captureSession?.suspend()
         blurCell(cell)
     }
 
     func imagePicker(delegate: ImagePickerDelegate, didScroll scrollView: UIScrollView) {
-        //update only if the view is visible.
+        // Update only if the view is visible.
         //TODO: precaching is not enabled for now (it's laggy need to profile)
     }
 }
@@ -69,19 +69,19 @@ private extension ImagePickerController {
         cell.previewView.session = captureSession?.session
         captureSession?.previewLayer = cell.previewView.previewLayer
 
-        //when using videos preset, we are using different technique for
-        //blurring the cell content. If isVisualEffectViewUsedForBlurring is
-        //true, then UIVisualEffectView is used for blurring. In other cases
-        //we manually blur video data output frame (it's faster). Reason why
-        //we have 2 different blurring techniques is that the faster solution
-        //can not be used when we have .video preset configuration.
+        // When using videos preset, we are using different technique for
+        // blurring the cell content. If isVisualEffectViewUsedForBlurring is
+        // true, then UIVisualEffectView is used for blurring. In other cases
+        // we manually blur video data output frame (it's faster). Reason why
+        // we have 2 different blurring techniques is that the faster solution
+        // can not be used when we have .video preset configuration.
         if let config = captureSession?.presetConfiguration, config == .videos {
             cell.isVisualEffectViewUsedForBlurring = true
         }
     }
 
     func updateLivePhotos(for cell: CameraCollectionViewCell) {
-        //if cell is default LivePhotoCameraCell, we must update it based on camera config
+        // If cell is default LivePhotoCameraCell, we must update it based on camera config
         if let liveCameraCell = cell as? LivePhotoCameraCell {
             liveCameraCell.updateWithCameraMode(captureSettings.cameraMode)
         }

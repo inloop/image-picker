@@ -1,90 +1,84 @@
-//
-//  ImagePickerController.swift
-//  Image Picker
-//
-//  Created by Peter Stajger on 04/09/2017.
-//  Copyright © 2017 Inloop. All rights reserved.
-//
+// Copyright © 2018 INLOOPX. All rights reserved.
 
 import Foundation
-import UIKit
 import Photos
 
-open class ImagePickerController : UIViewController {
+open class ImagePickerController: UIViewController {
+    /// Use this object to configure layout of action, camera and asset items.
+    public var layoutConfiguration = LayoutConfiguration.default
+    
+    /// Use this to register a cell classes or nibs for each item types
+    public lazy var cellRegistrator = CellRegistrator()
+    
+    /// Use these settings to configure how the capturing should behave
+    public var captureSettings = CaptureSettings.default
+    
+    /// Get informed about user interaction and changes
+    public weak var delegate: ImagePickerControllerDelegate?
+    
+    /// Provide additional data when requested by Image Picker
+    public weak var dataSource: ImagePickerControllerDataSource?
+    
+    /// Access all currently selected images
+    public var selectedAssets: [PHAsset] {
+        let selectedIndexPaths = collectionView.indexPathsForSelectedItems ?? []
+        let selectedAssets = selectedIndexPaths.compactMap { indexPath in
+            return asset(at: indexPath.row)
+        }
+        return selectedAssets
+    }
+    
+    /// Fetch result of assets that will be used for picking.
+    ///
+    /// If you leave this nil or return nil from the block, assets from recently
+    /// added smart album will be used.
+    public var assetsFetchResultBlock: (() -> PHFetchResult<PHAsset>?)?
+
+    /// A collection view that is used for displaying content.
+    public var collectionView: UICollectionView! {
+        return imagePickerView.collectionView
+    }
+    
+    private var collectionViewCoordinator: CollectionViewUpdatesCoordinator!
+    private var imagePickerView: ImagePickerView! {
+        return view as! ImagePickerView
+    }
+    
+    /// View is used when there is a need for an overlay view over whole image picker
+    /// view hierarchy. For example when there is no permissions to photo library.
+    private var overlayView: UIView?
+    
+    private var collectionViewDataSource = ImagePickerDataSource(assetsModel: ImagePickerAssetModel())
+    private var collectionViewDelegate = ImagePickerDelegate()
+    
+    var captureSession: CaptureSession?
+    
     deinit {
         PHPhotoLibrary.shared().unregisterChangeObserver(self)
         captureSession?.suspend()
         log("deinit: \(String(describing: self))")
     }
     
-    // MARK: - Public API
-
-    ///
-    /// Use this object to configure layout of action, camera and asset items.
-    ///
-    public var layoutConfiguration = LayoutConfiguration.default
-    
-    ///
-    /// Use this to register a cell classes or nibs for each item types
-    ///
-    public lazy var cellRegistrator = CellRegistrator()
-    
-    ///
-    /// Use these settings to configure how the capturing should behave
-    ///
-    public var captureSettings = CaptureSettings.default
-    
-    ///
-    /// Get informed about user interaction and changes
-    ///
-    public weak var delegate: ImagePickerControllerDelegate?
-    
-    ///
-    /// Provide additional data when requested by Image Picker
-    ///
-    public weak var dataSource: ImagePickerControllerDataSource?
-    
-    ///
     /// Programatically select asset.
-    ///
     public func selectAsset(at index: Int, animated: Bool, scrollPosition: UICollectionViewScrollPosition) {
         let path = IndexPath(item: index, section: layoutConfiguration.sectionIndexForAssets)
         collectionView.selectItem(at: path, animated: animated, scrollPosition: scrollPosition)
     }
     
-    ///
     /// Programatically deselect asset.
-    ///
     public func deselectAsset(at index: Int, animated: Bool) {
         let path = IndexPath(item: index, section: layoutConfiguration.sectionIndexForAssets)
         collectionView.deselectItem(at: path, animated: animated)
     }
     
-    ///
     /// Programatically deselect all selected assets.
-    ///
     public func deselectAllAssets(animated: Bool) {
         for selectedPath in collectionView.indexPathsForSelectedItems ?? [] {
             collectionView.deselectItem(at: selectedPath, animated: animated)
         }
     }
     
-    ///
-    /// Access all currently selected images
-    ///
-    public var selectedAssets: [PHAsset] {
-        get {
-            let selectedIndexPaths = collectionView.indexPathsForSelectedItems ?? []
-            let selectedAssets = selectedIndexPaths.compactMap { indexPath in
-                return asset(at: indexPath.row)
-            }
-            return selectedAssets
-        }
-    }
-    
-    ///
     /// Returns an array of assets at index set. An exception will be thrown if it fails
-    ///
     public func assets(at indexes: IndexSet) -> [PHAsset] {
         guard let fetchResult = collectionViewDataSource.assetsModel.fetchResult else {
             fatalError("Accessing assets at indexes \(indexes) failed")
@@ -92,62 +86,30 @@ open class ImagePickerController : UIViewController {
         return fetchResult.objects(at: indexes)
     }
     
-    ///
     /// Returns an asset at index. If there is no asset at the index, an exception will be thrown.
-    ///
     public func asset(at index: Int) -> PHAsset {
         guard let fetchResult = collectionViewDataSource.assetsModel.fetchResult else {
             fatalError("Accessing asset at index \(index) failed")
         }
         return fetchResult.object(at: index)
     }
-    
-    ///
-    /// Fetch result of assets that will be used for picking.
-    ///
-    /// If you leave this nil or return nil from the block, assets from recently
-    /// added smart album will be used.
-    ///
-    public var assetsFetchResultBlock: (() -> PHFetchResult<PHAsset>?)?
-    
-    ///
+
     /// Global appearance proxy object. Use this object to set appearance
     /// for all instances of Image Picker. If you wish to set an appearance
     /// on instances use corresponding instance method.
-    ///
     public static func appearance() -> Appearance {
         return classAppearanceProxy
     }
     
-    ///
     /// Instance appearance proxy object. Use this object to set appearance
     /// for this particular instance of Image Picker. This has precedence over
     /// global appearance.
-    ///
     public func appearance() -> Appearance {
         if instanceAppearanceProxy == nil {
             instanceAppearanceProxy = Appearance()
         }
         return instanceAppearanceProxy!
     }
-    
-    ///
-    /// A collection view that is used for displaying content.
-    ///
-    public var collectionView: UICollectionView! {
-        return imagePickerView.collectionView
-    }
-    
-    // MARK: - Private Methods
-    private var collectionViewCoordinator: CollectionViewUpdatesCoordinator!
-    private var imagePickerView: ImagePickerView! {
-        return view as! ImagePickerView
-    }
-    
-    private var collectionViewDataSource = ImagePickerDataSource(assetsModel: ImagePickerAssetModel())
-    private var collectionViewDelegate = ImagePickerDelegate()
-    
-    var captureSession: CaptureSession?
     
     private func updateItemSize() {
         guard let layout = self.collectionViewDelegate.layout else { return }
@@ -168,10 +130,6 @@ open class ImagePickerController : UIViewController {
             collectionView.contentInset.right = view.safeAreaInsets.right
         }
     }
-    
-    /// View is used when there is a need for an overlay view over whole image picker
-    /// view hierarchy. For example when there is no permissions to photo library.
-    private var overlayView: UIView?
     
     /// Reload collection view layout/data based on authorization status of photo library
     private func reloadData(basedOnAuthorizationStatus status: PHAuthorizationStatus) {
@@ -200,10 +158,10 @@ open class ImagePickerController : UIViewController {
         cameraCell.authorizationStatus = status
     }
     
-    ///appearance object for global instances
+    /// Appearance object for global instances
     static let classAppearanceProxy = Appearance()
     
-    ///appearance object for an instance
+    /// Appearance object for an instance
     var instanceAppearanceProxy: Appearance?
     
     // MARK: - View Lifecycle
@@ -242,11 +200,11 @@ open class ImagePickerController : UIViewController {
         collectionView.collectionViewLayout.invalidateLayout()
     }
     
-    //this will make sure that collection view layout is reloaded when interface rotates/changes
+    // This will make sure that collection view layout is reloaded when interface rotates/changes
     open override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
         
-        //update capture session with new interface orientation
+        // Update capture session with new interface orientation
         captureSession?.updateVideoOrientation(new: UIApplication.shared.statusBarOrientation.captureVideoOrientation)
 
         coordinator.animate(alongsideTransition: { _ in
@@ -256,7 +214,6 @@ open class ImagePickerController : UIViewController {
         })
     }
     
-    // MARK: Private Methods
     @objc private func tapGestureRecognized(sender: UIGestureRecognizer) {
         guard sender.state == .ended else { return }
         guard let cameraCell = collectionView.cameraCell(layout: layoutConfiguration) else { return }
@@ -295,7 +252,7 @@ private extension ImagePickerController {
             collectionView.contentInsetAdjustmentBehavior = .never
         }
 
-        //apply cell registrator to collection view
+        // Apply cell registrator to collection view
         collectionView.apply(registrator: cellRegistrator, cameraMode: captureSettings.cameraMode)
     }
 
@@ -330,11 +287,11 @@ private extension ImagePickerController {
     }
 
     func configureCameraRelatedItems() {
-        //register for photo library updates - this is needed when changing permissions to photo library
-        //TODO: this is expensive (loading library for the first time)
+        // Register for photo library updates - this is needed when changing permissions to photo library
+        // This is expensive (loading library for the first time)
         PHPhotoLibrary.shared().register(self)
 
-        //determine auth satus and based on that reload UI
+        // Determine auth satus and based on that reload UI
         reloadData(basedOnAuthorizationStatus: PHPhotoLibrary.authorizationStatus())
 
         captureSession?.prepare()
@@ -347,14 +304,14 @@ extension ImagePickerController: PHPhotoLibraryChangeObserver {
         guard let fetchResult = collectionViewDataSource.assetsModel.fetchResult, let changes = changeInstance.changeDetails(for: fetchResult) else { return }
         
         collectionViewCoordinator.performDataSourceUpdate { [unowned self] in
-            //update old fetch result with these updates
+            // Update old fetch result with these updates
             self.collectionViewDataSource.assetsModel.fetchResult = changes.fetchResultAfterChanges
             
-            //update layout model because it changed
+            // Update layout model because it changed
             self.collectionViewDataSource.layoutModel = LayoutModel(configuration: self.layoutConfiguration, assets: self.collectionViewDataSource.assetsModel.fetchResult.count)
         }
         
-        //perform update animations
+        // Perform update animations
         collectionViewCoordinator.performChanges(changes, inSection: layoutConfiguration.sectionIndexForAssets)
     }
 }
@@ -411,7 +368,7 @@ extension ImagePickerController: CaptureSessionDelegate {
 }
 
 // MARK: - CaptureSessionPhotoCapturingDelegate
-extension ImagePickerController : CaptureSessionPhotoCapturingDelegate {
+extension ImagePickerController: CaptureSessionPhotoCapturingDelegate {
     func captureSession(_ session: CaptureSession, didCapturePhotoData: Data, with settings: AVCapturePhotoSettings) {
         log("did capture photo \(settings.uniqueID)")
         delegate?.imagePicker(controller: self, didTake: UIImage(data: didCapturePhotoData)!)
@@ -434,7 +391,7 @@ extension ImagePickerController : CaptureSessionPhotoCapturingDelegate {
 }
 
 // MARK: - CaptureSessionVideoRecordingDelegate
-extension ImagePickerController : CaptureSessionVideoRecordingDelegate {
+extension ImagePickerController: CaptureSessionVideoRecordingDelegate {
     func captureSessionDidBecomeReadyForVideoRecording(_ session: CaptureSession) {
         log("ready for video recording")
         guard let cameraCell = collectionView.cameraCell(layout: layoutConfiguration) else { return }
