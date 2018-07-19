@@ -3,10 +3,8 @@
 import Foundation
 
 extension UICollectionView {
-    ///
     /// Used by datasource when registering all cells to the collection view. If user
     /// did not register custom cells, this method registers default cells
-    ///
     func apply(registrator: CellRegistrator, cameraMode: CaptureSettings.CameraMode) {
         registerActionItems(registrator: registrator)
         registerCameraItem(registrator: registrator, cameraMode: cameraMode)
@@ -14,7 +12,6 @@ extension UICollectionView {
     }
 }
 
-// MARK: - Helper private methods
 private extension UICollectionView {
     func registerActionItems(registrator: CellRegistrator) {
         if registrator.hasUserRegisteredActionCell {
@@ -39,7 +36,7 @@ private extension UICollectionView {
         register(classData: registrator.assetItemClassesData?.map { $1 })
         switch (registrator.assetItemNib, registrator.assetItemClass) {
         case (nil, nil):
-            //if user did not register all required classes/nibs - register default cells
+            // If user did not register all required classes/nibs - register default cells
             register(VideoAssetCell.self, forCellWithReuseIdentifier: registrator.cellIdentifierForAssetItems)
         case (let nib, nil):
             register(nib, forCellWithReuseIdentifier: registrator.cellIdentifierForAssetItems)
@@ -70,9 +67,7 @@ private extension UICollectionView {
         }
     }
 
-    ///
     /// Helper func that takes nib,cellid pair and registers them on a collection view
-    ///
     func register(nibsData: [(UINib, String)]?) {
         guard let nibsData = nibsData else { return }
         for (nib, cellIdentifier) in nibsData {
@@ -80,9 +75,7 @@ private extension UICollectionView {
         }
     }
 
-    ///
     /// Helper func that takes nib,cellid pair and registers them on a collection view
-    ///
     func register(classData: [(UICollectionViewCell.Type, String)]?) {
         guard let classData = classData else { return }
         for (cellType, cellIdentifier) in classData {
