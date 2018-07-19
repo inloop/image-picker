@@ -1,6 +1,5 @@
 // Copyright © 2018 INLOOPX. All rights reserved.
 
-import Foundation
 import Photos
 
 /// Wraps collectionView's `performBatchUpdates` block into AsynchronousOperation.
