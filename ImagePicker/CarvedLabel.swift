@@ -86,7 +86,7 @@ final class CarvedLabel: UIView {
     }
     
     private func drawText(_ rect: CGRect) {
-        guard let context = UIGraphicsGetCurrentContext(), text?.count ?? 0 > 0 else { return }
+        guard let context = UIGraphicsGetCurrentContext(), let textCount = text?.count, textCount > 0 else { return }
         
         let stringSize = attributedString.size()
         let xOrigin: CGFloat = max(horizontalInset, (rect.width - stringSize.width) / 2)

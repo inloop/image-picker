@@ -1,6 +1,5 @@
 // Copyright © 2018 INLOOPX. All rights reserved.
 
-import Foundation
 import Photos
 
 /// A default collection view cell that represents asset item. It supports:

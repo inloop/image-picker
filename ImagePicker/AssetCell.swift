@@ -50,12 +50,10 @@ class AssetCell: UICollectionViewCell, ImagePickerAssetCell {
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
         
-        selectedImageView.frame = CGRect(x: 0, y: 0, width: 31, height: 31)
+        selectedImageView.frame = CGRect(origin: .zero, size: CGSize(width: 31, height: 31))
         selectedImageView.isHidden = true
         
         contentView.addSubview(imageView)
         contentView.addSubview(selectedImageView)
     }
 }
-
-
