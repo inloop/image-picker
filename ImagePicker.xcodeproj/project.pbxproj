@@ -36,7 +36,7 @@
 		427271701FA1D304008AC2B4 /* CarvedLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4272716F1FA1D304008AC2B4 /* CarvedLabel.swift */; };
 		427925F31F9636D700B6D55F /* StationaryButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 427925F21F9636D700B6D55F /* StationaryButton.swift */; };
 		427925F51F96381400B6D55F /* ShutterButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 427925F41F96381400B6D55F /* ShutterButton.swift */; };
-		427925F71F96388000B6D55F /* RecordButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 427925F61F96388000B6D55F /* RecordButton.swift */; };
+		427925F71F96388000B6D55F /* RecordVideoButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 427925F61F96388000B6D55F /* RecordVideoButton.swift */; };
 		427925FD1F963A8D00B6D55F /* VideoCameraCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 427925FB1F963A8C00B6D55F /* VideoCameraCell.swift */; };
 		427925FE1F963B2800B6D55F /* VideoCameraCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 427925FC1F963A8C00B6D55F /* VideoCameraCell.xib */; };
 		427926011F963E9C00B6D55F /* LivePhotoCameraCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 427925FF1F963E9B00B6D55F /* LivePhotoCameraCell.swift */; };
@@ -60,6 +60,9 @@
 		42EDD4161F712B2A00EAD2F5 /* Miscellaneous.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42EDD4151F712B2A00EAD2F5 /* Miscellaneous.swift */; };
 		42EDD41A1F716F6300EAD2F5 /* PhotoCaptureDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42EDD4171F7164FB00EAD2F5 /* PhotoCaptureDelegate.swift */; };
 		42F7D8011F7A5B72009D378A /* Appearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42F7D8001F7A5B71009D378A /* Appearance.swift */; };
+		51636637210098D6006FC981 /* CheckView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51636636210098D6006FC981 /* CheckView.swift */; };
+		51D4B1D621007F75000F005A /* ImagePickerAssetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51D4B1D521007F75000F005A /* ImagePickerAssetCell.swift */; };
+		51D4B1D8210080AD000F005A /* VideoAssetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51D4B1D7210080AD000F005A /* VideoAssetCell.swift */; };
 		85D6EA7D20D2D0C200B63486 /* CaptureSessionProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85D6EA7C20D2D0C200B63486 /* CaptureSessionProtocols.swift */; };
 		85D6EA8120D573D200B63486 /* AVCaptureDevice+Default.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85D6EA8020D573D200B63486 /* AVCaptureDevice+Default.swift */; };
 		85D6EA8320D573FF00B63486 /* AVCapturePhotoSettings+Default.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85D6EA8220D573FF00B63486 /* AVCapturePhotoSettings+Default.swift */; };
@@ -130,7 +133,7 @@
 		4272716F1FA1D304008AC2B4 /* CarvedLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarvedLabel.swift; sourceTree = "<group>"; };
 		427925F21F9636D700B6D55F /* StationaryButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StationaryButton.swift; sourceTree = "<group>"; };
 		427925F41F96381400B6D55F /* ShutterButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShutterButton.swift; sourceTree = "<group>"; };
-		427925F61F96388000B6D55F /* RecordButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordButton.swift; sourceTree = "<group>"; };
+		427925F61F96388000B6D55F /* RecordVideoButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordVideoButton.swift; sourceTree = "<group>"; };
 		427925FB1F963A8C00B6D55F /* VideoCameraCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCameraCell.swift; sourceTree = "<group>"; };
 		427925FC1F963A8C00B6D55F /* VideoCameraCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = VideoCameraCell.xib; sourceTree = "<group>"; };
 		427925FF1F963E9B00B6D55F /* LivePhotoCameraCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LivePhotoCameraCell.swift; sourceTree = "<group>"; };
@@ -153,6 +156,9 @@
 		42EDD4171F7164FB00EAD2F5 /* PhotoCaptureDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCaptureDelegate.swift; sourceTree = "<group>"; };
 		42EDD41B1F71727500EAD2F5 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		42F7D8001F7A5B71009D378A /* Appearance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Appearance.swift; sourceTree = "<group>"; };
+		51636636210098D6006FC981 /* CheckView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckView.swift; sourceTree = "<group>"; };
+		51D4B1D521007F75000F005A /* ImagePickerAssetCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePickerAssetCell.swift; sourceTree = "<group>"; };
+		51D4B1D7210080AD000F005A /* VideoAssetCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoAssetCell.swift; sourceTree = "<group>"; };
 		85D6EA7C20D2D0C200B63486 /* CaptureSessionProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureSessionProtocols.swift; sourceTree = "<group>"; };
 		85D6EA8020D573D200B63486 /* AVCaptureDevice+Default.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AVCaptureDevice+Default.swift"; sourceTree = "<group>"; };
 		85D6EA8220D573FF00B63486 /* AVCapturePhotoSettings+Default.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AVCapturePhotoSettings+Default.swift"; sourceTree = "<group>"; };
@@ -267,12 +273,12 @@
 		42990DBD1FA07A6C001658C4 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				51D4B1D421007E7F000F005A /* Assets */,
 				425777511F98D10F000824F0 /* ActionCell.swift */,
 				425777521F98D10F000824F0 /* ActionCell.xib */,
-				42D0979B1F7BF6B300A66E33 /* AssetCell.swift */,
 				427925FF1F963E9B00B6D55F /* LivePhotoCameraCell.swift */,
 				427926001F963E9C00B6D55F /* LivePhotoCameraCell.xib */,
-				427925F61F96388000B6D55F /* RecordButton.swift */,
+				427925F61F96388000B6D55F /* RecordVideoButton.swift */,
 				42990DBE1FA07AF7001658C4 /* RecordDurationLabel.swift */,
 				427925F41F96381400B6D55F /* ShutterButton.swift */,
 				427925F21F9636D700B6D55F /* StationaryButton.swift */,
@@ -317,6 +323,17 @@
 				42311FFB1F73DBBE00B1AEB4 /* VideoOuptutSampleBufferDelegate.swift */,
 			);
 			name = Media;
+			sourceTree = "<group>";
+		};
+		51D4B1D421007E7F000F005A /* Assets */ = {
+			isa = PBXGroup;
+			children = (
+				42D0979B1F7BF6B300A66E33 /* AssetCell.swift */,
+				51D4B1D7210080AD000F005A /* VideoAssetCell.swift */,
+				51D4B1D521007F75000F005A /* ImagePickerAssetCell.swift */,
+				51636636210098D6006FC981 /* CheckView.swift */,
+			);
+			name = Assets;
 			sourceTree = "<group>";
 		};
 		85F70C3120D1414F00DC3997 /* Protocols */ = {
@@ -388,7 +405,7 @@
 			attributes = {
 				LastSwiftUpdateCheck = 0830;
 				LastUpgradeCheck = 0930;
-				ORGANIZATIONNAME = Inloop;
+				ORGANIZATIONNAME = INLOOPX;
 				TargetAttributes = {
 					420C23FB1F5D82C6008935D4 = {
 						CreatedOnToolsVersion = 8.3.3;
@@ -472,6 +489,7 @@
 				421442631F6014B3006BA45A /* CellRegistrator.swift in Sources */,
 				85F70C2D20D1393100DC3997 /* ImagePickerControllerDelegate.swift in Sources */,
 				429CCBD22080D6620050078B /* CollectionViewBatchAnimation.swift in Sources */,
+				51D4B1D621007F75000F005A /* ImagePickerAssetCell.swift in Sources */,
 				85D6EA7D20D2D0C200B63486 /* CaptureSessionProtocols.swift in Sources */,
 				429CCBD42080D6AE0050078B /* CollectionViewUpdatesCoordinator.swift in Sources */,
 				420C24361F5ED4AB008935D4 /* ImagePickerLayout.swift in Sources */,
@@ -482,6 +500,7 @@
 				42990DBF1FA07AF7001658C4 /* RecordDurationLabel.swift in Sources */,
 				42EDD41A1F716F6300EAD2F5 /* PhotoCaptureDelegate.swift in Sources */,
 				420C24341F5DA022008935D4 /* ImagePickerDelegate.swift in Sources */,
+				51636637210098D6006FC981 /* CheckView.swift in Sources */,
 				420C24281F5D925A008935D4 /* ImagePickerDataSource.swift in Sources */,
 				4214426F1F604498006BA45A /* ImagePickerSelectionPolicy.swift in Sources */,
 				420C243F1F5EEA19008935D4 /* LayoutModel.swift in Sources */,
@@ -508,8 +527,9 @@
 				42B296AB1FB1CC7400590260 /* ImagePickerView.swift in Sources */,
 				420C24261F5D8393008935D4 /* ImagePickerController.swift in Sources */,
 				42EDD4051F7125C700EAD2F5 /* CaptureSession.swift in Sources */,
-				427925F71F96388000B6D55F /* RecordButton.swift in Sources */,
+				427925F71F96388000B6D55F /* RecordVideoButton.swift in Sources */,
 				427925F31F9636D700B6D55F /* StationaryButton.swift in Sources */,
+				51D4B1D8210080AD000F005A /* VideoAssetCell.swift in Sources */,
 				425777531F98D110000824F0 /* ActionCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

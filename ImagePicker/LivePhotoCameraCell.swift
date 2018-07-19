@@ -1,16 +1,8 @@
-//
-//  LivePhotoCameraCell.swift
-//  ExampleApp
-//
-//  Created by Peter Stajger on 25/09/2017.
-//  Copyright © 2017 Inloop. All rights reserved.
-//
+// Copyright © 2018 INLOOPX. All rights reserved.
 
 import Foundation
-import UIKit
 
-class LivePhotoCameraCell : CameraCollectionViewCell {
-    
+final class LivePhotoCameraCell: CameraCollectionViewCell {
     @IBOutlet weak var snapButton: UIButton!
     @IBOutlet weak var enableLivePhotosButton: StationaryButton!
     @IBOutlet weak var liveIndicator: CarvedLabel!
@@ -20,15 +12,14 @@ class LivePhotoCameraCell : CameraCollectionViewCell {
         liveIndicator.alpha = 0
         liveIndicator.tintColor = UIColor(red: 245/255, green: 203/255, blue: 47/255, alpha: 1)
         
-        enableLivePhotosButton.unselectedTintColor = UIColor.white
+        enableLivePhotosButton.unselectedTintColor = .white
         enableLivePhotosButton.selectedTintColor = UIColor(red: 245/255, green: 203/255, blue: 47/255, alpha: 1)
     }
     
     @IBAction func snapButtonTapped(_ sender: UIButton) {
         if enableLivePhotosButton.isSelected {
             takeLivePhoto()
-        }
-        else {
+        } else {
             takePicture()
         }
     }
@@ -50,15 +41,15 @@ class LivePhotoCameraCell : CameraCollectionViewCell {
         }
     }
     
-    // MARK: Override Methods
-    
     override func updateLivePhotoStatus(isProcessing: Bool, shouldAnimate: Bool) {
-        
-        let updates: () -> Void = {
+        let updates = {
             self.liveIndicator.alpha = isProcessing ? 1 : 0
         }
         
-        shouldAnimate ? UIView.animate(withDuration: 0.25, animations: updates) : updates()
+        if shouldAnimate {
+            UIView.animate(withDuration: 0.25, animations: updates)
+        } else {
+            updates()
+        }
     }
-
 }

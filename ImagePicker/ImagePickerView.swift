@@ -1,15 +1,7 @@
-//
-//  ImagePickerView.swift
-//  ImagePicker
-//
-//  Created by Peter Stajger on 07/11/2017.
-//  Copyright © 2017 Inloop. All rights reserved.
-//
+// Copyright © 2018 INLOOPX. All rights reserved.
 
-import UIKit
+import Foundation
 
-final class ImagePickerView : UIView {
-    
+final class ImagePickerView: UIView {
     @IBOutlet weak var collectionView: UICollectionView!
-    
 }
