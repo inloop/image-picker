@@ -1,13 +1,6 @@
-//
-//  Logger.swift
-//  ImagePicker
-//
-//  Created by Peter Stajger on 19/09/2017.
-//  Copyright © 2017 Inloop. All rights reserved.
-//
+// Copyright © 2018 INLOOPX. All rights reserved.
 
 import Foundation
-import AVFoundation
 
 func log(_ message: String) {
     #if DEBUG
@@ -16,17 +9,14 @@ func log(_ message: String) {
 }
 
 extension UICollectionView {
-    
     func indexPathsForElements(in rect: CGRect) -> [IndexPath] {
         let allLayoutAttributes = collectionViewLayout.layoutAttributesForElements(in: rect)!
         let paths = allLayoutAttributes.map { $0.indexPath }
         return paths
     }
-    
 }
 
 extension UIInterfaceOrientation : CustomDebugStringConvertible {
-    
     public var debugDescription: String {
         switch self {
         case .unknown: return "unknown"
@@ -36,7 +26,6 @@ extension UIInterfaceOrientation : CustomDebugStringConvertible {
         case .landscapeLeft: return "landscape left"
         }
     }
-    
 }
 
 func differencesBetweenRects(_ old: CGRect, _ new: CGRect, _ scrollDirection: UICollectionViewScrollDirection) -> (added: [CGRect], removed: [CGRect]) {
@@ -63,8 +52,7 @@ func differencesBetweenRectsVertical(_ old: CGRect, _ new: CGRect) -> (added: [C
             removed += [CGRect(x: new.origin.x, y: old.minY, width: new.width, height: new.minY - old.minY)]
         }
         return (added, removed)
-    }
-    else {
+    } else {
         return ([new], [old])
     }
 }
@@ -86,8 +74,7 @@ func differencesBetweenRectsHorizontal(_ old: CGRect, _ new: CGRect) -> (added: 
             removed += [CGRect(x: old.minX, y: old.origin.y, width: new.maxX - old.maxX, height: old.height)]
         }
         return (added, removed)
-    }
-    else {
+    } else {
         return ([new], [old])
     }
 }

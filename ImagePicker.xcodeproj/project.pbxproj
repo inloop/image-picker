@@ -227,11 +227,11 @@
 		420C24171F5D82F9008935D4 /* ImagePicker */ = {
 			isa = PBXGroup;
 			children = (
-				420C24181F5D82F9008935D4 /* ImagePicker.h */,
 				42887C072080D5D200194155 /* Operations */,
 				42D7036F1F7909100057D557 /* Public */,
 				42D703701F790A3F0057D557 /* Media */,
 				42990DBD1FA07A6C001658C4 /* Views */,
+				425BEC841F7D351A0091D008 /* Assets.xcassets */,
 				420C24351F5ED4AA008935D4 /* ImagePickerLayout.swift */,
 				429BFDA91F68161D00029440 /* ImagePickerAssetModel.swift */,
 				420C24271F5D925A008935D4 /* ImagePickerDataSource.swift */,
@@ -239,7 +239,7 @@
 				420C243E1F5EEA19008935D4 /* LayoutModel.swift */,
 				4214426E1F604498006BA45A /* ImagePickerSelectionPolicy.swift */,
 				42EDD4151F712B2A00EAD2F5 /* Miscellaneous.swift */,
-				425BEC841F7D351A0091D008 /* Assets.xcassets */,
+				420C24181F5D82F9008935D4 /* ImagePicker.h */,
 				42D097981F7BD6E100A66E33 /* UIImageEffects.h */,
 				42D097971F7BD6E100A66E33 /* UIImageEffects.m */,
 				420C24191F5D82F9008935D4 /* Info.plist */,
