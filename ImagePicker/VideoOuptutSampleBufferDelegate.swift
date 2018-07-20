@@ -1,10 +1,4 @@
-//
-//  VideoDataOuptutSampleBufferDelegate.swift
-//  ImagePicker
-//
-//  Created by Peter Stajger on 21/09/2017.
-//  Copyright © 2017 Inloop. All rights reserved.
-//
+// Copyright © 2018 INLOOPX. All rights reserved.
 
 import Foundation
 import AVFoundation

@@ -1,10 +1,4 @@
-//
-//  UIInterfaceOrientation+Video.swift
-//  ImagePicker
-//
-//  Created by Anna Shirokova on 16/06/2018.
-//  Copyright © 2018 Inloop. All rights reserved.
-//
+// Copyright © 2018 INLOOPX. All rights reserved.
 
 import AVFoundation
 
