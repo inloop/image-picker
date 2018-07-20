@@ -100,18 +100,8 @@ final class ImagePickerLayout {
         // For iphone in landscape we need different ratio
         if traitCollection.userInterfaceIdiom == .phone {
             switch (traitCollection.horizontalSizeClass, traitCollection.verticalSizeClass) {
-            // Iphones in landscape
-            case (.unspecified, .compact):
-                fallthrough
-                
-            // Iphones+ in landscape
-            case (.regular, .compact):
-                fallthrough
-                
-            // Iphones in landscape except iphone +
-            case (.compact, .compact):
+            case (.compact, .compact), (.unspecified, .compact), (.regular, .compact):
                 ratio = 1 / ratio
-                
             default: break
             }
         }

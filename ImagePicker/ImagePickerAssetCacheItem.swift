@@ -45,24 +45,7 @@ final class ImagePickerAssetCacheItem {
         }
         
         // The preheat window is twice the height of the visible rect.
-        let visibleRect = CGRect(origin: collectionView.contentOffset, size: collectionView.bounds.size)
-        var preheatRect: CGRect
-        
-        switch layout.scrollDirection {
-        case .vertical:
-            preheatRect = visibleRect.insetBy(dx: 0, dy: -0.75 * visibleRect.height)
-            
-            // Update only if the visible area is significantly different from the last preheated area.
-            let delta = abs(preheatRect.midY - previousPreheatRect.midY)
-            guard delta > collectionView.bounds.height / 3 else { return }
-            
-        case .horizontal:
-            preheatRect = visibleRect.insetBy(dx: -0.75 * visibleRect.width, dy: 0)
-            
-            // Update only if the visible area is significantly different from the last preheated area.
-            let delta = abs(preheatRect.midX - previousPreheatRect.midX)
-            guard delta > collectionView.bounds.width / 3 else { return }
-        }
+        guard let preheatRect = createPreheatRect(scrollDirection: layout.scrollDirection, collectionView: collectionView) else { return }
         
         // Compute the assets to start caching and to stop caching.
         let (addedRects, removedRects) = differencesBetweenRects(previousPreheatRect, preheatRect, layout.scrollDirection)
@@ -82,5 +65,26 @@ final class ImagePickerAssetCacheItem {
         
         // Store the preheat rect to compare against in the future.
         previousPreheatRect = preheatRect
+    }
+    
+    private func createPreheatRect(scrollDirection: UICollectionViewScrollDirection, collectionView: UICollectionView) -> CGRect? {
+        let visibleRect = CGRect(origin: collectionView.contentOffset, size: collectionView.bounds.size)
+        let preheatRect: CGRect
+        switch scrollDirection {
+        case .vertical:
+            preheatRect = visibleRect.insetBy(dx: 0, dy: -0.75 * visibleRect.height)
+            
+            // Update only if the visible area is significantly different from the last preheated area.
+            let delta = abs(preheatRect.midY - previousPreheatRect.midY)
+            guard delta > collectionView.bounds.height / 3 else { return nil }
+            
+        case .horizontal:
+            preheatRect = visibleRect.insetBy(dx: -0.75 * visibleRect.width, dy: 0)
+            
+            // Update only if the visible area is significantly different from the last preheated area.
+            let delta = abs(preheatRect.midX - previousPreheatRect.midX)
+            guard delta > collectionView.bounds.width / 3 else { return nil }
+        }
+        return preheatRect
     }
 }
