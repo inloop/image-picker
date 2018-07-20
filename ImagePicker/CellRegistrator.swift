@@ -19,7 +19,7 @@ public final class CellRegistrator {
     var cameraItemNib: UINib?
     var cameraItemClass: UICollectionViewCell.Type?
     
-    var assetItemNibsData: [PHAssetMediaType: (UINib, String)]?
+    var assetItemNibsData: [PHAssetMediaType: (nib: UINib, identifier: String)]?
     var assetItemClassesData: [PHAssetMediaType: (UICollectionViewCell.Type, String)]?
     
     // We use these if there is no asset media type specified
@@ -140,6 +140,6 @@ public final class CellRegistrator {
     }
     
     func cellIdentifier(forAsset type: PHAssetMediaType) -> String? {
-        return assetItemNibsData?[type]?.1 ?? assetItemClassesData?[type]?.1
+        return assetItemNibsData?[type]?.identifier ?? assetItemClassesData?[type]?.identifier
     }
 }

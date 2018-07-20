@@ -45,7 +45,7 @@ extension ImagePickerController: ImagePickerDelegateDelegate {
     }
 
     func imagePicker(delegate: ImagePickerDelegate, didEndDisplayingCameraCell cell: CameraCollectionViewCell) {
-        // Susped session only if not recording video, otherwise the recording would be stopped.
+        // Suspend session only if not recording video, otherwise the recording would be stopped.
         guard !isRecordingVideo else { return }
         captureSession?.suspend()
         blurCell(cell)
