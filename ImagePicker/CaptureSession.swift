@@ -749,22 +749,22 @@ private extension CaptureSession {
 
     func processStopVideoCapturing(delegate: VideoCaptureDelegate, outputURL: URL) {
         removeReferenceToVideoCaptureDelegate()
-        DispatchQueue.main.async { [weak self] in
+        DispatchQueue.main.async {
             if delegate.isBeingCancelled {
-                self?.videoRecordingDelegate?.captureSessionDidCancelVideoRecording(self!)
+                self.videoRecordingDelegate?.captureSessionDidCancelVideoRecording(self)
             } else {
-                self?.videoRecordingDelegate?.captureSessionDid(self!, didFinishVideoRecording: outputURL)
+                self.videoRecordingDelegate?.captureSessionDid(self, didFinishVideoRecording: outputURL)
             }
         }
     }
 
     func processFailVideoCapturing(delegate: VideoCaptureDelegate, outputURL: URL, error: Error) {
         removeReferenceToVideoCaptureDelegate()
-        DispatchQueue.main.async { [weak self] in
+        DispatchQueue.main.async {
             if delegate.recordingWasInterrupted {
-                self?.videoRecordingDelegate?.captureSessionDid(self!, didInterruptVideoRecording: outputURL, reason: error)
+                self.videoRecordingDelegate?.captureSessionDid(self, didInterruptVideoRecording: outputURL, reason: error)
             } else {
-                self?.videoRecordingDelegate?.captureSessionDid(self!, didFailVideoRecording: error)
+                self.videoRecordingDelegate?.captureSessionDid(self, didFailVideoRecording: error)
             }
         }
     }
