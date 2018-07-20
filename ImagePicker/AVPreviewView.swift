@@ -1,31 +1,17 @@
-//
-//  AVPreviewView.swift
-//  Image Picker
-//
-//  Created by Peter Stajger on 27/03/17.
-//  Copyright © 2017 Peter Stajger. All rights reserved.
-//
+// Copyright © 2018 INLOOPX. All rights reserved.
 
-import Foundation
-import UIKit
 import AVFoundation
 
-enum VideoDisplayMode {
-    /// Preserve aspect ratio, fit within layer bounds.
-    case aspectFit
-    /// Preserve aspect ratio, fill view bounds.
-    case aspectFill
-    ///Stretch to fill layer bounds
-    case resize
-}
-
-///
 /// A view whose layer is AVCaptureVideoPreviewLayer so it's used for previewing
 /// output from a capture session.
-///
 final class AVPreviewView: UIView {
-    deinit {
-        log("deinit: \(String(describing: self))")
+    enum VideoDisplayMode {
+        /// Preserve aspect ratio, fit within layer bounds.
+        case aspectFit
+        /// Preserve aspect ratio, fill view bounds.
+        case aspectFill
+        ///Stretch to fill layer bounds
+        case resize
     }
     
     var previewLayer: AVCaptureVideoPreviewLayer {
@@ -58,7 +44,10 @@ final class AVPreviewView: UIView {
         applyVideoDisplayMode()
     }
     
-    // MARK: Private Methods
+    deinit {
+        log("deinit: \(String(describing: self))")
+    }
+    
     private func applyVideoDisplayMode() {
         switch displayMode {
         case .aspectFill: previewLayer.videoGravity = .resizeAspectFill
