@@ -4,7 +4,7 @@ import Photos
 
 /// Model that is used when accessing an caching PHAsset objects
 
-final class ImagePickerAssetModel {
+final class ImagePickerAssetCacheItem {
     var fetchResult: PHFetchResult<PHAsset>! {
         set { userDefinedFetchResult = newValue }
         get { return userDefinedFetchResult ?? defaultFetchResult }

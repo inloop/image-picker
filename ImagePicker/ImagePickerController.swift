@@ -144,7 +144,7 @@ open class ImagePickerController : UIViewController {
         return view as! ImagePickerView
     }
     
-    private var collectionViewDataSource = ImagePickerDataSource(assetsModel: ImagePickerAssetModel())
+    private var collectionViewDataSource = ImagePickerDataSource(assetsModel: ImagePickerAssetCacheItem())
     private var collectionViewDelegate = ImagePickerDelegate()
     
     var captureSession: CaptureSession?

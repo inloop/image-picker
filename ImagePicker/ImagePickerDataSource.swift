@@ -7,9 +7,9 @@ import Photos
 final class ImagePickerDataSource: NSObject, UICollectionViewDataSource {
     var layoutModel = LayoutModel.empty
     var cellRegistrator: CellRegistrator?
-    var assetsModel: ImagePickerAssetModel
+    var assetsModel: ImagePickerAssetCacheItem
     
-    init(assetsModel: ImagePickerAssetModel) {
+    init(assetsModel: ImagePickerAssetCacheItem) {
         self.assetsModel = assetsModel
         super.init()
     }
