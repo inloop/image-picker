@@ -1,17 +1,9 @@
-//
-//  LivePhotoCameraCell.swift
-//  ExampleApp
-//
-//  Created by Peter Stajger on 25/09/2017.
-//  Copyright © 2017 Inloop. All rights reserved.
-//
+// Copyright © 2018 INLOOPX. All rights reserved.
 
 import Foundation
-import UIKit
 
 //TODO: add a recording indicator (red dot with timer)
-class VideoCameraCell : CameraCollectionViewCell {
-    
+final class VideoCameraCell: CameraCollectionViewCell {
     @IBOutlet weak var recordLabel: RecordDurationLabel!
     @IBOutlet weak var recordButton: RecordVideoButton!
     @IBOutlet weak var flipButton: UIButton!
@@ -25,8 +17,7 @@ class VideoCameraCell : CameraCollectionViewCell {
     @IBAction func recordButtonTapped(_ sender: UIButton) {
         if sender.isSelected {
             stopVideoRecording()
-        }
-        else {
+        } else {
             startVideoRecording()
         }
     }
@@ -35,21 +26,11 @@ class VideoCameraCell : CameraCollectionViewCell {
         flipCamera()
     }
     
-    // MARK: Override Methods
-    
     override func updateRecordingVideoStatus(isRecording: Bool, shouldAnimate: Bool) {
-
-        //update button state
         recordButton.isSelected = isRecording
-        
-        //update duration label
         isRecording ? recordLabel.start() : recordLabel.stop()
         
-        //update other buttons
-        let updates: () -> Void = {
-            self.flipButton.alpha = isRecording ? 0 : 1
-        }
-
+        let updates = { self.flipButton.alpha = isRecording ? 0 : 1 }
         shouldAnimate ? UIView.animate(withDuration: 0.25, animations: updates) : updates()
     }
     
@@ -59,5 +40,4 @@ class VideoCameraCell : CameraCollectionViewCell {
             self.recordButton.alpha = 1.0
         }
     }
-    
 }
