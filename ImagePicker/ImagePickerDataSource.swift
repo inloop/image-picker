@@ -7,10 +7,10 @@ import Photos
 final class ImagePickerDataSource: NSObject, UICollectionViewDataSource {
     var layoutModel = LayoutModel.empty
     var cellRegistrator: CellRegistrator?
-    var assetsModel: ImagePickerAssetCacheItem
+    var assetsCacheItem: ImagePickerAssetCacheItem
     
-    init(assetsModel: ImagePickerAssetCacheItem) {
-        self.assetsModel = assetsModel
+    init(assetsCacheItem: ImagePickerAssetCacheItem) {
+        self.assetsCacheItem = assetsCacheItem
         super.init()
     }
     
@@ -54,18 +54,18 @@ final class ImagePickerDataSource: NSObject, UICollectionViewDataSource {
     }
     
     private func assetItems(for indexPath: IndexPath, collectionView: UICollectionView, cellsRegistrator: CellRegistrator) -> UICollectionViewCell {
-        let asset = assetsModel.fetchResult.object(at: indexPath.item)
+        let asset = assetsCacheItem.fetchResult.object(at: indexPath.item)
         let cellId = cellsRegistrator.cellIdentifier(forAsset: asset.mediaType) ?? cellsRegistrator.cellIdentifierForAssetItems
         
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as? ImagePickerAssetCell else {
             fatalError("asset item cell must conform to \(ImagePickerAssetCell.self) protocol")
         }
         
-        let thumbnailSize = assetsModel.thumbnailSize ?? .zero
+        let thumbnailSize = assetsCacheItem.thumbnailSize ?? .zero
         
         // Request an image for the asset from the PHCachingImageManager.
         cell.representedAssetIdentifier = asset.localIdentifier
-        assetsModel.imageManager.requestImage(for: asset, targetSize: thumbnailSize, contentMode: .aspectFill, options: nil) { image, _ in
+        assetsCacheItem.imageManager.requestImage(for: asset, targetSize: thumbnailSize, contentMode: .aspectFill, options: nil) { image, _ in
             // The cell may have been recycled by the time this handler gets called;
             // set the cell's thumbnail image only if it's still showing the same asset.
             if cell.representedAssetIdentifier == asset.localIdentifier && image != nil {

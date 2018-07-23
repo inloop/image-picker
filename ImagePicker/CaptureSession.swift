@@ -1,33 +1,54 @@
-//
-//  CaptureSession.swift
-//  Image Picker
-//
-//  Created by Peter Stajger on 27/03/17.
-//  Copyright © 2017 Peter Stajger. All rights reserved.
-//
+// Copyright © 2018 INLOOPX. All rights reserved.
 
-import AVFoundation
 import Photos
-import UIKit
 
-///
 /// Manages AVCaptureSession
-///
-final class CaptureSession : NSObject {
-    deinit {
-        log("deinit: \(String(describing: self))")
+
+final class CaptureSession: NSObject {
+    weak var delegate: CaptureSessionDelegate?
+    weak var previewLayer: AVCaptureVideoPreviewLayer?
+    weak var videoRecordingDelegate: CaptureSessionVideoRecordingDelegate?
+    weak var photoCapturingDelegate: CaptureSessionPhotoCapturingDelegate?
+    
+    let session = AVCaptureSession()
+    var isSessionRunning = false
+    var presetConfiguration: SessionPresetConfiguration = .photos
+    var isReadyForVideoRecording: Bool { return videoFileOutput != nil }
+    var isRecordingVideo: Bool { return videoFileOutput?.isRecording ?? false }
+    var latestVideoBufferImage: UIImage? { return videoOutpuSampleBufferDelegate.latestImage }
+    var blurredBufferImage: UIImage? {
+        guard let image = latestVideoBufferImage else { return nil }
+        return UIImageEffects.imageByApplyingLightEffect(to: image)
     }
     
-    private enum SessionSetupResult {
-        case success
-        case notAuthorized
-        case configurationFailed
-    }
+    /// Set this method to orientation that mathches UI orientation before `prepare()`
+    /// method is called. If you need to update orientation when session is running,
+    /// use `updateVideoOrientation()` method instead
+    var videoOrientation: AVCaptureVideoOrientation = .portrait
+    
+    /// Communicate with the session and other session objects on this queue.
+    private let sessionQueue = DispatchQueue(label: "session queue", attributes: [], target: nil)
+    private var setupResult = SessionSetupResult.success
+    private var videoDeviceInput: AVCaptureDeviceInput!
+    private lazy var videoDeviceDiscoverySession = AVCaptureDevice.DiscoverySession(deviceTypes: [.builtInWideAngleCamera, .builtInDuoCamera], mediaType: .video, position: .unspecified)
+    private var videoDataOutput: AVCaptureVideoDataOutput?
+    private let videoOutpuSampleBufferDelegate = VideoOutputSampleBufferDelegate()
+    private var videoFileOutput: AVCaptureMovieFileOutput?
+    private var videoCaptureDelegate: VideoCaptureDelegate?
+    private let photoOutput = AVCapturePhotoOutput()
+    private var inProgressPhotoCaptureDelegates = [Int64 : PhotoCaptureDelegate]()
+    private(set) var inProgressLivePhotoCapturesCount = 0
+    private var sessionRunningObserveContext = 0
+    private var addedObservers = false
+
+    private let subjectAreaDidChangeNotificationKey = "AVCaptureDeviceSubjectAreaDidChangeNotification"
+    private let runtimeErrorNotificationKey = "AVCaptureSessionRuntimeErrorNotification"
+    private let sessionWasInterruptedNotificationKey = "AVCaptureSessionWasInterruptedNotification"
+    private let interruptionEndedNotificationKey = "AVCaptureSessionInterruptionEndedNotification"
     
     enum SessionPresetConfiguration {
-        case photos, livePhotos
-        case videos
-
+        case photos, livePhotos, videos
+        
         var preset: AVCaptureSession.Preset {
             switch self {
             case .livePhotos, .photos:
@@ -37,88 +58,40 @@ final class CaptureSession : NSObject {
             }
         }
     }
-
-    weak var delegate: CaptureSessionDelegate?
     
-    let session = AVCaptureSession()
-    var isSessionRunning = false
-    weak var previewLayer: AVCaptureVideoPreviewLayer?
+    enum LivePhotoMode {
+        case on, off
+    }
     
-    var presetConfiguration: SessionPresetConfiguration = .photos
+    enum RuntimeError: Error {
+        case unableToRestart
+    }
     
-    ///
-    /// Set this method to orientation that mathches UI orientation before `prepare()`
-    /// method is called. If you need to update orientation when session is running,
-    /// use `updateVideoOrientation()` method instead
-    ///
-    var videoOrientation: AVCaptureVideoOrientation = .portrait
+    private enum SessionSetupResult {
+        case success
+        case notAuthorized
+        case configurationFailed
+    }
     
-    ///
+    deinit {
+        log("deinit: \(String(describing: self))")
+    }
+    
     /// Updates orientaiton on video outputs
-    ///
     func updateVideoOrientation(new: AVCaptureVideoOrientation) {
-        
         videoOrientation = new
         
-        //we need to change orientation on all outputs
-        self.previewLayer?.connection?.videoOrientation = new
+        // We need to change orientation on all outputs
+        previewLayer?.connection?.videoOrientation = new
         
-        //TODO: we have to update orientation of video data output but it's blinking a bit which is
-        //uggly, I have no idea how to fix this
-        //note: when I added these 2 updates into a configuration block the lag was even worse
+        // TODO: we have to update orientation of video data output but it's blinking a bit which is
+        // uggly, I have no idea how to fix this
+        // note: when I added these 2 updates into a configuration block the lag was even worse
         sessionQueue.async {
-            //when device is disconnected also video data output connection orientation is reset, so we need to set to new proper value
+            // When device is disconnected also video data output connection orientation is reset, so we need to set to new proper value
             self.videoDataOutput?.connection(with: AVMediaType.video)?.videoOrientation = new
         }
-        
     }
-    
-    /// Communicate with the session and other session objects on this queue.
-    private let sessionQueue = DispatchQueue(label: "session queue", attributes: [], target: nil)
-    private var setupResult = SessionSetupResult.success
-    private var videoDeviceInput: AVCaptureDeviceInput!
-    private lazy var videoDeviceDiscoverySession = AVCaptureDevice.DiscoverySession(deviceTypes: [.builtInWideAngleCamera, .builtInDuoCamera], mediaType: .video, position: .unspecified)
-    private var videoDataOutput: AVCaptureVideoDataOutput?
-    private let videoOutpuSampleBufferDelegate = VideoOutputSampleBufferDelegate()
-    
-    /// returns latest captured image
-    var latestVideoBufferImage: UIImage? {
-        return videoOutpuSampleBufferDelegate.latestImage
-    }
-
-    var blurredBufferImage: UIImage? {
-        guard let image = latestVideoBufferImage else { return nil }
-        return UIImageEffects.imageByApplyingLightEffect(to: image)
-    }
-    
-    // MARK: Video Recoding
-    weak var videoRecordingDelegate: CaptureSessionVideoRecordingDelegate?
-    private var videoFileOutput: AVCaptureMovieFileOutput?
-    private var videoCaptureDelegate: VideoCaptureDelegate?
-    
-    var isReadyForVideoRecording: Bool {
-        return videoFileOutput != nil
-    }
-    var isRecordingVideo: Bool {
-        return videoFileOutput?.isRecording ?? false
-    }
-    
-    // MARK: Photo Capturing
-    enum LivePhotoMode {
-        case on
-        case off
-    }
-    
-    weak var photoCapturingDelegate: CaptureSessionPhotoCapturingDelegate?
-    
-    // this is provided by argument of capturePhoto()
-    private let photoOutput = AVCapturePhotoOutput()
-    private var inProgressPhotoCaptureDelegates = [Int64 : PhotoCaptureDelegate]()
-    
-    /// contains number of currently processing live photos
-    private(set) var inProgressLivePhotoCapturesCount = 0
-    
-    // MARK: Public Methods
     
     func prepare() {
         /*
@@ -170,8 +143,8 @@ final class CaptureSession : NSObject {
     func suspend() {
         guard setupResult == .success else { return }
         
-        //we need to capture self in order to postpone deallocation while
-        //session is properly stopped and cleaned up
+        // We need to capture self in order to postpone deallocation while
+        // session is properly stopped and cleaned up
         sessionQueue.async { [capturedSelf = self] in
             guard self.isSessionRunning == true else {
                 return log("capture session: warning - trying to suspend non running session")
@@ -180,8 +153,8 @@ final class CaptureSession : NSObject {
             capturedSelf.session.stopRunning()
             capturedSelf.isSessionRunning = self.session.isRunning
             capturedSelf.removeObservers()
-            //we are not calling delegate from here because
-            //we are KVOing `isRunning` on session itself so it's called from there
+            // We are not calling delegate from here because
+            // we are KVOing `isRunning` on session itself so it's called from there
         }
     }
 
@@ -192,8 +165,7 @@ final class CaptureSession : NSObject {
                 DispatchQueue.main.async {
                     capturedSelf.delegate?.captureSession(capturedSelf, authorizationStatusGranted: .authorized)
                 }
-            }
-            else {
+            } else {
                 capturedSelf.setupResult = .notAuthorized
             }
             capturedSelf.sessionQueue.resume()
@@ -254,14 +226,6 @@ final class CaptureSession : NSObject {
     }
 
     // MARK: KVO and Notifications
-    
-    private var sessionRunningObserveContext = 0
-    private var addedObservers = false
-
-    private let subjectAreaDidChangeNotificationKey = "AVCaptureDeviceSubjectAreaDidChangeNotification"
-    private let runtimeErrorNotificationKey = "AVCaptureSessionRuntimeErrorNotification"
-    private let sessionWasInterruptedNotificationKey = "AVCaptureSessionWasInterruptedNotification"
-    private let interruptionEndedNotificationKey = "AVCaptureSessionInterruptionEndedNotification"
     private func addObservers() {
         guard !addedObservers else { return }
         
@@ -300,18 +264,13 @@ final class CaptureSession : NSObject {
                 log("capture session: is running - \(isSessionRunning)")
                 if isSessionRunning {
                     self.delegate?.captureSessionDidResume(capturedSelf)
-                }
-                else {
+                } else {
                     self.delegate?.captureSessionDidSuspend(capturedSelf)
                 }
             }
         } else {
             super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
         }
-    }
-
-    enum RuntimeError: Error {
-        case unableToRestart
     }
 
     @objc func sessionRuntimeError(notification: NSNotification) {
@@ -716,11 +675,9 @@ extension CaptureSession {
         }
     }
 
-    ///
     /// If there is any recording in progres it will be stopped.
     ///
     /// - parameter cancel: if true, recorded file will be deleted and corresponding delegate method will be called.
-    ///
     func stopVideoRecording(cancel: Bool = false) {
         guard let movieFileOutput = self.videoFileOutput else {
             return log("capture session: trying to stop a video recording but no movie file output is set")
@@ -744,7 +701,7 @@ extension CaptureSession {
 // MARK: - Video Recording Helpers
 private extension CaptureSession {
     func recordVideo(output movieFileOutput: AVCaptureMovieFileOutput, orientation videoPreviewLayerOrientation: AVCaptureVideoOrientation, saveToPhotoLibrary: Bool) {
-        // if already recording do nothing
+        // If already recording do nothing
         guard movieFileOutput.isRecording == false else {
             return log("capture session: trying to record a video but there is one already being recorded")
         }
@@ -779,8 +736,8 @@ private extension CaptureSession {
             }
         }, didFinish: { [weak self] delegate in
             self?.processStopVideoCapturing(delegate: delegate, outputURL: outputURL)
-            }, didFail: { [weak self] delegate, error in
-                self?.processFailVideoCapturing(delegate: delegate, outputURL: outputURL, error: error)
+        }, didFail: { [weak self] delegate, error in
+            self?.processFailVideoCapturing(delegate: delegate, outputURL: outputURL, error: error)
         })
         recordingDelegate.savesVideoToLibrary = saveToPhotoLibrary
         return recordingDelegate
@@ -792,12 +749,10 @@ private extension CaptureSession {
 
     func processStopVideoCapturing(delegate: VideoCaptureDelegate, outputURL: URL) {
         removeReferenceToVideoCaptureDelegate()
-        DispatchQueue.main.async { [weak self] in
-            guard let `self` = self else { return }
+        DispatchQueue.main.async {
             if delegate.isBeingCancelled {
                 self.videoRecordingDelegate?.captureSessionDidCancelVideoRecording(self)
-            }
-            else {
+            } else {
                 self.videoRecordingDelegate?.captureSessionDid(self, didFinishVideoRecording: outputURL)
             }
         }
@@ -805,12 +760,10 @@ private extension CaptureSession {
 
     func processFailVideoCapturing(delegate: VideoCaptureDelegate, outputURL: URL, error: Error) {
         removeReferenceToVideoCaptureDelegate()
-        DispatchQueue.main.async { [weak self] in
-            guard let `self` = self else { return }
+        DispatchQueue.main.async {
             if delegate.recordingWasInterrupted {
                 self.videoRecordingDelegate?.captureSessionDid(self, didInterruptVideoRecording: outputURL, reason: error)
-            }
-            else {
+            } else {
                 self.videoRecordingDelegate?.captureSessionDid(self, didFailVideoRecording: error)
             }
         }

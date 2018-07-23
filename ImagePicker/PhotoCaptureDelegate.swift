@@ -1,10 +1,4 @@
-/*
-	Copyright (C) 2016 Apple Inc. All Rights Reserved.
-	See LICENSE.txt for this sample’s licensing information
-	
-	Abstract:
-	Photo capture delegate.
-*/
+// Copyright © 2018 INLOOPX. All rights reserved.
 
 import AVFoundation
 import Photos
