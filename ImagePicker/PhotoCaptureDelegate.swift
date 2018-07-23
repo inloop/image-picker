@@ -17,6 +17,9 @@ final class PhotoCaptureDelegate: NSObject, AVCapturePhotoCaptureDelegate {
     /// this contains photo data when taken
     private(set) var photoData: Data? = nil
     
+    /// this contains live photo url
+    private(set) var livePhotoCompanionMovieURL: URL? = nil
+    
     private(set) var requestedPhotoSettings: AVCapturePhotoSettings
     
     /// not nil if error occured during capturing
@@ -27,7 +30,6 @@ final class PhotoCaptureDelegate: NSObject, AVCapturePhotoCaptureDelegate {
 	private let willCapturePhotoAnimation: () -> ()
 	private let capturingLivePhoto: (Bool) -> ()
 	private let completed: (PhotoCaptureDelegate) -> ()
-	private var livePhotoCompanionMovieURL: URL? = nil
 
 	init(with requestedPhotoSettings: AVCapturePhotoSettings, willCapturePhotoAnimation: @escaping () -> (), capturingLivePhoto: @escaping (Bool) -> (), completed: @escaping (PhotoCaptureDelegate) -> ()) {
 		self.requestedPhotoSettings = requestedPhotoSettings

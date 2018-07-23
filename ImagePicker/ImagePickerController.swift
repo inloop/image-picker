@@ -1,6 +1,5 @@
 // Copyright © 2018 INLOOPX. All rights reserved.
 
-import Foundation
 import Photos
 
 open class ImagePickerController: UIViewController {
@@ -377,6 +376,11 @@ extension ImagePickerController: CaptureSessionPhotoCapturingDelegate {
         log("will capture photo \(settings.uniqueID)")
     }
     
+    func captureSession(_ session: CaptureSession, didCapturePhotoData: Data, withCompanionMovieUrl: URL, with settings: AVCapturePhotoSettings) {
+        log("did capture live photo \(settings.uniqueID)")
+        delegate?.imagePicker(controller: self, didTakeLive: UIImage(data: didCapturePhotoData)!, videoUrl: withCompanionMovieUrl)
+    }
+    
     func captureSession(_ session: CaptureSession, didFailCapturingPhotoWith error: Error) {
         log("did fail capturing: \(error)")
     }
@@ -410,6 +414,7 @@ extension ImagePickerController: CaptureSessionVideoRecordingDelegate {
     func captureSessionDid(_ session: CaptureSession, didFinishVideoRecording videoURL: URL) {
         log("did finish video recording")
         updateCameraCellRecordingStatusIfNeeded(isRecording: false, animated: true)
+        delegate?.imagePicker(controller: self, didCaptureVideo: videoURL)
     }
     
     func captureSessionDid(_ session: CaptureSession, didInterruptVideoRecording videoURL: URL, reason: Error) {

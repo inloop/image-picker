@@ -616,7 +616,11 @@ private extension CaptureSession {
 
     func finishCaptureSession(delegate: PhotoCaptureDelegate) {
         if let data = delegate.photoData {
-            photoCapturingDelegate?.captureSession(self, didCapturePhotoData: data, with: delegate.requestedPhotoSettings)
+            if let movieUrl = delegate.livePhotoCompanionMovieURL {
+                photoCapturingDelegate?.captureSession(self, didCapturePhotoData: data, withCompanionMovieUrl: movieUrl, with: delegate.requestedPhotoSettings)
+            } else {
+                photoCapturingDelegate?.captureSession(self, didCapturePhotoData: data, with: delegate.requestedPhotoSettings)
+            }
         } else if let error = delegate.processError {
             photoCapturingDelegate?.captureSession(self, didFailCapturingPhotoWith: error)
         }

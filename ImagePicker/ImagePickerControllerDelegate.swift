@@ -17,6 +17,12 @@ public protocol ImagePickerControllerDelegate: class {
 
     /// Called when user takes new photo.
     func imagePicker(controller: ImagePickerController, didTake image: UIImage)
+    
+    /// Called when user takes new live photo.
+    func imagePicker(controller: ImagePickerController, didTakeLive livePhoto: UIImage, videoUrl: URL)
+    
+    /// Called when user captures new video.
+    func imagePicker(controller: ImagePickerController, didCaptureVideo url: URL)
 
     /// Called right before an action item collection view cell is displayed. Use this method
     /// to configure your cell.
