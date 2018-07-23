@@ -20,7 +20,7 @@ public final class CellRegistrator {
     var cameraItemClass: UICollectionViewCell.Type?
     
     var assetItemNibsData: [PHAssetMediaType: (nib: UINib, identifier: String)]?
-    var assetItemClassesData: [PHAssetMediaType: (UICollectionViewCell.Type, String)]?
+    var assetItemClassesData: [PHAssetMediaType: (type: UICollectionViewCell.Type, identifier: String)]?
     
     // We use these if there is no asset media type specified
     var assetItemNib: UINib?

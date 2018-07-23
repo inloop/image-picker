@@ -1,16 +1,10 @@
-//
-//  ImagePickerDelegate.swift
-//  Image Picker
-//
-//  Created by Peter Stajger on 04/09/2017.
-//  Copyright © 2017 Inloop. All rights reserved.
-//
+// Copyright © 2018 INLOOPX. All rights reserved.
 
 import Foundation
 
 /// Informs a delegate what is going on in ImagePickerDelegate
-protocol ImagePickerDelegateDelegate : class {
-    
+
+protocol ImagePickerDelegateDelegate: class {
     /// Called when user selects one of action items
     func imagePicker(delegate: ImagePickerDelegate, didSelectActionItemAt index: Int)
     
@@ -35,16 +29,15 @@ protocol ImagePickerDelegateDelegate : class {
     func imagePicker(delegate: ImagePickerDelegate, didScroll scrollView: UIScrollView)
 }
 
-final class ImagePickerDelegate : NSObject, UICollectionViewDelegateFlowLayout {
-    
-    deinit {
-        log("deinit: \(String(describing: self))")
-    }
-    
+final class ImagePickerDelegate: NSObject, UICollectionViewDelegateFlowLayout {
     var layout: ImagePickerLayout?
     weak var delegate: ImagePickerDelegateDelegate?
     
     private let selectionPolicy = ImagePickerSelectionPolicy()
+    
+    deinit {
+        log("deinit: \(String(describing: self))")
+    }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return layout?.collectionView(collectionView, layout: collectionViewLayout, sizeForItemAt: indexPath) ?? .zero
@@ -83,7 +76,6 @@ final class ImagePickerDelegate : NSObject, UICollectionViewDelegateFlowLayout {
     }
     
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        
         guard let configuration = layout?.configuration else { return }
         
         switch indexPath.section {
@@ -95,7 +87,6 @@ final class ImagePickerDelegate : NSObject, UICollectionViewDelegateFlowLayout {
     }
  
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        
         guard let configuration = layout?.configuration else { return }
         
         switch indexPath.section {
@@ -113,5 +104,4 @@ final class ImagePickerDelegate : NSObject, UICollectionViewDelegateFlowLayout {
     func scrollViewDidChangeAdjustedContentInset(_ scrollView: UIScrollView) {
         log("XXX: \(scrollView.adjustedContentInset)")
     }
-    
 }

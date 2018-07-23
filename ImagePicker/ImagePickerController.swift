@@ -47,7 +47,7 @@ open class ImagePickerController: UIViewController {
     /// view hierarchy. For example when there is no permissions to photo library.
     private var overlayView: UIView?
     
-    private var collectionViewDataSource = ImagePickerDataSource(assetsModel: ImagePickerAssetModel())
+    private var collectionViewDataSource = ImagePickerDataSource(assetsCacheItem: ImagePickerAssetCacheItem())
     private var collectionViewDelegate = ImagePickerDelegate()
     
     var captureSession: CaptureSession?
@@ -79,7 +79,7 @@ open class ImagePickerController: UIViewController {
     
     /// Returns an array of assets at index set. An exception will be thrown if it fails
     public func assets(at indexes: IndexSet) -> [PHAsset] {
-        guard let fetchResult = collectionViewDataSource.assetsModel.fetchResult else {
+        guard let fetchResult = collectionViewDataSource.assetsCacheItem.fetchResult else {
             fatalError("Accessing assets at indexes \(indexes) failed")
         }
         return fetchResult.objects(at: indexes)
@@ -87,7 +87,7 @@ open class ImagePickerController: UIViewController {
     
     /// Returns an asset at index. If there is no asset at the index, an exception will be thrown.
     public func asset(at index: Int) -> PHAsset {
-        guard let fetchResult = collectionViewDataSource.assetsModel.fetchResult else {
+        guard let fetchResult = collectionViewDataSource.assetsCacheItem.fetchResult else {
             fatalError("Accessing asset at index \(index) failed")
         }
         return fetchResult.object(at: index)
@@ -109,7 +109,7 @@ open class ImagePickerController: UIViewController {
         }
         return instanceAppearanceProxy!
     }
-    
+
     private func updateItemSize() {
         guard let layout = self.collectionViewDelegate.layout else { return }
         
@@ -118,7 +118,7 @@ open class ImagePickerController: UIViewController {
         let cellSize = layout.sizeForItem(numberOfItemsInRow: itemsInRow, preferredWidthOrHeight: nil, collectionView: collectionView, scrollDirection: scrollDirection)
         let scale = UIScreen.main.scale
         let thumbnailSize = CGSize(width: cellSize.width * scale, height: cellSize.height * scale)
-        self.collectionViewDataSource.assetsModel.thumbnailSize = thumbnailSize
+        self.collectionViewDataSource.assetsCacheItem.thumbnailSize = thumbnailSize
         
         //TODO: we need to purge all image asset caches if item size changed
     }
@@ -134,8 +134,8 @@ open class ImagePickerController: UIViewController {
     private func reloadData(basedOnAuthorizationStatus status: PHAuthorizationStatus) {
         switch status {
         case .authorized:
-            collectionViewDataSource.assetsModel.fetchResult = assetsFetchResultBlock?()
-            collectionViewDataSource.layoutModel = LayoutModel(configuration: layoutConfiguration, assets: collectionViewDataSource.assetsModel.fetchResult.count)
+            collectionViewDataSource.assetsCacheItem.fetchResult = assetsFetchResultBlock?()
+            collectionViewDataSource.layoutModel = LayoutModel(configuration: layoutConfiguration, assets: collectionViewDataSource.assetsCacheItem.fetchResult.count)
             collectionView.reloadData()
         case .restricted, .denied:
             guard let view = overlayView ?? dataSource?.imagePicker(controller: self, viewForAuthorizationStatus: status),
@@ -300,14 +300,14 @@ private extension ImagePickerController {
 // MARK: - PHPhotoLibraryChangeObserver
 extension ImagePickerController: PHPhotoLibraryChangeObserver {
     public func photoLibraryDidChange(_ changeInstance: PHChange) {
-        guard let fetchResult = collectionViewDataSource.assetsModel.fetchResult, let changes = changeInstance.changeDetails(for: fetchResult) else { return }
+        guard let fetchResult = collectionViewDataSource.assetsCacheItem.fetchResult, let changes = changeInstance.changeDetails(for: fetchResult) else { return }
         
         collectionViewCoordinator.performDataSourceUpdate { [unowned self] in
             // Update old fetch result with these updates
-            self.collectionViewDataSource.assetsModel.fetchResult = changes.fetchResultAfterChanges
+            self.collectionViewDataSource.assetsCacheItem.fetchResult = changes.fetchResultAfterChanges
             
             // Update layout model because it changed
-            self.collectionViewDataSource.layoutModel = LayoutModel(configuration: self.layoutConfiguration, assets: self.collectionViewDataSource.assetsModel.fetchResult.count)
+            self.collectionViewDataSource.layoutModel = LayoutModel(configuration: self.layoutConfiguration, assets: self.collectionViewDataSource.assetsCacheItem.fetchResult.count)
         }
         
         // Perform update animations
