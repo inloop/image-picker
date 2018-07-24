@@ -17,6 +17,12 @@ public protocol ImagePickerControllerDelegate: class {
 
     /// Called when user takes new photo.
     func imagePicker(controller: ImagePickerController, didTake image: UIImage)
+    
+    /// Called when user takes new live photo.
+    func imagePicker(controller: ImagePickerController, didTake livePhoto: UIImage, videoUrl: URL)
+    
+    /// Called when user captures new video.
+    func imagePicker(controller: ImagePickerController, didCaptureVideo url: URL)
 
     /// Called right before an action item collection view cell is displayed. Use this method
     /// to configure your cell.
@@ -32,6 +38,8 @@ extension ImagePickerControllerDelegate {
     public func imagePicker(controller: ImagePickerController, didSelect asset: PHAsset) {}
     public func imagePicker(controller: ImagePickerController, didUnselect asset: PHAsset) {}
     public func imagePicker(controller: ImagePickerController, didTake image: UIImage) {}
+    public func imagePicker(controller: ImagePickerController, didTake livePhoto: UIImage, videoUrl: URL) {}
+    public func imagePicker(controller: ImagePickerController, didCaptureVideo url: URL) {}
     public func imagePicker(controller: ImagePickerController, willDisplayActionItem cell: UICollectionViewCell, at index: Int) {}
     public func imagePicker(controller: ImagePickerController, willDisplayAssetItem cell: ImagePickerAssetCell, asset: PHAsset) {}
 }

@@ -327,6 +327,14 @@ extension ViewController : ImagePickerControllerDelegate {
         print("did take image \(image.size)")
     }
     
+    public func imagePicker(controller: ImagePickerController, didTake livePhoto: UIImage, videoUrl: URL) {
+        print("did take livePhoto \(livePhoto.size) \(videoUrl.absoluteString)")
+    }
+
+    public func imagePicker(controller: ImagePickerController, didCaptureVideo url: URL) {
+        print("did take video \(url.absoluteString)")
+    }
+    
     func imagePicker(controller: ImagePickerController, willDisplayActionItem cell: UICollectionViewCell, at index: Int) {
         switch cell {
         case let iconWithTextCell as IconWithTextCell:

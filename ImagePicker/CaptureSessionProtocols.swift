@@ -9,6 +9,9 @@ protocol CaptureSessionPhotoCapturingDelegate : class {
 
     /// called when captured photo is processed and ready for use
     func captureSession(_ session: CaptureSession, didCapturePhotoData: Data, with settings: AVCapturePhotoSettings)
+    
+    /// called when captured live photo is processed and ready for use
+    func captureSession(_ session: CaptureSession, didCapturePhotoData: Data, withCompanionMovieUrl: URL, with settings: AVCapturePhotoSettings)
 
     /// called when captured photo is processed and ready for use
     func captureSession(_ session: CaptureSession, didFailCapturingPhotoWith error: Error)
