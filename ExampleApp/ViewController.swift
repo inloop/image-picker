@@ -327,7 +327,7 @@ extension ViewController : ImagePickerControllerDelegate {
         print("did take image \(image.size)")
     }
     
-    public func imagePicker(controller: ImagePickerController, didTakeLive livePhoto: UIImage, videoUrl: URL) {
+    public func imagePicker(controller: ImagePickerController, didTake livePhoto: UIImage, videoUrl: URL) {
         print("did take livePhoto \(livePhoto.size) \(videoUrl.absoluteString)")
     }
 

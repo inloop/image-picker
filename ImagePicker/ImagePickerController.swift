@@ -378,7 +378,7 @@ extension ImagePickerController: CaptureSessionPhotoCapturingDelegate {
     
     func captureSession(_ session: CaptureSession, didCapturePhotoData: Data, withCompanionMovieUrl: URL, with settings: AVCapturePhotoSettings) {
         log("did capture live photo \(settings.uniqueID)")
-        delegate?.imagePicker(controller: self, didTakeLive: UIImage(data: didCapturePhotoData)!, videoUrl: withCompanionMovieUrl)
+        delegate?.imagePicker(controller: self, didTake: UIImage(data: didCapturePhotoData)!, videoUrl: withCompanionMovieUrl)
     }
     
     func captureSession(_ session: CaptureSession, didFailCapturingPhotoWith error: Error) {
