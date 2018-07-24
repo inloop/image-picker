@@ -22,7 +22,8 @@ An easy to use drop-in framework providing user interface for taking pictures an
 #### Carthage [[link](https://github.com/Carthage/Carthage)]
 - Add to your cartfile: `github "inloop/image-picker"` 
 - If you would like to specify branch, just use `github "inloop/image-picker" "master"`
-#### Manually
+#### CocoaPods [[link](https://cocoapods.org)]
+- Add to your Podfile: `pod 'image-picker'`
 
 ## Overview
 
