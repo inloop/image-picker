@@ -18,9 +18,11 @@ An easy to use drop-in framework providing user interface for taking pictures an
 - Xcode 9+
 - Swift 4
 
-**Installation**
-- [Carthage](https://github.com/Carthage/Carthage)
-- manually
+## Installation
+#### Carthage [[link](https://github.com/Carthage/Carthage)]
+- Add to your cartfile: `github "inloop/image-picker"` 
+- If you would like to specify branch, just use `github "inloop/image-picker" "master"`
+#### Manually
 
 ## Overview
 
