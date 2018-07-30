@@ -113,7 +113,10 @@ open class CameraCollectionViewCell: UICollectionViewCell {
     }
 
     func blurIfNeeded(blurImage: UIImage?, animated: Bool, completion: ((Bool) -> Void)?) {
-        guard blurEffectsCanBeApplied else { return }
+        guard blurEffectsCanBeApplied else {
+            completion?(true)
+            return
+        }
         let view = configureBlurredView(blurImage: blurImage)
         view.alpha = 0
         applyAnimationBlocks(animated: animated, animationBlock: {
