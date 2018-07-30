@@ -11,22 +11,22 @@ import AVFoundation
 
 func log(_ message: String) {
     #if DEBUG
-        debugPrint(message)
+    debugPrint(message)
     #endif
 }
 
 extension UICollectionView {
-    
+
     func indexPathsForElements(in rect: CGRect) -> [IndexPath] {
         let allLayoutAttributes = collectionViewLayout.layoutAttributesForElements(in: rect)!
         let paths = allLayoutAttributes.map { $0.indexPath }
         return paths
     }
-    
+
 }
 
 extension UIInterfaceOrientation : CustomDebugStringConvertible {
-    
+
     public var debugDescription: String {
         switch self {
         case .unknown: return "unknown"
@@ -36,7 +36,7 @@ extension UIInterfaceOrientation : CustomDebugStringConvertible {
         case .landscapeLeft: return "landscape left"
         }
     }
-    
+
 }
 
 func differencesBetweenRects(_ old: CGRect, _ new: CGRect, _ scrollDirection: UICollectionViewScrollDirection) -> (added: [CGRect], removed: [CGRect]) {
@@ -91,3 +91,4 @@ func differencesBetweenRectsHorizontal(_ old: CGRect, _ new: CGRect) -> (added: 
         return ([new], [old])
     }
 }
+

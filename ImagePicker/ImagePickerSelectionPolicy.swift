@@ -16,7 +16,7 @@ import Foundation
 /// camera item is untouched.
 ///
 struct ImagePickerSelectionPolicy {
-    
+
     func shouldSelectItem(atSection section: Int, layoutConfiguration: LayoutConfiguration) -> Bool {
         switch section {
         case layoutConfiguration.sectionIndexForActions, layoutConfiguration.sectionIndexForCamera:
@@ -25,7 +25,7 @@ struct ImagePickerSelectionPolicy {
             return true
         }
     }
-    
+
     func shouldHighlightItem(atSection section: Int, layoutConfiguration: LayoutConfiguration) -> Bool {
         switch section {
         case layoutConfiguration.sectionIndexForCamera:
@@ -34,5 +34,6 @@ struct ImagePickerSelectionPolicy {
             return true
         }
     }
-    
+
 }
+

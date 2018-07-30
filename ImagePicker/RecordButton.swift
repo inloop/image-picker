@@ -13,11 +13,11 @@ import Foundation
 /// 3 states - initial, pressed, recording.
 ///
 class RecordVideoButton : StationaryButton {
-    
+
     var outerBorderWidth: CGFloat = 3 { didSet { setNeedsUpdateCircleLayers() } }
     var innerBorderWidth: CGFloat = 1.5 { didSet { setNeedsUpdateCircleLayers()  } }
     var pressDepthFactor: CGFloat = 0.9 { didSet { setNeedsUpdateCircleLayers() } }
-    
+
     override var isHighlighted: Bool {
         get { return super.isHighlighted }
         set {
@@ -27,10 +27,10 @@ class RecordVideoButton : StationaryButton {
             super.isHighlighted = newValue
         }
     }
-    
+
     override func selectionDidChange(animated: Bool) {
         super.selectionDidChange(animated: animated)
-        
+
         if isSelected {
             updateCircleLayers(state: .recording, animated: animated)
         }
@@ -38,23 +38,23 @@ class RecordVideoButton : StationaryButton {
             updateCircleLayers(state: .initial, animated: animated)
         }
     }
-    
+
     private var innerCircleLayerInset: CGFloat {
         return outerBorderWidth + innerBorderWidth
     }
-    
+
     private var needsUpdateCircleLayers = true
     private var outerCircleLayer: CALayer
     private var innerCircleLayer: CALayer
-    
+
     private enum State: String {
         case initial
         case pressed
         case recording
     }
-    
+
     private var layersState: State = .initial
-    
+
     required init?(coder aDecoder: NSCoder) {
         outerCircleLayer = CALayer()
         innerCircleLayer = CALayer()
@@ -63,17 +63,17 @@ class RecordVideoButton : StationaryButton {
         layer.addSublayer(outerCircleLayer)
         layer.addSublayer(innerCircleLayer)
         CATransaction.setDisableActions(true)
-        
+
         outerCircleLayer.backgroundColor = UIColor.clear.cgColor
         outerCircleLayer.cornerRadius = bounds.width/2
         outerCircleLayer.borderWidth = outerBorderWidth
         outerCircleLayer.borderColor = tintColor.cgColor
-        
+
         innerCircleLayer.backgroundColor = UIColor.red.cgColor
-        
+
         CATransaction.commit()
     }
-    
+
     override func layoutSubviews() {
         super.layoutSubviews()
         if needsUpdateCircleLayers {
@@ -85,17 +85,17 @@ class RecordVideoButton : StationaryButton {
             CATransaction.commit()
         }
     }
-    
+
     private func setNeedsUpdateCircleLayers() {
         needsUpdateCircleLayers = true
         setNeedsLayout()
     }
-    
+
     private func updateCircleLayers(state: State, animated: Bool) {
         guard layersState != state else { return }
-        
+
         layersState = state
-        
+
         switch layersState {
         case .initial:
             setInnerLayer(recording: false, animated: animated)
@@ -105,9 +105,9 @@ class RecordVideoButton : StationaryButton {
             setInnerLayer(recording: true, animated: animated)
         }
     }
-    
+
     private func setInnerLayerPressed(animated: Bool) {
-        
+
         if animated {
             innerCircleLayer.add(transformAnimation(to: pressDepthFactor, duration: 0.25), forKey: nil)
         }
@@ -117,9 +117,9 @@ class RecordVideoButton : StationaryButton {
             CATransaction.commit()
         }
     }
-    
+
     private func setInnerLayer(recording: Bool, animated: Bool) {
-        
+
         if recording {
             innerCircleLayer.add(transformAnimation(to: 0.5, duration: 0.15), forKey: nil)
             innerCircleLayer.cornerRadius = 8
@@ -128,9 +128,9 @@ class RecordVideoButton : StationaryButton {
             innerCircleLayer.add(transformAnimation(to: 1, duration: 0.25), forKey: nil)
             innerCircleLayer.cornerRadius = bounds.insetBy(dx: innerCircleLayerInset, dy: innerCircleLayerInset).width/2
         }
-        
+
     }
-    
+
     private func transformAnimation(to value: CGFloat, duration: CFTimeInterval) -> CAAnimation {
         let animation = CABasicAnimation()
         animation.keyPath = "transform.scale"
@@ -143,5 +143,6 @@ class RecordVideoButton : StationaryButton {
         animation.isRemovedOnCompletion = false
         return animation
     }
-    
+
 }
+
