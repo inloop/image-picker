@@ -64,6 +64,8 @@
 		5163663B2100BAE1006FC981 /* CameraCollectionViewCellDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5163663A2100BAE1006FC981 /* CameraCollectionViewCellDelegate.swift */; };
 		51D4B1D621007F75000F005A /* ImagePickerAssetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51D4B1D521007F75000F005A /* ImagePickerAssetCell.swift */; };
 		51D4B1D8210080AD000F005A /* VideoAssetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51D4B1D7210080AD000F005A /* VideoAssetCell.swift */; };
+		51DE4C03210F3CCC00772BA3 /* ViewController+Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51DE4C02210F3CCC00772BA3 /* ViewController+Data.swift */; };
+		51DE4C05210F409700772BA3 /* ViewController+ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51DE4C04210F409700772BA3 /* ViewController+ImagePicker.swift */; };
 		85D6EA7D20D2D0C200B63486 /* CaptureSessionProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85D6EA7C20D2D0C200B63486 /* CaptureSessionProtocols.swift */; };
 		85D6EA8120D573D200B63486 /* AVCaptureDevice+Default.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85D6EA8020D573D200B63486 /* AVCaptureDevice+Default.swift */; };
 		85D6EA8320D573FF00B63486 /* AVCapturePhotoSettings+Default.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85D6EA8220D573FF00B63486 /* AVCapturePhotoSettings+Default.swift */; };
@@ -161,6 +163,8 @@
 		5163663A2100BAE1006FC981 /* CameraCollectionViewCellDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraCollectionViewCellDelegate.swift; sourceTree = "<group>"; };
 		51D4B1D521007F75000F005A /* ImagePickerAssetCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePickerAssetCell.swift; sourceTree = "<group>"; };
 		51D4B1D7210080AD000F005A /* VideoAssetCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoAssetCell.swift; sourceTree = "<group>"; };
+		51DE4C02210F3CCC00772BA3 /* ViewController+Data.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewController+Data.swift"; sourceTree = "<group>"; };
+		51DE4C04210F409700772BA3 /* ViewController+ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewController+ImagePicker.swift"; sourceTree = "<group>"; };
 		85D6EA7C20D2D0C200B63486 /* CaptureSessionProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureSessionProtocols.swift; sourceTree = "<group>"; };
 		85D6EA8020D573D200B63486 /* AVCaptureDevice+Default.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AVCaptureDevice+Default.swift"; sourceTree = "<group>"; };
 		85D6EA8220D573FF00B63486 /* AVCapturePhotoSettings+Default.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AVCapturePhotoSettings+Default.swift"; sourceTree = "<group>"; };
@@ -216,7 +220,9 @@
 			children = (
 				420C23FF1F5D82C6008935D4 /* AppDelegate.swift */,
 				420C24011F5D82C6008935D4 /* ViewController.swift */,
+				51DE4C02210F3CCC00772BA3 /* ViewController+Data.swift */,
 				42E736481F838DB80060E24D /* ViewController+Helpers.swift */,
+				51DE4C04210F409700772BA3 /* ViewController+ImagePicker.swift */,
 				4275FFC31F62C2290077A2CD /* Custom Views */,
 				420C24031F5D82C6008935D4 /* Main.storyboard */,
 				420C24061F5D82C6008935D4 /* Assets.xcassets */,
@@ -478,10 +484,12 @@
 			files = (
 				420C24021F5D82C6008935D4 /* ViewController.swift in Sources */,
 				420BCC3C1F66C53A006E8806 /* CustomVideoCell.swift in Sources */,
+				51DE4C03210F3CCC00772BA3 /* ViewController+Data.swift in Sources */,
 				42E736491F838DB80060E24D /* ViewController+Helpers.swift in Sources */,
 				420C24001F5D82C6008935D4 /* AppDelegate.swift in Sources */,
 				421442711F604993006BA45A /* IconWithTextCell.swift in Sources */,
 				42428A8E1F618E4200D4EB3B /* CustomImageCell.swift in Sources */,
+				51DE4C05210F409700772BA3 /* ViewController+ImagePicker.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
