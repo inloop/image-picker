@@ -25,6 +25,8 @@ public struct LayoutConfiguration {
     /// Spacing between camera section and assets section
     public var cameraSectionSpacing: CGFloat = 10
     
+    public var enableAssetDragAndDrop = false
+    
     let showsAssetItems = true
 }
 

@@ -31,6 +31,15 @@ public protocol ImagePickerControllerDelegate: class {
     /// Called right before an asset item collection view cell is displayed. Use this method
     /// to configure your cell based on asset media type, subtype, etc.
     func imagePicker(controller: ImagePickerController, willDisplayAssetItem cell: ImagePickerAssetCell, asset: PHAsset)
+    
+    /// Called after the lift animation has completed to signal the start of a drag session.
+    /// This call will always be balanced with a corresponding call to dragSessionDidEnd
+    @available(iOS 11.0, *)
+    func imagePicker(controller: ImagePickerController, dragSessionWillBegin session: UIDragSession)
+    
+    /// Called to signal the end of the drag session.
+    @available(iOS 11.0, *)
+    func imagePicker(controller: ImagePickerController, dragSessionDidEnd session: UIDragSession)
 }
 
 extension ImagePickerControllerDelegate {
@@ -42,4 +51,8 @@ extension ImagePickerControllerDelegate {
     public func imagePicker(controller: ImagePickerController, didCaptureVideo url: URL) {}
     public func imagePicker(controller: ImagePickerController, willDisplayActionItem cell: UICollectionViewCell, at index: Int) {}
     public func imagePicker(controller: ImagePickerController, willDisplayAssetItem cell: ImagePickerAssetCell, asset: PHAsset) {}
+    @available(iOS 11.0, *)
+    public func imagePicker(controller: ImagePickerController, dragSessionWillBegin session: UIDragSession) {}
+    @available(iOS 11.0, *)
+    public func imagePicker(controller: ImagePickerController, dragSessionDidEnd session: UIDragSession) {}
 }

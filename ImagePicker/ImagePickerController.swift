@@ -46,8 +46,8 @@ open class ImagePickerController: UIViewController {
     /// view hierarchy. For example when there is no permissions to photo library.
     private var overlayView: UIView?
     
-    private var collectionViewDataSource = ImagePickerDataSource(assetsCacheItem: ImagePickerAssetCacheItem())
-    private var collectionViewDelegate = ImagePickerDelegate()
+    var collectionViewDataSource = ImagePickerDataSource(assetsCacheItem: ImagePickerAssetCacheItem())
+    var collectionViewDelegate = ImagePickerDelegate()
     
     var captureSession: CaptureSession?
     
@@ -240,6 +240,13 @@ private extension ImagePickerController {
         collectionView.allowsMultipleSelection = true
         collectionView.showsVerticalScrollIndicator = false
         collectionView.showsHorizontalScrollIndicator = false
+        
+        if #available(iOS 11.0, *) {
+            if layoutConfiguration.enableAssetDragAndDrop {
+                collectionView.dragDelegate = self
+                collectionView.dragInteractionEnabled = true
+            }   
+        }
 
         switch layoutConfiguration.scrollDirection {
         case .horizontal: collectionView.alwaysBounceHorizontal = true

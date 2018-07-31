@@ -31,7 +31,8 @@ struct LayoutModel {
         let emptyConfiguration = LayoutConfiguration(showsFirstActionItem: false, showsSecondActionItem: false,
                                                      showsCameraItem: false, scrollDirection: .horizontal,
                                                      numberOfAssetItemsInRow: 0, interitemSpacing: 0,
-                                                     actionSectionSpacing: 0, cameraSectionSpacing: 0)
+                                                     actionSectionSpacing: 0, cameraSectionSpacing: 0,
+                                                     enableAssetDragAndDrop: false)
         return LayoutModel(configuration: emptyConfiguration, assets: 0)
     }
 }

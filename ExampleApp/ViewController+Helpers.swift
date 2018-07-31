@@ -8,12 +8,16 @@ extension ViewController {
         return true
     }
     
-    override func resignFirstResponder() -> Bool {
-        let result = super.resignFirstResponder()
-        if result == true {
-            currentInputView = nil
-        }
-        return result
+//    override func resignFirstResponder() -> Bool {
+//        let result = super.resignFirstResponder()
+//        if result == true {
+//            currentInputView = nil
+//        }
+//        return result
+//    }
+    
+    override var canResignFirstResponder: Bool {
+        return false
     }
     
     override var inputView: UIView? {

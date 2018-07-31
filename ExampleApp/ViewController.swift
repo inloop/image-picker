@@ -4,8 +4,8 @@ import ImagePicker
 import Photos
 
 /// This is an example view controller that shows how Image Picker can be used
-class ViewController: UITableViewController {
-    var currentInputView: UIView?
+class ViewController: UITableViewController, UIDropInteractionDelegate {
+    @IBOutlet var dropAssetsView: UIView!
     
     lazy var presentButton: UIButton = {
         let button = UIButton(type: .custom)
@@ -18,7 +18,7 @@ class ViewController: UITableViewController {
         button.backgroundColor = UIColor(red: 208/255, green: 2/255, blue: 27/255, alpha: 1)
         button.setTitle("Present", for: .normal)
         button.setTitle("Dismiss", for: .selected)
-        button.addTarget(self, action: #selector(presentButtonTapped(sender:)), for: .touchUpInside)
+        button.addTarget(self, action: #selector(presentButtonTapped), for: .touchUpInside)
         return button
     }()
     
@@ -33,14 +33,18 @@ class ViewController: UITableViewController {
         case onlySelfies
     }
     
+    var currentInputView: UIView?
+    
     // Defaul configuration values
-    var presentsModally: Bool = false
-    var numberOfActionItems: Int = 2
+    var presentsModally = false
+    var numberOfActionItems = 2
     var cameraConfig: CameraItemConfig = .enabled
     var assetsSource: AssetsSource = .recentlyAdded
-    var assetItemsInRow: Int = 2
+    var assetItemsInRow = 2
     var captureMode: CaptureSettings.CameraMode = .photoAndLivePhoto
-    var savesCapturedAssets: Bool = false
+    var savesCapturedAssets = false
+    var dragAndDropConfig = false
+    var imagePickerController: ImagePickerController?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -53,8 +57,12 @@ class ViewController: UITableViewController {
         navigationItem.title = "Image Picker"
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cellId")
         tableView.keyboardDismissMode = .none
+        
+        if #available(iOS 11.0, *) {
+            setupDragDestination()
+        }
     }
-
+    
     @objc func togglePresentationMode(indexPath: IndexPath) {
         presentsModally = indexPath.row == 1
     }
@@ -85,15 +93,19 @@ class ViewController: UITableViewController {
         }
     }
     
+    @objc func configDragAndDrop(indexPath: IndexPath) {
+        dragAndDropConfig = indexPath.row == 1
+    }
+    
     @objc func configSavesCapturedAssets(indexPath: IndexPath) {
         savesCapturedAssets = indexPath.row == 1
     }
 
-    private var imagePickerController: ImagePickerController?
-    @objc func presentButtonTapped(sender: UIButton) {
-        sender.isSelected = !sender.isSelected
+    
+    @objc func presentButtonTapped() {
+        presentButton.isSelected = !presentButton.isSelected
         
-        if sender.isSelected {
+        if presentButton.isSelected {
             let imagePicker = ImagePickerController()
             imagePickerController = imagePicker
             
@@ -164,6 +176,10 @@ class ViewController: UITableViewController {
             // Number of items in a row (supported values > 0)
             imagePicker.layoutConfiguration.numberOfAssetItemsInRow = assetItemsInRow
             
+            // Enable assets drag & drop
+            imagePicker.layoutConfiguration.enableAssetDragAndDrop = dragAndDropConfig
+            
+            // capture mode
             switch captureMode {
             case .photo:
                 imagePicker.captureSettings.cameraMode = .photo
