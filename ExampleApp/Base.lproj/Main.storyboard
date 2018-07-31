@@ -1,33 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13196" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="IvJ-Xx-MXV">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="IvJ-Xx-MXV">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13173"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--View Controller-->
-        <scene sceneID="4Ve-lU-r9H">
-            <objects>
-                <tableViewController id="weE-ub-lED" customClass="ViewController" customModule="Image_Picker" customModuleProvider="target" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="18" sectionFooterHeight="18" id="T7O-8b-ZIH">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
-                        <connections>
-                            <outlet property="dataSource" destination="weE-ub-lED" id="sRT-26-qPm"/>
-                            <outlet property="delegate" destination="weE-ub-lED" id="RDl-VF-uCI"/>
-                        </connections>
-                    </tableView>
-                    <navigationItem key="navigationItem" id="cES-n6-ULN"/>
-                </tableViewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="nav-YJ-5NF" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="1308" y="102.99850074962519"/>
-        </scene>
         <!--Navigation Controller-->
         <scene sceneID="FkM-uB-kWc">
             <objects>
@@ -39,12 +20,52 @@
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="weE-ub-lED" kind="relationship" relationship="rootViewController" id="pqH-uG-qLE"/>
+                        <segue destination="q3G-1m-7oQ" kind="relationship" relationship="rootViewController" id="JJY-SW-lcv"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="gnN-H1-3VE" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="368.80000000000001" y="102.99850074962519"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="e5T-hH-R8h">
+            <objects>
+                <tableViewController id="q3G-1m-7oQ" customClass="ViewController" customModule="Image_Picker" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="grouped" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" sectionFooterHeight="18" id="qTQ-Ka-vBx">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                        <sections/>
+                        <connections>
+                            <outlet property="dataSource" destination="q3G-1m-7oQ" id="Alm-J7-kGh"/>
+                            <outlet property="delegate" destination="q3G-1m-7oQ" id="zb2-vr-XHt"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" id="Ag2-8U-UZw"/>
+                    <connections>
+                        <outlet property="dropAssetsView" destination="J30-jm-qbk" id="za6-XY-s6G"/>
+                    </connections>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="bdf-kJ-iXL" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <view contentMode="scaleToFill" id="J30-jm-qbk">
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="603"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <subviews>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="[ Drop assets here ]" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qpH-Oc-XkS">
+                            <rect key="frame" x="86.5" y="288" width="201" height="27"/>
+                            <fontDescription key="fontDescription" type="boldSystem" pointSize="22"/>
+                            <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                    </subviews>
+                    <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.69999999999999996" colorSpace="custom" customColorSpace="displayP3"/>
+                    <constraints>
+                        <constraint firstItem="qpH-Oc-XkS" firstAttribute="centerX" secondItem="J30-jm-qbk" secondAttribute="centerX" id="4TE-RM-iyK"/>
+                        <constraint firstItem="qpH-Oc-XkS" firstAttribute="centerY" secondItem="J30-jm-qbk" secondAttribute="centerY" id="MOo-1Z-Fbj"/>
+                    </constraints>
+                </view>
+            </objects>
+            <point key="canvasLocation" x="1481" y="112"/>
         </scene>
     </scenes>
 </document>

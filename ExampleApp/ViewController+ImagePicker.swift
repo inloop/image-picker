@@ -78,6 +78,32 @@ extension ViewController: ImagePickerControllerDelegate {
             break
         }
     }
+    
+    @available(iOS 11.0, *)
+    func imagePicker(controller: ImagePickerController, dragSessionWillBegin session: UIDragSession) {
+        presentButtonTapped()
+        dropAssetsView.autoresizingMask = .flexibleHeight
+        if let window = UIApplication.shared.delegate?.window, let safeWindow = window {
+            dropAssetsView.frame = safeWindow.frame
+            safeWindow.addSubview(dropAssetsView)
+            dropAssetsView.alpha = 0
+            UIView.animate(withDuration: 0.4) {
+                self.dropAssetsView.alpha = 1
+            }
+            
+        }
+    }
+    
+    @available(iOS 11.0, *)
+    func imagePicker(controller: ImagePickerController, dragSessionDidEnd session: UIDragSession) {
+        presentButtonTapped()
+        UIView.animate(withDuration: 0.2, animations: {
+            self.dropAssetsView.alpha = 0
+        }) { completed in
+            self.dropAssetsView.removeFromSuperview()
+        }
+        
+    }
 }
 
 extension ViewController: ImagePickerControllerDataSource {
