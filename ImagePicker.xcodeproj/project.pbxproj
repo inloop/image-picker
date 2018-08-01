@@ -62,6 +62,8 @@
 		42F7D8011F7A5B72009D378A /* Appearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42F7D8001F7A5B71009D378A /* Appearance.swift */; };
 		51636637210098D6006FC981 /* CheckView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51636636210098D6006FC981 /* CheckView.swift */; };
 		5163663B2100BAE1006FC981 /* CameraCollectionViewCellDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5163663A2100BAE1006FC981 /* CameraCollectionViewCellDelegate.swift */; };
+		51875DC7210F5572005CF685 /* ImagePickerController+Drag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51875DC6210F5572005CF685 /* ImagePickerController+Drag.swift */; };
+		51875DC921108CED005CF685 /* ViewController+Drop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51875DC821108CED005CF685 /* ViewController+Drop.swift */; };
 		51D4B1D621007F75000F005A /* ImagePickerAssetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51D4B1D521007F75000F005A /* ImagePickerAssetCell.swift */; };
 		51D4B1D8210080AD000F005A /* VideoAssetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51D4B1D7210080AD000F005A /* VideoAssetCell.swift */; };
 		51DE4C03210F3CCC00772BA3 /* ViewController+Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51DE4C02210F3CCC00772BA3 /* ViewController+Data.swift */; };
@@ -161,6 +163,8 @@
 		42F7D8001F7A5B71009D378A /* Appearance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Appearance.swift; sourceTree = "<group>"; };
 		51636636210098D6006FC981 /* CheckView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckView.swift; sourceTree = "<group>"; };
 		5163663A2100BAE1006FC981 /* CameraCollectionViewCellDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraCollectionViewCellDelegate.swift; sourceTree = "<group>"; };
+		51875DC6210F5572005CF685 /* ImagePickerController+Drag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ImagePickerController+Drag.swift"; sourceTree = "<group>"; };
+		51875DC821108CED005CF685 /* ViewController+Drop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewController+Drop.swift"; sourceTree = "<group>"; };
 		51D4B1D521007F75000F005A /* ImagePickerAssetCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePickerAssetCell.swift; sourceTree = "<group>"; };
 		51D4B1D7210080AD000F005A /* VideoAssetCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoAssetCell.swift; sourceTree = "<group>"; };
 		51DE4C02210F3CCC00772BA3 /* ViewController+Data.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewController+Data.swift"; sourceTree = "<group>"; };
@@ -222,6 +226,7 @@
 				420C24011F5D82C6008935D4 /* ViewController.swift */,
 				51DE4C02210F3CCC00772BA3 /* ViewController+Data.swift */,
 				42E736481F838DB80060E24D /* ViewController+Helpers.swift */,
+				51875DC821108CED005CF685 /* ViewController+Drop.swift */,
 				51DE4C04210F409700772BA3 /* ViewController+ImagePicker.swift */,
 				4275FFC31F62C2290077A2CD /* Custom Views */,
 				420C24031F5D82C6008935D4 /* Main.storyboard */,
@@ -309,6 +314,7 @@
 				421442621F6014B3006BA45A /* CellRegistrator.swift */,
 				85F70C3420D258E900DC3997 /* UICollectionView+CellRegistrator.swift */,
 				420C24251F5D8393008935D4 /* ImagePickerController.swift */,
+				51875DC6210F5572005CF685 /* ImagePickerController+Drag.swift */,
 				85F70C3220D1417600DC3997 /* ImagePickerController+Delegate.swift */,
 				420C24401F5EEA3C008935D4 /* LayoutConfiguration.swift */,
 			);
@@ -484,6 +490,7 @@
 			files = (
 				420C24021F5D82C6008935D4 /* ViewController.swift in Sources */,
 				420BCC3C1F66C53A006E8806 /* CustomVideoCell.swift in Sources */,
+				51875DC921108CED005CF685 /* ViewController+Drop.swift in Sources */,
 				51DE4C03210F3CCC00772BA3 /* ViewController+Data.swift in Sources */,
 				42E736491F838DB80060E24D /* ViewController+Helpers.swift in Sources */,
 				420C24001F5D82C6008935D4 /* AppDelegate.swift in Sources */,
@@ -519,6 +526,7 @@
 				4217080E1F62D06D000DA508 /* CameraCollectionViewCell.swift in Sources */,
 				427925F51F96381400B6D55F /* ShutterButton.swift in Sources */,
 				85F70C3320D1417600DC3997 /* ImagePickerController+Delegate.swift in Sources */,
+				51875DC7210F5572005CF685 /* ImagePickerController+Drag.swift in Sources */,
 				5163663B2100BAE1006FC981 /* CameraCollectionViewCellDelegate.swift in Sources */,
 				85F70C3520D258E900DC3997 /* UICollectionView+CellRegistrator.swift in Sources */,
 				85D6EA8720D5746600B63486 /* CaptureSessionError.swift in Sources */,

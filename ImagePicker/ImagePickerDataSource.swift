@@ -31,22 +31,21 @@ final class ImagePickerDataSource: NSObject, UICollectionViewDataSource {
             fatalError("cells registrator must be set at this moment")
         }
         
-        //TODO: change these hardcoded section numbers to those defined in layoutModel.layoutConfiguration
         switch indexPath.section {
-        case 0:
+        case LayoutConfiguration.default.sectionIndexForActions:
             guard let id = cellsRegistrator.cellIdentifier(forActionItemAt: indexPath.row) else {
                 fatalError("there is an action item at index \(indexPath.row) but no cell is registered.")
             }
             return collectionView.dequeueReusableCell(withReuseIdentifier: id, for: indexPath)
-        
-        case 1:
+
+        case LayoutConfiguration.default.sectionIndexForCamera:
             let id = cellsRegistrator.cellIdentifierForCameraItem
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: id, for: indexPath) as? CameraCollectionViewCell else {
                 fatalError("there is a camera item but no cell class `CameraCollectionViewCell` is registered.")
             }
             return cell
             
-        case 2:
+        case LayoutConfiguration.default.sectionIndexForAssets:
             return assetItems(for: indexPath, collectionView: collectionView, cellsRegistrator: cellsRegistrator)
             
         default: fatalError("only 3 sections are supported")

@@ -70,6 +70,12 @@ extension ViewController {
                      { cell, controller in cell.accessoryType = controller.captureMode == .photoAndVideo ? .checkmark : .none })
         ],
         [
+            CellData("Disabled (default)", #selector(ViewController.configDragAndDrop(indexPath:)), .indexPath,
+                     { cell, controller in cell.accessoryType = controller.dragAndDropConfig ? .none : .checkmark }),
+            CellData("Enabled", #selector(ViewController.configDragAndDrop(indexPath:)), .indexPath,
+                     { cell, controller in cell.accessoryType = controller.dragAndDropConfig ? .checkmark : .none })
+        ],
+        [
             CellData("Don't save (default)", #selector(ViewController.configSavesCapturedAssets(indexPath:)), .indexPath,
                      { cell, controller in cell.accessoryType = controller.savesCapturedAssets ? .none : .checkmark }),
             CellData("Save", #selector(ViewController.configSavesCapturedAssets(indexPath:)), .indexPath,
@@ -84,6 +90,7 @@ extension ViewController {
         ("Assets Source", nil),
         ("Asset Items in a row", nil),
         ("Capture mode", nil),
+        ("Drag and drop", nil),
         ("Save Assets", "Assets will be saved to Photo Library. This applies to photos only. Live photos and videos are always saved.")
     ]
 }
