@@ -47,7 +47,7 @@ open class ImagePickerController: UIViewController {
     private var overlayView: UIView?
     
     var collectionViewDataSource = ImagePickerDataSource(assetsCacheItem: ImagePickerAssetCacheItem())
-    var collectionViewDelegate = ImagePickerDelegate()
+    private var collectionViewDelegate = ImagePickerDelegate()
     
     var captureSession: CaptureSession?
     
