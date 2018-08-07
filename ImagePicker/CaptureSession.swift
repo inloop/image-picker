@@ -128,7 +128,7 @@ final class CaptureSession : NSObject {
         //note: when I added these 2 updates into a configuration block the lag was even worse
         sessionQueue.async {
             //when device is disconnected also video data output connection orientation is reset, so we need to set to new proper value
-            self.videoDataOutput?.connection(withMediaType: AVMediaTypeVideo)?.videoOrientation = new
+            self.videoDataOutput?.connection(with: AVMediaType.video)?.videoOrientation = new
         }
 
     }
@@ -137,7 +137,7 @@ final class CaptureSession : NSObject {
     fileprivate let sessionQueue = DispatchQueue(label: "session queue", attributes: [], target: nil)
     fileprivate var setupResult: SessionSetupResult = .success
     fileprivate var videoDeviceInput: AVCaptureDeviceInput!
-    fileprivate lazy var videoDeviceDiscoverySession = AVCaptureDevice.DiscoverySession(deviceTypes: [AVCaptureDevice.DeviceType.builtInWideAngleCamera, AVCaptureDevice.DeviceType.builtInDuoCamera], mediaType: AVMediaTypeVideo, position: .unspecified)
+    fileprivate lazy var videoDeviceDiscoverySession = AVCaptureDevice.DiscoverySession(deviceTypes: [AVCaptureDevice.DeviceType.builtInWideAngleCamera, AVCaptureDevice.DeviceType.builtInDuoCamera], mediaType: AVMediaType.video, position: .unspecified)
     fileprivate var videoDataOutput: AVCaptureVideoDataOutput?
     fileprivate let videoOutpuSampleBufferDelegate = VideoOutputSampleBufferDelegate()
 
@@ -185,8 +185,8 @@ final class CaptureSession : NSObject {
          access is optional. If audio access is denied, audio is not recorded
          during movie recording.
          */
-        let mediaType = AVMediaTypeVideo
-        switch AVCaptureDevice.authorizationStatus(forMediaType: mediaType) {
+        let mediaType = AVMediaType.video
+        switch AVCaptureDevice.authorizationStatus(for: mediaType) {
         case .authorized:
             // The user has previously granted access to the camera.
             break
@@ -201,7 +201,7 @@ final class CaptureSession : NSObject {
              create an AVCaptureDeviceInput for audio during session setup.
              */
             sessionQueue.suspend()
-            AVCaptureDevice.requestAccess(forMediaType: AVMediaTypeVideo, completionHandler: { [capturedSelf = self] granted in
+            AVCaptureDevice.requestAccess(for: AVMediaType.video, completionHandler: { [capturedSelf = self] granted in
                 if granted {
                     DispatchQueue.main.async {
                         capturedSelf.delegate?.captureSession(capturedSelf, authorizationStatusGranted: .authorized)
@@ -252,7 +252,7 @@ final class CaptureSession : NSObject {
             case .notAuthorized:
                 log("capture session: not authorized")
                 DispatchQueue.main.async { [weak self] in
-                    let status = AVCaptureDevice.authorizationStatus(forMediaType: AVMediaTypeVideo)
+                    let status = AVCaptureDevice.authorizationStatus(for: AVMediaType.video)
                     self?.delegate?.captureSession(self!, authorizationStatusFailed: status)
                 }
 
@@ -309,9 +309,9 @@ final class CaptureSession : NSObject {
 
         switch presetConfiguration {
         case .livePhotos, .photos:
-            session.sessionPreset = AVCaptureSessionPresetPhoto
+            session.sessionPreset = AVCaptureSession.Preset.photo
         case .videos:
-            session.sessionPreset = AVCaptureSessionPresetHigh
+            session.sessionPreset = AVCaptureSession.Preset.high
         }
 
         // Add video input.
@@ -319,14 +319,14 @@ final class CaptureSession : NSObject {
             var defaultVideoDevice: AVCaptureDevice?
 
             // Choose the back dual camera if available, otherwise default to a wide angle camera.
-            if let dualCameraDevice = AVCaptureDevice.defaultDevice(withDeviceType: AVCaptureDevice.DeviceType.builtInDuoCamera, mediaType: AVMediaTypeVideo, position: .back) {
+            if let dualCameraDevice = AVCaptureDevice.default(AVCaptureDevice.DeviceType.builtInDuoCamera, for: AVMediaType.video, position: .back) {
                 defaultVideoDevice = dualCameraDevice
             }
-            else if let backCameraDevice = AVCaptureDevice.defaultDevice(withDeviceType: AVCaptureDevice.DeviceType.builtInWideAngleCamera, mediaType: AVMediaTypeVideo, position: .back) {
+            else if let backCameraDevice = AVCaptureDevice.default(AVCaptureDevice.DeviceType.builtInWideAngleCamera, for: AVMediaType.video, position: .back) {
                 // If the back dual camera is not available, default to the back wide angle camera.
                 defaultVideoDevice = backCameraDevice
             }
-            else if let frontCameraDevice = AVCaptureDevice.defaultDevice(withDeviceType: AVCaptureDevice.DeviceType.builtInWideAngleCamera, mediaType: AVMediaTypeVideo, position: .front) {
+            else if let frontCameraDevice = AVCaptureDevice.default(AVCaptureDevice.DeviceType.builtInWideAngleCamera, for: AVMediaType.video, position: .front) {
                 // In some cases where users break their phones, the back wide angle camera is not available. In this case, we should default to the front wide angle camera.
                 defaultVideoDevice = frontCameraDevice
             }
@@ -405,7 +405,7 @@ final class CaptureSession : NSObject {
 
             // Add audio input, if fails no need to fail whole configuration
             do {
-                let audioDevice = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeAudio)
+                let audioDevice = AVCaptureDevice.default(for: AVMediaType.audio)
                 let audioDeviceInput = try AVCaptureDeviceInput(device: audioDevice!)
 
                 if session.canAddInput(audioDeviceInput) {
@@ -455,7 +455,7 @@ final class CaptureSession : NSObject {
                 videoDataOutput!.alwaysDiscardsLateVideoFrames = true
                 videoDataOutput!.setSampleBufferDelegate(videoOutpuSampleBufferDelegate, queue: videoOutpuSampleBufferDelegate.processQueue)
 
-                if let connection = videoDataOutput!.connection(withMediaType: AVMediaTypeVideo) {
+                if let connection = videoDataOutput!.connection(with: AVMediaType.video) {
                     connection.videoOrientation = self.videoOrientation
                     connection.automaticallyAdjustsVideoMirroring = false
                 }
@@ -604,17 +604,17 @@ extension CaptureSession {
 
         sessionQueue.async { [unowned self] in
             let currentVideoDevice = self.videoDeviceInput.device
-            let currentPosition = currentVideoDevice?.position
+            let currentPosition = currentVideoDevice.position
 
             let preferredPosition: AVCaptureDevice.Position
             let preferredDeviceType: AVCaptureDevice.DeviceType
 
             switch currentPosition {
-            case .unspecified?, .front?:
+            case .unspecified, .front:
                 preferredPosition = .back
                 preferredDeviceType = AVCaptureDevice.DeviceType.builtInDuoCamera
 
-            case .back?:
+            case .back:
                 preferredPosition = .front
                 preferredDeviceType = AVCaptureDevice.DeviceType.builtInWideAngleCamera
             default:
@@ -622,14 +622,14 @@ extension CaptureSession {
                 preferredDeviceType = AVCaptureDevice.DeviceType.builtInDuoCamera
             }
 
-            let devices = self.videoDeviceDiscoverySession?.devices
+            let devices = self.videoDeviceDiscoverySession.devices
             var newVideoDevice: AVCaptureDevice? = nil
 
             // First, look for a device with both the preferred position and device type. Otherwise, look for a device with only the preferred position.
-            if let device = devices?.filter({ $0.position == preferredPosition && $0.deviceType == preferredDeviceType }).first {
+            if let device = devices.filter({ $0.position == preferredPosition && $0.deviceType == preferredDeviceType }).first {
                 newVideoDevice = device
             }
-            else if let device = devices?.filter({ $0.position == preferredPosition }).first {
+            else if let device = devices.filter({ $0.position == preferredPosition }).first {
                 newVideoDevice = device
             }
 
@@ -653,7 +653,7 @@ extension CaptureSession {
                         self.session.addInput(self.videoDeviceInput);
                     }
 
-                    if let connection = self.videoFileOutput?.connection(withMediaType: AVMediaTypeVideo) {
+                    if let connection = self.videoFileOutput?.connection(with: AVMediaType.video) {
                         if connection.isVideoStabilizationSupported {
                             connection.preferredVideoStabilizationMode = .auto
                         }
@@ -670,7 +670,7 @@ extension CaptureSession {
                     // when device is disconnected:
                     // - video data output connection orientation is reset, so we need to set to new proper value
                     // - video mirroring is set to true if camera is front, make sure we use no mirroring
-                    if let videoDataOutputConnection = self.videoDataOutput?.connection(withMediaType: AVMediaTypeVideo) {
+                    if let videoDataOutputConnection = self.videoDataOutput?.connection(with: AVMediaType.video) {
                         videoDataOutputConnection.videoOrientation = self.videoOrientation
                         if videoDataOutputConnection.isVideoMirroringSupported {
                             videoDataOutputConnection.isVideoMirrored = true
@@ -710,7 +710,7 @@ extension CaptureSession {
 
         sessionQueue.async {
             // Update the photo output's connection to match the video orientation of the video preview layer.
-            if let photoOutputConnection = self.photoOutput.connection(withMediaType: AVMediaTypeVideo) {
+            if let photoOutputConnection = self.photoOutput.connection(with: AVMediaType.video) {
                 photoOutputConnection.videoOrientation = videoPreviewLayerOrientation
             }
 
@@ -839,7 +839,7 @@ extension CaptureSession {
             }
 
             // update the orientation on the movie file output video connection before starting recording.
-            let movieFileOutputConnection = strongSelf.videoFileOutput?.connection(withMediaType: AVMediaTypeVideo)
+            let movieFileOutputConnection = strongSelf.videoFileOutput?.connection(with: AVMediaType.video)
             movieFileOutputConnection?.videoOrientation = videoPreviewLayerOrientation!
 
             // start recording to a temporary file.
@@ -886,7 +886,7 @@ extension CaptureSession {
             recordingDelegate.savesVideoToLibrary = saveToPhotoLibrary
 
             // start recording
-            movieFileOutput.startRecording(toOutputFileURL: outputURL, recordingDelegate: recordingDelegate)
+            movieFileOutput.startRecording(to: outputURL, recordingDelegate: recordingDelegate)
             strongSelf.videoCaptureDelegate = recordingDelegate
         }
     }

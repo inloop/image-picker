@@ -144,7 +144,7 @@ open class ImagePickerController : UIViewController {
     public var selectedAssets: [PHAsset] {
         get {
             let selectedIndexPaths = collectionView.indexPathsForSelectedItems ?? []
-            let selectedAssets = selectedIndexPaths.flatMap { indexPath in
+            let selectedAssets = selectedIndexPaths.compactMap { indexPath in
                 return asset(at: indexPath.row)
             }
             return selectedAssets
@@ -514,7 +514,7 @@ extension ImagePickerController : ImagePickerDelegateDelegate {
         cell.updateRecordingVideoStatus(isRecording: isRecordingVideo, shouldAnimate: false)
 
         //update authorization status if it's changed
-        let status = AVCaptureDevice.authorizationStatus(forMediaType: AVMediaTypeVideo)
+        let status = AVCaptureDevice.authorizationStatus(for: AVMediaType.video)
         if cell.authorizationStatus != status {
             cell.authorizationStatus = status
         }

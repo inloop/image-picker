@@ -47,7 +47,7 @@ class VideoAssetCell : AssetCell {
         iconView.contentMode = .center
 
         durationLabel.textColor = UIColor.white
-        durationLabel.font = UIFont.systemFont(ofSize: 12, weight: UIFontWeightSemibold)
+        durationLabel.font = UIFont.systemFont(ofSize: 12, weight: UIFont.Weight.semibold)
         durationLabel.textAlignment = .right
 
         contentView.addSubview(gradientView)

@@ -65,9 +65,9 @@ final class AVPreviewView: UIView {
     // MARK: Private Methods
 
     private func applyVideoDisplayMode() {        switch displayMode {
-    case .aspectFill:    previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill
-    case .aspectFit:    previewLayer.videoGravity = AVLayerVideoGravityResizeAspect
-    case .resize:       previewLayer.videoGravity = AVLayerVideoGravityResize
+    case .aspectFill:    previewLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
+    case .aspectFit:    previewLayer.videoGravity = AVLayerVideoGravity.resizeAspect
+    case .resize:       previewLayer.videoGravity = AVLayerVideoGravity.resize
         }
     }
 }
