@@ -69,14 +69,14 @@ final class CarvedLabel : UIView {
     }
 
     fileprivate var textAttributes: TextAttributes {
-        let activeFont = font ?? UIFont.systemFont(ofSize: 12, weight: UIFontWeightRegular)
+        let activeFont = font ?? UIFont.systemFont(ofSize: 12, weight: UIFont.Weight.regular)
         return [
-            NSFontAttributeName as NSString: activeFont
+            NSAttributedStringKey.font: activeFont
         ]
     }
 
     fileprivate var attributedString: NSAttributedString {
-        return NSAttributedString(string: text ?? "", attributes: textAttributes as [String : Any])
+        return NSAttributedString(string: text ?? "", attributes: textAttributes)
     }
 
     override func draw(_ rect: CGRect) {

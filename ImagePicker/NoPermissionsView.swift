@@ -9,7 +9,7 @@ public class NoPermissionsView: UIView {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .center
         label.numberOfLines = 0
-        label.font = .systemFont(ofSize: 17, weight: UIFontWeightRegular)
+        label.font = .systemFont(ofSize: 17, weight: UIFont.Weight.regular)
         let grayLevel: CGFloat = 153/255
         label.textColor = UIColor(red: grayLevel, green: grayLevel, blue: grayLevel, alpha: 1.0)
         return label
@@ -19,7 +19,7 @@ public class NoPermissionsView: UIView {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle(NSLocalizedString("Go to Settings", comment: ""), for: .normal)
-        button.titleLabel?.font = .systemFont(ofSize: 20, weight: UIFontWeightSemibold)
+        button.titleLabel?.font = .systemFont(ofSize: 20, weight: UIFont.Weight.semibold)
         return button
     }()
 
@@ -41,7 +41,7 @@ public class NoPermissionsView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func navigateToSettings() {
+    @objc func navigateToSettings() {
         guard let settingsURL = URL(string: UIApplicationOpenSettingsURLString) else { return }
         UIApplication.shared.open(settingsURL, options: [:], completionHandler: nil)
     }
