@@ -11,17 +11,17 @@ import UIKit
 
 //TODO: add a recording indicator (red dot with timer)
 class VideoCameraCell : CameraCollectionViewCell {
-    
+
     @IBOutlet weak var recordLabel: RecordDurationLabel!
     @IBOutlet weak var recordButton: RecordVideoButton!
     @IBOutlet weak var flipButton: UIButton!
-    
+
     override func awakeFromNib() {
         super.awakeFromNib()
         recordButton.isEnabled = false
         recordButton.alpha = 0.5
     }
-    
+
     @IBAction func recordButtonTapped(_ sender: UIButton) {
         if sender.isSelected {
             stopVideoRecording()
@@ -30,21 +30,21 @@ class VideoCameraCell : CameraCollectionViewCell {
             startVideoRecording()
         }
     }
-    
+
     @IBAction func flipButtonTapped(_ sender: UIButton) {
         flipCamera()
     }
-    
+
     // MARK: Override Methods
-    
+
     override func updateRecordingVideoStatus(isRecording: Bool, shouldAnimate: Bool) {
 
         //update button state
         recordButton.isSelected = isRecording
-        
+
         //update duration label
         isRecording ? recordLabel.start() : recordLabel.stop()
-        
+
         //update other buttons
         let updates: () -> Void = {
             self.flipButton.alpha = isRecording ? 0 : 1
@@ -52,12 +52,13 @@ class VideoCameraCell : CameraCollectionViewCell {
 
         shouldAnimate ? UIView.animate(withDuration: 0.25, animations: updates) : updates()
     }
-    
+
     override func videoRecodingDidBecomeReady() {
         recordButton.isEnabled = true
         UIView.animate(withDuration: 0.25) {
             self.recordButton.alpha = 1.0
         }
     }
-    
+
 }
+

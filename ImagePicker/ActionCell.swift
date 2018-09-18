@@ -9,30 +9,38 @@
 import Foundation
 import UIKit
 
-final class ActionCell : UICollectionViewCell {
-    
-    @IBOutlet weak var titleLabel: UILabel!
-    @IBOutlet weak var imageView: UIImageView!
-    
+public final class ActionCell : UICollectionViewCell {
+
+    @IBOutlet public weak var backgroundImageView: UIImageView!
+    @IBOutlet public weak var titleLabel: UILabel!
+    @IBOutlet public weak var imageView: UIImageView!
+
     @IBOutlet var leadingOffset: NSLayoutConstraint!
     @IBOutlet var trailingOffset: NSLayoutConstraint!
     @IBOutlet var topOffset: NSLayoutConstraint!
     @IBOutlet var bottomOffset: NSLayoutConstraint!
-    
-    override func awakeFromNib() {
+
+    override public func awakeFromNib() {
         super.awakeFromNib()
         imageView.backgroundColor = UIColor.clear
     }
-    
+
 }
 
 extension ActionCell {
-    
+
+    public func setupOffsets() {
+        topOffset.constant = 5
+        bottomOffset.constant = 5
+        leadingOffset.constant = 5
+        trailingOffset.constant = 5
+    }
+
     func update(withIndex index: Int, layoutConfiguration: LayoutConfiguration) {
-        
+
         let layoutModel = LayoutModel(configuration: layoutConfiguration, assets: 0)
         let actionCount = layoutModel.numberOfItems(in: layoutConfiguration.sectionIndexForActions)
-        
+
         titleLabel.textColor = UIColor.black
         switch index {
         case 0:
@@ -43,10 +51,10 @@ extension ActionCell {
             imageView.image = UIImage(named: "button-photo-library", in: Bundle(for: type(of: self)), compatibleWith: nil)
         default: break
         }
-        
+
         let isFirst = index == 0
         let isLast = index == actionCount - 1
-        
+
         switch layoutConfiguration.scrollDirection {
         case .horizontal:
             topOffset.constant = isFirst ? 10 : 5
@@ -59,7 +67,8 @@ extension ActionCell {
             leadingOffset.constant = isFirst ? 10 : 5
             trailingOffset.constant = isLast ? 10 : 5
         }
-        
+
     }
-    
+
 }
+

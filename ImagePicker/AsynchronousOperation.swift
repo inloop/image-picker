@@ -13,7 +13,7 @@ import Foundation
 /// be enqueued in a OperationQueue and run serially.
 ///
 class AsynchronousOperation : Foundation.Operation {
-    
+
     var stateFinished: Bool = false {
         willSet { willChangeValue(forKey: "isFinished") }
         didSet { didChangeValue(forKey: "isFinished") }
@@ -22,19 +22,19 @@ class AsynchronousOperation : Foundation.Operation {
         willSet { willChangeValue(forKey: "isExecuting") }
         didSet { didChangeValue(forKey: "isExecuting") }
     }
-    
+
     override var isFinished: Bool {
         return stateFinished
     }
-    
+
     override var isExecuting: Bool {
         return stateExecuting
     }
-    
+
     override var isAsynchronous: Bool {
         return true
     }
-    
+
     override func main() {
         if isCancelled {
             completeOperation()
@@ -44,18 +44,19 @@ class AsynchronousOperation : Foundation.Operation {
             execute()
         }
     }
-    
+
     func execute() {
         fatalError("This method has to be overriden")
     }
-    
+
     func completeOperation() {
         if self.stateExecuting == true {
             self.stateExecuting = false
         }
-        
+
         if self.stateFinished == false {
             self.stateFinished = true
         }
     }
 }
+

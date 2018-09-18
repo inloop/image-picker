@@ -13,34 +13,34 @@ import Foundation
 /// collection view items.
 ///
 public struct LayoutConfiguration {
-    
+
     public var showsFirstActionItem = true
     public var showsSecondActionItem = true
- 
+
     public var showsCameraItem = true
-    
+
     let showsAssetItems = true
-    
+
     ///
     /// Scroll and layout direction
     ///
-    public var scrollDirection: UICollectionViewScrollDirection = .horizontal
-    
+    public var scrollDirection: UICollectionView.ScrollDirection = .horizontal
+
     ///
     /// Defines how many image assets will be in a row. Must be > 0
     ///
     public var numberOfAssetItemsInRow: Int = 2
-    
+
     ///
     /// Spacing between items within a section
     ///
     public var interitemSpacing: CGFloat = 1
-    
+
     ///
     /// Spacing between actions section and camera section
     ///
     public var actionSectionSpacing: CGFloat = 1
-    
+
     ///
     /// Spacing between camera section and assets section
     ///
@@ -48,32 +48,33 @@ public struct LayoutConfiguration {
 }
 
 extension LayoutConfiguration {
-    
+
     var hasAnyAction: Bool {
         return showsFirstActionItem || showsSecondActionItem
     }
-    
+
     var sectionIndexForActions: Int {
         return 0
     }
-    
+
     var sectionIndexForCamera: Int {
         return 1
     }
-    
+
     var sectionIndexForAssets: Int {
         return 2
     }
-    
+
     public static var `default` = LayoutConfiguration()
-    
+
 }
 
 extension UICollectionView {
-    
+
     /// Helper method for convenienet access to camera cell
     func cameraCell(layout: LayoutConfiguration) -> CameraCollectionViewCell? {
         return cellForItem(at: IndexPath(row: 0, section: layout.sectionIndexForCamera)) as? CameraCollectionViewCell
     }
-    
+
 }
+

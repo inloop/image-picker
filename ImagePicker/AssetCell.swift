@@ -13,10 +13,10 @@ import Photos
 /// Each image picker asset cell must conform to this protocol.
 ///
 public protocol ImagePickerAssetCell : class {
-    
+
     /// This image view will be used when setting an asset's image
     var imageView: UIImageView! { get }
-    
+
     /// This is a helper identifier that is used when properly displaying cells asynchronously
     var representedAssetIdentifier: String? { get set }
 }
@@ -28,43 +28,43 @@ public protocol ImagePickerAssetCell : class {
 /// - selected icon when isSelected is true
 ///
 class VideoAssetCell : AssetCell {
-    
+
     var durationLabel: UILabel
     var iconView: UIImageView
     var gradientView: UIImageView
-    
+
     override init(frame: CGRect) {
-        
+
         durationLabel = UILabel(frame: .zero)
         gradientView = UIImageView(frame: .zero)
         iconView = UIImageView(frame: .zero)
-        
+
         super.init(frame: frame)
-        
+
         gradientView.isHidden = true
-        
+
         iconView.tintColor = UIColor.white
         iconView.contentMode = .center
-        
+
         durationLabel.textColor = UIColor.white
-        durationLabel.font = UIFont.systemFont(ofSize: 12, weight: .semibold)
+        durationLabel.font = UIFont.systemFont(ofSize: 12, weight: UIFont.Weight.semibold)
         durationLabel.textAlignment = .right
 
         contentView.addSubview(gradientView)
         contentView.addSubview(durationLabel)
         contentView.addSubview(iconView)
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     override func layoutSubviews() {
         super.layoutSubviews()
-        
+
         gradientView.frame.size = CGSize(width: bounds.width, height: 40)
         gradientView.frame.origin = CGPoint(x: 0, y: bounds.height-40)
-        
+
         let margin: CGFloat = 5
         durationLabel.frame.size = CGSize(width: 50, height: 20)
         durationLabel.frame.origin = CGPoint(
@@ -77,7 +77,7 @@ class VideoAssetCell : AssetCell {
             y: contentView.bounds.height - iconView.frame.height - margin
         )
     }
-    
+
     static let durationFormatter: DateComponentsFormatter = {
         let formatter = DateComponentsFormatter()
         formatter.unitsStyle = .positional
@@ -85,9 +85,9 @@ class VideoAssetCell : AssetCell {
         formatter.zeroFormattingBehavior = .pad
         return formatter
     }()
-    
+
     func update(with asset: PHAsset) {
-        
+
         switch asset.mediaType {
         case .image:
             if asset.mediaSubtypes.contains(.photoLive) {
@@ -111,9 +111,9 @@ class VideoAssetCell : AssetCell {
             durationLabel.text = VideoAssetCell.durationFormatter.string(from: asset.duration)
         default: break
         }
-        
+
     }
-    
+
 }
 
 ///
@@ -122,12 +122,12 @@ class VideoAssetCell : AssetCell {
 /// default icon for selected state.
 ///
 class AssetCell : UICollectionViewCell, ImagePickerAssetCell {
-    
+
     var imageView: UIImageView! = UIImageView(frame: .zero)
     fileprivate var selectedImageView = CheckView(frame: .zero)
-    
+
     var representedAssetIdentifier: String?
-    
+
     override var isSelected: Bool {
         didSet {
             selectedImageView.isHidden = !isSelected
@@ -137,28 +137,28 @@ class AssetCell : UICollectionViewCell, ImagePickerAssetCell {
             }
         }
     }
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
         contentView.addSubview(imageView)
-        
+
         selectedImageView.frame = CGRect(x: 0, y: 0, width: 31, height: 31)
-        
+
         contentView.addSubview(selectedImageView)
         selectedImageView.isHidden = true
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     override func prepareForReuse() {
         super.prepareForReuse()
         imageView.image = nil
     }
-    
+
     override func layoutSubviews() {
         super.layoutSubviews()
         imageView.frame = bounds
@@ -168,31 +168,32 @@ class AssetCell : UICollectionViewCell, ImagePickerAssetCell {
             y: margin
         )
     }
-    
+
 }
 
 private final class CheckView : UIImageView {
-    
+
     var foregroundImage: UIImage? {
         get { return foregroundView.image }
         set { foregroundView.image = newValue }
     }
-    
+
     private let foregroundView = UIImageView(frame: .zero)
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         addSubview(foregroundView)
         contentMode = .center
         foregroundView.contentMode = .center
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     override func layoutSubviews() {
         super.layoutSubviews()
         foregroundView.frame = bounds
     }
 }
+
