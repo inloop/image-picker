@@ -118,9 +118,9 @@ final class RecordDurationLabel : UILabel {
         appear.fromValue = indicatorLayer.presentation()?.opacity
         appear.toValue = 1
         appear.duration = 0.15
-        appear.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseOut)
+        appear.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeOut)
         appear.beginTime = delay
-        appear.fillMode = kCAFillModeForwards
+        appear.fillMode = CAMediaTimingFillMode.forwards
         return appear
     }
 
@@ -128,7 +128,7 @@ final class RecordDurationLabel : UILabel {
         let disappear = CABasicAnimation(keyPath: "opacity")
         disappear.fromValue = indicatorLayer.presentation()?.opacity
         disappear.toValue = 0
-        disappear.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseIn)
+        disappear.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeIn)
         disappear.beginTime = delay
         disappear.duration = 0.25
         return disappear

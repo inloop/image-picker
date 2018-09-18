@@ -116,7 +116,7 @@ open class ImagePickerController : UIViewController {
     ///
     /// Programatically select asset.
     ///
-    public func selectAsset(at index: Int, animated: Bool, scrollPosition: UICollectionViewScrollPosition) {
+    public func selectAsset(at index: Int, animated: Bool, scrollPosition: UICollectionView.ScrollPosition) {
         let path = IndexPath(item: index, section: layoutConfiguration.sectionIndexForAssets)
         collectionView.selectItem(at: path, animated: animated, scrollPosition: scrollPosition)
     }
@@ -443,7 +443,7 @@ extension ImagePickerController: PHPhotoLibraryChangeObserver {
         }
 
         //perform update animations
-        collectionViewCoordinator.performChanges(changes, inSection: layoutConfiguration.sectionIndexForAssets)
+        collectionViewCoordinator.performChanges(changes as! PHFetchResultChangeDetails<PHObject>, inSection: layoutConfiguration.sectionIndexForAssets)
     }
 }
 
