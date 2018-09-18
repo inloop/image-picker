@@ -39,7 +39,7 @@ extension UIInterfaceOrientation : CustomDebugStringConvertible {
 
 }
 
-func differencesBetweenRects(_ old: CGRect, _ new: CGRect, _ scrollDirection: UICollectionViewScrollDirection) -> (added: [CGRect], removed: [CGRect]) {
+func differencesBetweenRects(_ old: CGRect, _ new: CGRect, _ scrollDirection: UICollectionView.ScrollDirection) -> (added: [CGRect], removed: [CGRect]) {
     switch scrollDirection {
     case .horizontal: return differencesBetweenRectsHorizontal(old, new)
     case .vertical: return differencesBetweenRectsVertical(old, new)

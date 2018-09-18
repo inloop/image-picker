@@ -8,7 +8,7 @@
 
 import UIKit
 
-fileprivate typealias TextAttributes = [NSAttributedStringKey: Any]
+fileprivate typealias TextAttributes = [NSAttributedString.Key: Any]
 
 ///
 /// A label whose transparent text is carved into solid color.
@@ -71,7 +71,7 @@ final class CarvedLabel : UIView {
     fileprivate var textAttributes: TextAttributes {
         let activeFont = font ?? UIFont.systemFont(ofSize: 12, weight: UIFont.Weight.regular)
         return [
-            NSAttributedStringKey.font: activeFont
+            NSAttributedString.Key.font: activeFont
         ]
     }
 

@@ -35,7 +35,7 @@ final class VideoOutputSampleBufferDelegate : NSObject, AVCaptureVideoDataOutput
 
 extension CMSampleBuffer {
 
-    static let context = CIContext(options: [kCIContextUseSoftwareRenderer: false])
+    static let context = CIContext(options: [CIContextOption.useSoftwareRenderer: false])
 
     ///
     /// Converts Sample Buffer to UIImage with backing CGImage. This conversion

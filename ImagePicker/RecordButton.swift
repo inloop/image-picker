@@ -47,13 +47,13 @@ class RecordVideoButton : StationaryButton {
     private var outerCircleLayer: CALayer
     private var innerCircleLayer: CALayer
 
-    private enum State: String {
+    private enum RecordVideoButtonState: String {
         case initial
         case pressed
         case recording
     }
 
-    private var layersState: State = .initial
+    private var layersState: RecordVideoButtonState = .initial
 
     required init?(coder aDecoder: NSCoder) {
         outerCircleLayer = CALayer()
@@ -91,7 +91,7 @@ class RecordVideoButton : StationaryButton {
         setNeedsLayout()
     }
 
-    private func updateCircleLayers(state: State, animated: Bool) {
+    private func updateCircleLayers(state: RecordVideoButtonState, animated: Bool) {
         guard layersState != state else { return }
 
         layersState = state
@@ -137,9 +137,9 @@ class RecordVideoButton : StationaryButton {
         animation.fromValue = innerCircleLayer.presentation()?.value(forKeyPath: "transform.scale")
         animation.toValue = value
         animation.duration = duration
-        animation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseOut)
+        animation.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeOut)
         animation.beginTime = CACurrentMediaTime()
-        animation.fillMode = kCAFillModeForwards
+        animation.fillMode = CAMediaTimingFillMode.forwards
         animation.isRemovedOnCompletion = false
         return animation
     }

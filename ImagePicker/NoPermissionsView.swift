@@ -42,7 +42,7 @@ public class NoPermissionsView: UIView {
     }
 
     @objc func navigateToSettings() {
-        guard let settingsURL = URL(string: UIApplicationOpenSettingsURLString) else { return }
+        guard let settingsURL = URL(string: UIApplication.openSettingsURLString) else { return }
         UIApplication.shared.open(settingsURL, options: [:], completionHandler: nil)
     }
 }

@@ -27,7 +27,7 @@ final class ImagePickerLayout {
     }
 
     /// Returns size for item considering number of rows and scroll direction, if preferredWidthOrHeight is nil, square size is returned
-    func sizeForItem(numberOfItemsInRow: Int, preferredWidthOrHeight: CGFloat?, collectionView: UICollectionView, scrollDirection: UICollectionViewScrollDirection) -> CGSize {
+    func sizeForItem(numberOfItemsInRow: Int, preferredWidthOrHeight: CGFloat?, collectionView: UICollectionView, scrollDirection: UICollectionView.ScrollDirection) -> CGSize {
 
         switch scrollDirection {
         case .horizontal:
