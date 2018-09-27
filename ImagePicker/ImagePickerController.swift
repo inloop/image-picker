@@ -53,6 +53,12 @@ public protocol ImagePickerControllerDelegate : class {
     /// to configure your cell based on asset media type, subtype, etc.
     ///
     func imagePicker(controller: ImagePickerController, willDisplayAssetItem cell: ImagePickerAssetCell, asset: PHAsset)
+    
+    ///
+    /// Called right before an asset item collection view cell is selected.
+    /// Return false to prevent selection
+    ///
+    func imagePicker(controller: ImagePickerController, shouldSelectCellAt: Int) -> Bool
 }
 
 //this will make sure all delegate methods are optional
@@ -63,6 +69,11 @@ extension ImagePickerControllerDelegate {
     public func imagePicker(controller: ImagePickerController, didTake image: UIImage) {}
     public func imagePicker(controller: ImagePickerController, willDisplayActionItem cell: UICollectionViewCell, at index: Int) {}
     public func imagePicker(controller: ImagePickerController, willDisplayAssetItem cell: ImagePickerAssetCell, asset: PHAsset) {}
+    // public func imagePicker(controller: ImagePickerController, willDisplayAssetItem cell: ImagePickerAssetCell, asset: PHAsset) {}
+    public func imagePicker(controller: ImagePickerController, shouldSelectCellAt: Int) -> Bool {
+        // default: Do not prevent selection
+        return true
+    }
 }
 
 
@@ -425,6 +436,9 @@ extension ImagePickerController: PHPhotoLibraryChangeObserver {
 }
 
 extension ImagePickerController : ImagePickerDelegateDelegate {
+    func imagePicker(delegate: ImagePickerDelegate, shouldSelectCellAt index: Int) -> Bool {
+        return self.delegate?.imagePicker(controller: self, shouldSelectCellAt: index) ?? true
+    }
     
     func imagePicker(delegate: ImagePickerDelegate, didSelectActionItemAt index: Int) {
         self.delegate?.imagePicker(controller: self, didSelectActionItemAt: index)

@@ -33,6 +33,9 @@ protocol ImagePickerDelegateDelegate : class {
     
     //func imagePicker(delegate: ImagePickerDelegate, didEndDisplayingAssetCell cell: ImagePickerAssetCell)
     func imagePicker(delegate: ImagePickerDelegate, didScroll scrollView: UIScrollView)
+    
+    // Called before selection happens
+    func imagePicker(delegate: ImagePickerDelegate, shouldSelectCellAt index: Int) -> Bool
 }
 
 final class ImagePickerDelegate : NSObject, UICollectionViewDelegateFlowLayout {
@@ -67,6 +70,7 @@ final class ImagePickerDelegate : NSObject, UICollectionViewDelegateFlowLayout {
     }
     
     func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
+        guard delegate?.imagePicker(delegate: self, shouldSelectCellAt: indexPath.item) ?? true else { return false }
         guard let configuration = layout?.configuration else { return false }
         return selectionPolicy.shouldSelectItem(atSection: indexPath.section, layoutConfiguration: configuration)
     }
