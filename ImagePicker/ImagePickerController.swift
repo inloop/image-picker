@@ -144,7 +144,7 @@ open class ImagePickerController : UIViewController {
     public var selectedAssets: [PHAsset] {
         get {
             let selectedIndexPaths = collectionView.indexPathsForSelectedItems ?? []
-            let selectedAssets = selectedIndexPaths.flatMap { indexPath in
+			let selectedAssets = selectedIndexPaths.compactMap { indexPath in
                 return asset(at: indexPath.row)
             }
             return selectedAssets
@@ -212,7 +212,7 @@ open class ImagePickerController : UIViewController {
     private var collectionViewCoordinator: CollectionViewUpdatesCoordinator!
     
     fileprivate var imagePickerView: ImagePickerView! {
-        return view as! ImagePickerView
+		return (view as! ImagePickerView)
     }
     
     fileprivate var collectionViewDataSource = ImagePickerDataSource(assetsModel: ImagePickerAssetModel())
