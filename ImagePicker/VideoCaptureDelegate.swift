@@ -10,11 +10,6 @@ import AVFoundation
 import Photos
 
 final class VideoCaptureDelegate: NSObject, AVCaptureFileOutputRecordingDelegate {
-
-    func capture(_ output: AVCaptureFileOutput!, didFinishRecordingToOutputFileAt outputFileURL: URL!, fromConnections connections: [Any]!, error: Error!) {
-        fatalError("Redbooth added, protocol conformance")
-    }
-
     deinit {
         log("deinit: \(String(describing: self))")
     }
