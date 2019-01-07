@@ -151,7 +151,6 @@ open class ImagePickerController : UIViewController {
         }
     }
 
-    /// Redbooth Added.
     /// Access all currently selected images by name
     /// With index paths
     public var selectedAssetsToIndexPath: [PHAsset: IndexPath] {
@@ -163,7 +162,6 @@ open class ImagePickerController : UIViewController {
         }
     }
 
-    /// Redbooth Added.
     /// Return all visible asset cells
     public var visibleAssetsToIndexPath: [PHAsset: IndexPath] {
         get {
