@@ -137,7 +137,7 @@ final class CaptureSession : NSObject {
     fileprivate let sessionQueue = DispatchQueue(label: "session queue", attributes: [], target: nil)
     fileprivate var setupResult: SessionSetupResult = .success
     fileprivate var videoDeviceInput: AVCaptureDeviceInput!
-    fileprivate lazy var videoDeviceDiscoverySession = AVCaptureDevice.DiscoverySession(deviceTypes: [AVCaptureDevice.DeviceType.builtInWideAngleCamera, AVCaptureDevice.DeviceType.builtInDuoCamera], mediaType: AVMediaType.video, position: .unspecified)
+    fileprivate lazy var videoDeviceDiscoverySession = AVCaptureDevice.DiscoverySession(deviceTypes: [AVCaptureDevice.DeviceType.builtInWideAngleCamera, AVCaptureDevice.DeviceType.builtInDualCamera], mediaType: AVMediaType.video, position: .unspecified)
     fileprivate var videoDataOutput: AVCaptureVideoDataOutput?
     fileprivate let videoOutpuSampleBufferDelegate = VideoOutputSampleBufferDelegate()
 
@@ -319,7 +319,7 @@ final class CaptureSession : NSObject {
             var defaultVideoDevice: AVCaptureDevice?
 
             // Choose the back dual camera if available, otherwise default to a wide angle camera.
-            if let dualCameraDevice = AVCaptureDevice.default(AVCaptureDevice.DeviceType.builtInDuoCamera, for: AVMediaType.video, position: .back) {
+            if let dualCameraDevice = AVCaptureDevice.default(AVCaptureDevice.DeviceType.builtInDualCamera, for: AVMediaType.video, position: .back) {
                 defaultVideoDevice = dualCameraDevice
             }
             else if let backCameraDevice = AVCaptureDevice.default(AVCaptureDevice.DeviceType.builtInWideAngleCamera, for: AVMediaType.video, position: .back) {
@@ -612,14 +612,14 @@ extension CaptureSession {
             switch currentPosition {
             case .unspecified, .front:
                 preferredPosition = .back
-                preferredDeviceType = AVCaptureDevice.DeviceType.builtInDuoCamera
+                preferredDeviceType = AVCaptureDevice.DeviceType.builtInDualCamera
 
             case .back:
                 preferredPosition = .front
                 preferredDeviceType = AVCaptureDevice.DeviceType.builtInWideAngleCamera
             default:
                 preferredPosition = .back
-                preferredDeviceType = AVCaptureDevice.DeviceType.builtInDuoCamera
+                preferredDeviceType = AVCaptureDevice.DeviceType.builtInDualCamera
             }
 
             let devices = self.videoDeviceDiscoverySession.devices

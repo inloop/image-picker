@@ -163,7 +163,7 @@ public extension UIImage {
         var effectImage = self
 
         let hasBlur = blurRadius > __FLT_EPSILON__
-        let hasSaturationChange = fabs(saturationDeltaFactor - 1.0) > __FLT_EPSILON__
+        let hasSaturationChange = abs(saturationDeltaFactor - 1.0) > __FLT_EPSILON__
 
         if hasBlur || hasSaturationChange {
             func createEffectBuffer(_ context: CGContext) -> vImage_Buffer {

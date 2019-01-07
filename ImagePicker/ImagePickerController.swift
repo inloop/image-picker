@@ -233,7 +233,8 @@ open class ImagePickerController : UIViewController {
     fileprivate var collectionViewCoordinator: CollectionViewUpdatesCoordinator!
 
     fileprivate var imagePickerView: ImagePickerView! {
-        return view as! ImagePickerView
+        guard let imagePickerView = view as? ImagePickerView else { fatalError() }
+        return imagePickerView
     }
 
     fileprivate var collectionViewDataSource = ImagePickerDataSource(assetsModel: ImagePickerAssetModel())
