@@ -1,5 +1,5 @@
 Pod::Spec.new do |s|
-  s.name = 'ImagePicker'
+  s.name = 'RedboothImagePicker'
   s.module_name = 'ImagePicker'
   s.version = '0.7.5'
   s.summary = 'An easy to use, highly configurable image picker for your chat application.'
