@@ -1,11 +1,11 @@
 Pod::Spec.new do |s|
   s.name = 'RedboothImagePicker'
   s.module_name = 'ImagePicker'
-  s.version = '0.7.5'
+  s.version = '0.8.1'
   s.summary = 'An easy to use, highly configurable image picker for your chat application.'
   s.homepage = 'https://github.com/redbooth/image-picker'
   s.author = { "INLOOPX" => "info@inloopx.com" }
-  s.source = { :git => 'https://github.com/redbooth/image-picker.git' }
+  s.source = { :git => 'https://github.com/redbooth/image-picker.git', :tag => s.version}
 
   s.swift_version = '4.2'
 
