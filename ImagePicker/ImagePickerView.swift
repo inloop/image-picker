@@ -9,7 +9,8 @@
 import UIKit
 
 final class ImagePickerView : UIView {
-    
+
     @IBOutlet weak var collectionView: UICollectionView!
-    
+
 }
+

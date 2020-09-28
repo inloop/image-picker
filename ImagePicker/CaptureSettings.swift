@@ -12,7 +12,7 @@ import Foundation
 /// Configure capture session using this struct.
 ///
 public struct CaptureSettings {
-    
+
     public enum CameraMode {
         ///
         /// If you support only photos use this preset. Default value.
@@ -22,11 +22,11 @@ public struct CaptureSettings {
         /// If you know you will use live photos use this preset.
         ///
         case photoAndLivePhoto
-        
+
         /// If you wish to record videos or take photos.
         case photoAndVideo
     }
-    
+
     ///
     /// Capture session uses this preset when configuring. Select a preset of
     /// media types you wish to support.
@@ -34,7 +34,7 @@ public struct CaptureSettings {
     /// - note: currently you can not change preset at runtime
     ///
     public var cameraMode: CameraMode
-    
+
     ///
     /// Return true if captured photos will be saved to photo library. Image picker
     /// will prompt user with request for permisssions when needed. Default value is false
@@ -44,10 +44,10 @@ public struct CaptureSettings {
     /// live photos and videos this is always true.
     ///
     public var savesCapturedPhotosToPhotoLibrary: Bool
-    
+
     let savesCapturedLivePhotosToPhotoLibrary: Bool = true
     let savesCapturedVideosToPhotoLibrary: Bool = true
-    
+
     /// Default configuration
     public static var `default`: CaptureSettings {
         return CaptureSettings(
@@ -58,7 +58,7 @@ public struct CaptureSettings {
 }
 
 extension CaptureSettings.CameraMode {
-    
+
     /// transforms user related enum to specific internal capture session enum
     var captureSessionPresetConfiguration: CaptureSession.SessionPresetConfiguration {
         switch self {
@@ -67,5 +67,5 @@ extension CaptureSettings.CameraMode {
         case .photoAndVideo: return .videos
         }
     }
-    
+
 }

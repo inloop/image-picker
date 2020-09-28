@@ -24,15 +24,15 @@ enum VideoDisplayMode {
 /// output from a capture session.
 ///
 final class AVPreviewView: UIView {
-    
+
     deinit {
         log("deinit: \(String(describing: self))")
     }
-    
+
     var previewLayer: AVCaptureVideoPreviewLayer {
         return layer as! AVCaptureVideoPreviewLayer
     }
-    
+
     var session: AVCaptureSession? {
         get { return previewLayer.session }
         set {
@@ -40,35 +40,35 @@ final class AVPreviewView: UIView {
                 return
             }
             previewLayer.session = newValue
-            
+
         }
     }
-    
+
     var displayMode: VideoDisplayMode = .aspectFill {
         didSet { applyVideoDisplayMode() }
     }
-    
+
     override class var layerClass: AnyClass {
         return AVCaptureVideoPreviewLayer.self
     }
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         applyVideoDisplayMode()
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         applyVideoDisplayMode()
     }
-    
+
     // MARK: Private Methods
-    
-    private func applyVideoDisplayMode() {
-        switch displayMode {
-        case .aspectFill:    previewLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
-        case .aspectFit:    previewLayer.videoGravity = AVLayerVideoGravity.resizeAspect
-        case .resize:       previewLayer.videoGravity = AVLayerVideoGravity.resize
+
+    private func applyVideoDisplayMode() {        switch displayMode {
+    case .aspectFill:    previewLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
+    case .aspectFit:    previewLayer.videoGravity = AVLayerVideoGravity.resizeAspect
+    case .resize:       previewLayer.videoGravity = AVLayerVideoGravity.resize
         }
     }
 }
+

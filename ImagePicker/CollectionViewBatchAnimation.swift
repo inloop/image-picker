@@ -16,17 +16,17 @@ final class CollectionViewBatchAnimation<ObjectType> : AsynchronousOperation whe
     private let collectionView: UICollectionView
     private let sectionIndex: Int
     private let changes: PHFetchResultChangeDetails<ObjectType>
-    
+
     init(collectionView: UICollectionView, sectionIndex: Int, changes: PHFetchResultChangeDetails<ObjectType>) {
         self.collectionView = collectionView
         self.sectionIndex = sectionIndex
         self.changes = changes
     }
-    
+
     override func execute() {
         // If we have incremental diffs, animate them in the collection view
         collectionView.performBatchUpdates({ [unowned self] in
-            
+
             // For indexes to make sense, updates must be in this order:
             // delete, insert, reload, move
             if let removed = self.changes.removedIndexes, removed.isEmpty == false {
@@ -46,3 +46,4 @@ final class CollectionViewBatchAnimation<ObjectType> : AsynchronousOperation whe
         })
     }
 }
+
