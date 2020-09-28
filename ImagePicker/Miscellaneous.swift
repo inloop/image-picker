@@ -34,6 +34,7 @@ extension UIInterfaceOrientation : CustomDebugStringConvertible {
         case .portraitUpsideDown: return "portrait upside down"
         case .landscapeRight: return "landscape right"
         case .landscapeLeft: return "landscape left"
+        @unknown default: return "unknown"
         }
     }
 
@@ -43,6 +44,7 @@ func differencesBetweenRects(_ old: CGRect, _ new: CGRect, _ scrollDirection: UI
     switch scrollDirection {
     case .horizontal: return differencesBetweenRectsHorizontal(old, new)
     case .vertical: return differencesBetweenRectsVertical(old, new)
+    @unknown default: return differencesBetweenRects(old, new, scrollDirection)
     }
 }
 

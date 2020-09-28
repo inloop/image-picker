@@ -84,6 +84,7 @@ final class ImagePickerAssetModel {
             guard delta > collectionView.bounds.width / 3 else {
                 return
             }
+        @unknown default: return
         }
 
         // Compute the assets to start caching and to stop caching.

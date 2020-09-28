@@ -276,7 +276,7 @@ open class ImagePickerController : UIViewController {
             collectionViewDataSource.assetsModel.fetchResult = assetsFetchResultBlock?()
             collectionViewDataSource.layoutModel = LayoutModel(configuration: layoutConfiguration, assets: collectionViewDataSource.assetsModel.fetchResult.count)
 
-        case .restricted, .denied:
+        case .restricted, .denied, .limited:
             if let view = overlayView ?? dataSource?.imagePicker(controller: self, viewForAuthorizationStatus: status), view.superview != collectionView {
                 collectionView.backgroundView = view
                 overlayView = view
@@ -288,6 +288,8 @@ open class ImagePickerController : UIViewController {
                     self.reloadData(basedOnAuthorizationStatus: status)
                 }
             })
+        @unknown default: break
+
         }
     }
 
@@ -338,6 +340,7 @@ open class ImagePickerController : UIViewController {
         switch layoutConfiguration.scrollDirection {
         case .horizontal: collectionView.alwaysBounceHorizontal = true
         case .vertical: collectionView.alwaysBounceVertical = true
+        @unknown default: break
         }
 
         if #available(iOS 11.0, *) {

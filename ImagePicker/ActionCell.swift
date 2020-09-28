@@ -66,6 +66,7 @@ extension ActionCell {
             bottomOffset.constant = 5
             leadingOffset.constant = isFirst ? 10 : 5
             trailingOffset.constant = isLast ? 10 : 5
+        @unknown default: break
         }
 
     }

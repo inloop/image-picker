@@ -43,6 +43,7 @@ final class ImagePickerLayout {
             itemWidth -= (CGFloat(numberOfItemsInRow) - 1) * configuration.interitemSpacing
             itemWidth /= CGFloat(numberOfItemsInRow)
             return CGSize(width: itemWidth, height: preferredWidthOrHeight ?? itemWidth)
+        @unknown default: return CGSize(width: collectionView.frame.width, height: collectionView.frame.height)
         }
     }
 
@@ -115,6 +116,7 @@ final class ImagePickerLayout {
             switch layout.scrollDirection {
             case .horizontal: return UIEdgeInsets(top: 0, left: 0, bottom: 0, right: inset)
             case .vertical: return UIEdgeInsets(top: 0, left: 0, bottom: inset, right: 0)
+            @unknown default: return UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
             }
         }
 
