@@ -19,7 +19,7 @@ final class ImagePickerLayout {
     }
     
     /// Returns size for item considering number of rows and scroll direction, if preferredWidthOrHeight is nil, square size is returned
-    func sizeForItem(numberOfItemsInRow: Int, preferredWidthOrHeight: CGFloat?, collectionView: UICollectionView, scrollDirection: UICollectionViewScrollDirection) -> CGSize {
+    func sizeForItem(numberOfItemsInRow: Int, preferredWidthOrHeight: CGFloat?, collectionView: UICollectionView, scrollDirection: UICollectionView.ScrollDirection) -> CGSize {
         switch scrollDirection {
         case .horizontal:
             var itemHeight = collectionView.frame.height
@@ -28,7 +28,7 @@ final class ImagePickerLayout {
             itemHeight /= CGFloat(numberOfItemsInRow)
             return CGSize(width: preferredWidthOrHeight ?? itemHeight, height: itemHeight)
             
-        case .vertical:
+        default:
             var itemWidth = collectionView.frame.width
             itemWidth -= (collectionView.contentInset.left + collectionView.contentInset.right)
             itemWidth -= (CGFloat(numberOfItemsInRow) - 1) * configuration.interitemSpacing
@@ -76,7 +76,7 @@ final class ImagePickerLayout {
         func sectionInsets(_ inset: CGFloat) -> UIEdgeInsets {
             switch layout.scrollDirection {
             case .horizontal: return UIEdgeInsets(top: 0, left: 0, bottom: 0, right: inset)
-            case .vertical: return UIEdgeInsets(top: 0, left: 0, bottom: inset, right: 0)
+            default: return UIEdgeInsets(top: 0, left: 0, bottom: inset, right: 0)
             }
         }
         

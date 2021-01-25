@@ -38,7 +38,7 @@ open class ImagePickerController: UIViewController {
     }
     
     private var collectionViewCoordinator: CollectionViewUpdatesCoordinator!
-    private var imagePickerView: ImagePickerView! {
+    private var imagePickerView: ImagePickerView {
         return view as! ImagePickerView
     }
     
@@ -58,7 +58,7 @@ open class ImagePickerController: UIViewController {
     }
     
     /// Programatically select asset.
-    public func selectAsset(at index: Int, animated: Bool, scrollPosition: UICollectionViewScrollPosition) {
+    public func selectAsset(at index: Int, animated: Bool, scrollPosition: UICollectionView.ScrollPosition) {
         let path = IndexPath(item: index, section: layoutConfiguration.sectionIndexForAssets)
         collectionView.selectItem(at: path, animated: animated, scrollPosition: scrollPosition)
     }
@@ -149,7 +149,8 @@ open class ImagePickerController: UIViewController {
             }
         case .limited:
             //TODO:
-            fatalError("implement this")
+            //fatalError("implement this")
+            print("access to photos is limited")
         }
     }
     
@@ -253,7 +254,7 @@ private extension ImagePickerController {
 
         switch layoutConfiguration.scrollDirection {
         case .horizontal: collectionView.alwaysBounceHorizontal = true
-        case .vertical: collectionView.alwaysBounceVertical = true
+        default: collectionView.alwaysBounceVertical = true
         }
 
         if #available(iOS 11.0, *) {
@@ -481,7 +482,7 @@ extension ImagePickerController: CameraCollectionViewCellDelegate {
 
     private func flipAnimation(_ view: UIView, completion: (() -> Void)?) {
         let duration = 0.25
-        let options: UIViewAnimationOptions = [.transitionFlipFromLeft, .allowAnimatedContent]
+        let options: UIView.AnimationOptions = [.transitionFlipFromLeft, .allowAnimatedContent]
         UIView.transition(with: view, duration: duration, options: options, animations: nil) { _ in
             completion?()
         }

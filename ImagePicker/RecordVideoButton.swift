@@ -118,9 +118,9 @@ final class RecordVideoButton: StationaryButton {
         animation.fromValue = innerCircleLayer.presentation()?.value(forKeyPath: "transform.scale")
         animation.toValue = value
         animation.duration = duration
-        animation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseOut)
+        animation.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeOut)
         animation.beginTime = CACurrentMediaTime()
-        animation.fillMode = kCAFillModeForwards
+        animation.fillMode = CAMediaTimingFillMode.forwards
         animation.isRemovedOnCompletion = false
         return animation
     }

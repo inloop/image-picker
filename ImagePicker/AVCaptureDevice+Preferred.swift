@@ -15,19 +15,19 @@ extension AVCaptureDevice {
 private extension AVCaptureDevice.Position {
     var preferredPosition: AVCaptureDevice.Position {
         switch self {
-        case .unspecified, .front:
+        case .front:
             return .back
-        case .back:
+        default:
             return .front
         }
     }
 
     var preferredDeviceType: AVCaptureDevice.DeviceType {
         switch self {
-        case .unspecified, .front:
-            return .builtInDuoCamera
         case .back:
             return .builtInWideAngleCamera
+        default:
+            return .builtInDuoCamera
         }
     }
 }

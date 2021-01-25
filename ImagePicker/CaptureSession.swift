@@ -112,7 +112,11 @@ final class CaptureSession: NSObject {
              */
             sessionQueue.suspend()
             requestAccessToCaptureDevice()
+        
         case .restricted, .denied:
+            fallthrough
+            
+        @unknown default:
             setupResult = .notAuthorized
         }
         
@@ -212,17 +216,54 @@ final class CaptureSession: NSObject {
         guard setupResult == .success else { return }
         session.beginConfiguration()
         session.sessionPreset = presetConfiguration.preset
+        
         do {
             try addVideoInput()
-            try addMovieFileOutputIfNeeded()
-            try addAudioInputIfNeeded()
-            try addPhotoOutputIfNeeded()
-            try addVideoDataOutputIfNeeded()
-            session.commitConfiguration()
+            
+            do {
+                try addMovieFileOutputIfNeeded()
+            } catch let error as CaptureSessionError {
+                error.logError()
+            } catch {
+                log("capture session: configuring - failed adding move file output: \(error)")
+            }
+            
+            do {
+                try addAudioInputIfNeeded()
+            } catch let error as CaptureSessionError {
+                error.logError()
+            } catch {
+                log("capture session: configuring - failed adding audio input: \(error)")
+            }
+            
+            do {
+                try addPhotoOutputIfNeeded()
+            } catch let error as CaptureSessionError {
+                error.logError()
+            } catch {
+                log("capture session: configuring - failed adding photo output: \(error)")
+            }
+            
+            do {
+                try addVideoDataOutputIfNeeded()
+            } catch let error as CaptureSessionError {
+                error.logError()
+            } catch {
+                log("capture session: configuring - failed vide data output: \(error)")
+            }
+            
         } catch {
-            guard let error = error as? CaptureSessionError else { return }
-            processCaptureSessionError(error)
+            if let error = error as? CaptureSessionError, error.isWarning == false {
+                error.logError()
+                setupResult = .configurationFailed
+            }
+            else {
+                setupResult = .configurationFailed
+                log("capture session: configuring - failed adding video input: \(error)")
+            }
         }
+        
+        session.commitConfiguration()
     }
 
     // MARK: KVO and Notifications
@@ -387,6 +428,7 @@ private extension CaptureSession {
     func addAudioInputIfNeeded() throws {
         guard presetConfiguration == .livePhotos || presetConfiguration == .videos else { return }
         log("capture session: configuring - adding audio input")
+        
         guard let audioDevice = AVCaptureDevice.default(for: .audio) else { throw CaptureSessionError.failToCreateAudioDevice }
         let audioDeviceInput: AVCaptureDeviceInput
         do {
@@ -433,14 +475,6 @@ private extension CaptureSession {
         if let connection = videoDataOutput.connection(with: .video) {
             connection.videoOrientation = videoOrientation
             connection.automaticallyAdjustsVideoMirroring = false
-        }
-    }
-
-    func processCaptureSessionError(_ error: CaptureSessionError) {
-        error.logError()
-        if !error.isWarning {
-            setupResult = .configurationFailed
-            session.commitConfiguration()
         }
     }
 }

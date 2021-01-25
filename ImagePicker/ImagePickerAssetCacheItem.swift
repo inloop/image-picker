@@ -67,7 +67,7 @@ final class ImagePickerAssetCacheItem {
         previousPreheatRect = preheatRect
     }
     
-    private func createPreheatRect(scrollDirection: UICollectionViewScrollDirection, collectionView: UICollectionView) -> CGRect? {
+    private func createPreheatRect(scrollDirection: UICollectionView.ScrollDirection, collectionView: UICollectionView) -> CGRect? {
         let visibleRect = CGRect(origin: collectionView.contentOffset, size: collectionView.bounds.size)
         let preheatRect: CGRect
         switch scrollDirection {
@@ -78,7 +78,7 @@ final class ImagePickerAssetCacheItem {
             let delta = abs(preheatRect.midY - previousPreheatRect.midY)
             guard delta > collectionView.bounds.height / 3 else { return nil }
             
-        case .horizontal:
+        default:
             preheatRect = visibleRect.insetBy(dx: -0.75 * visibleRect.width, dy: 0)
             
             // Update only if the visible area is significantly different from the last preheated area.

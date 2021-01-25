@@ -67,8 +67,8 @@ final class VideoCaptureDelegate: NSObject, AVCaptureFileOutputRecordingDelegate
         }
         
         if let currentBackgroundRecordingID = backgroundRecordingID {
-            backgroundRecordingID = UIBackgroundTaskInvalid
-            if currentBackgroundRecordingID != UIBackgroundTaskInvalid {
+            backgroundRecordingID = UIBackgroundTaskIdentifier.invalid
+            if currentBackgroundRecordingID != UIBackgroundTaskIdentifier.invalid {
                 UIApplication.shared.endBackgroundTask(currentBackgroundRecordingID)
             }
         }

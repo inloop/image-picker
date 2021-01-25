@@ -44,10 +44,10 @@ final class CarvedLabel: UIView {
         set { super.backgroundColor = .clear }
     }
     
-    private typealias TextAttributes = [NSAttributedStringKey: Any]
+    private typealias TextAttributes = [NSAttributedString.Key: Any]
     private var textAttributes: TextAttributes {
         let activeFont = font ?? UIFont.systemFont(ofSize: 12, weight: .regular)
-        return [NSAttributedStringKey.font: activeFont]
+        return [NSAttributedString.Key.font: activeFont]
     }
     
     private var attributedString: NSAttributedString {

@@ -51,7 +51,7 @@ final class ActionCell: UICollectionViewCell {
             bottomOffset.constant = isLast ? largeOffset : normalOffset
             leadingOffset.constant = normalOffset
             trailingOffset.constant = normalOffset
-        case .vertical:
+        default:
             topOffset.constant = 5
             bottomOffset.constant = 5
             leadingOffset.constant = isFirst ? largeOffset : normalOffset
