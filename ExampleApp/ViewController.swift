@@ -58,9 +58,10 @@ class ViewController: UITableViewController, UIDropInteractionDelegate {
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cellId")
         tableView.keyboardDismissMode = .none
         
-        if #available(iOS 11.0, *) {
-            setupDragDestination()
-        }
+        //TODO: enable this
+//        if #available(iOS 11.0, *) {
+//            setupDragDestination()
+//        }
     }
     
     @objc func togglePresentationMode(indexPath: IndexPath) {
@@ -209,6 +210,7 @@ class ViewController: UITableViewController, UIDropInteractionDelegate {
             presentPicker(imagePicker)
         } else {
             updateNavigationItem(with: 0)
+            imagePickerController = nil
             currentInputView = nil
             reloadInputViews()
         }
@@ -244,6 +246,10 @@ class ViewController: UITableViewController, UIDropInteractionDelegate {
         updateNavigationItem(with: 0)
         presentButton.isSelected = false
         navigationController?.visibleViewController?.dismiss(animated: true, completion: nil)
+        
+        //we need to remove picker from memory
+        imagePickerController = nil
+        currentInputView = nil
     }
     
     func updateNavigationItem(with selectedCount: Int) {

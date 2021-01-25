@@ -64,10 +64,12 @@ final class ImagePickerDataSource: NSObject, UICollectionViewDataSource {
         
         // Request an image for the asset from the PHCachingImageManager.
         cell.representedAssetIdentifier = asset.localIdentifier
-        assetsCacheItem.imageManager.requestImage(for: asset, targetSize: thumbnailSize, contentMode: .aspectFill, options: nil) { image, _ in
+        let assetIdentifier = asset.localIdentifier
+        
+        assetsCacheItem.imageManager.requestImage(for: asset, targetSize: thumbnailSize, contentMode: .aspectFill, options: nil) { [weak cell] image, _ in
             // The cell may have been recycled by the time this handler gets called;
             // set the cell's thumbnail image only if it's still showing the same asset.
-            if cell.representedAssetIdentifier == asset.localIdentifier && image != nil {
+            if let cell = cell, cell.representedAssetIdentifier == assetIdentifier && image != nil {
                 cell.imageView.image = image
             }
         }

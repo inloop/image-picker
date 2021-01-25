@@ -147,6 +147,9 @@ open class ImagePickerController: UIViewController {
                     self.reloadData(basedOnAuthorizationStatus: status)
                 }
             }
+        case .limited:
+            //TODO:
+            fatalError("implement this")
         }
     }
     

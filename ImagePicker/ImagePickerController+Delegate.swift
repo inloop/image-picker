@@ -54,6 +54,7 @@ extension ImagePickerController: ImagePickerDelegateDelegate {
     func imagePicker(delegate: ImagePickerDelegate, didScroll scrollView: UIScrollView) {
         // Update only if the view is visible.
         //TODO: precaching is not enabled for now (it's laggy need to profile)
+        collectionViewDataSource.assetsCacheItem.updateCachedAssets(collectionView: collectionView)
     }
 }
 
