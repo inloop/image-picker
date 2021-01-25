@@ -136,11 +136,7 @@ open class ImagePickerController: UIViewController {
             collectionViewDataSource.assetsCacheItem.fetchResult = assetsFetchResultBlock?()
             collectionViewDataSource.layoutModel = LayoutModel(configuration: layoutConfiguration, assets: collectionViewDataSource.assetsCacheItem.fetchResult.count)
             collectionView.reloadData()
-        case .restricted, .denied:
-            guard let view = overlayView ?? dataSource?.imagePicker(controller: self, viewForAuthorizationStatus: status),
-                view.superview != collectionView else { return }
-            collectionView.backgroundView = view
-            overlayView = view
+
         case .notDetermined:
             PHPhotoLibrary.requestAuthorization { status in
                 DispatchQueue.main.async {
@@ -148,9 +144,14 @@ open class ImagePickerController: UIViewController {
                 }
             }
         case .limited:
-            //TODO:
-            //fatalError("implement this")
-            print("access to photos is limited")
+            print("we don't support this in example app")
+        
+        default:
+            //we treat .restricted, .denied, @unknown default as DENIED
+            guard let view = overlayView ?? dataSource?.imagePicker(controller: self, viewForAuthorizationStatus: status),
+                view.superview != collectionView else { return }
+            collectionView.backgroundView = view
+            overlayView = view
         }
     }
     
