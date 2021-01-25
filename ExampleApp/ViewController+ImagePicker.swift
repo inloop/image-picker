@@ -81,7 +81,6 @@ extension ViewController: ImagePickerControllerDelegate {
     
     @available(iOS 11.0, *)
     func imagePicker(controller: ImagePickerController, dragSessionWillBegin session: UIDragSession) {
-        presentButtonTapped()
         dropAssetsView.autoresizingMask = .flexibleHeight
         if let window = UIApplication.shared.delegate?.window, let safeWindow = window {
             dropAssetsView.frame = safeWindow.frame
