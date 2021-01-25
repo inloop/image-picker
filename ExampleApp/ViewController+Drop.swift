@@ -1,14 +1,16 @@
 // Copyright © 2018 INLOOPX. All rights reserved.
 
 import Photos
+import UIKit
 
 @available(iOS 11.0, *)
 extension ViewController {
     func setupDragDestination() {
+        
         let interaction = UIDropInteraction(delegate: self)
         dropAssetsView.addInteraction(interaction)
     }
-    
+
     func dropInteraction(_ interaction: UIDropInteraction, performDrop session: UIDropSession) {
         guard let items = session.localDragSession?.items else { return }
         for item in items {
@@ -17,7 +19,7 @@ extension ViewController {
             }
         }
     }
-    
+
     func dropInteraction(_ interaction: UIDropInteraction, canHandle session: UIDropSession) -> Bool {
         guard let items = session.localDragSession?.items else { return false }
         for item in items {
@@ -27,7 +29,7 @@ extension ViewController {
         }
         return false
     }
-    
+
     func dropInteraction(_ interaction: UIDropInteraction, sessionDidUpdate session: UIDropSession) -> UIDropProposal {
         return UIDropProposal(operation: .copy)
     }
