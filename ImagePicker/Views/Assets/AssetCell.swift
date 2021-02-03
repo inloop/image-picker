@@ -1,6 +1,6 @@
 // Copyright © 2018 INLOOPX. All rights reserved.
 
-import Foundation
+import UIKit
 
 /// A default implementation of `ImagePickerAssetCell`. If user does not register a custom cell.
 /// Image Picker will use this one. Also contains  default icon for selected state.

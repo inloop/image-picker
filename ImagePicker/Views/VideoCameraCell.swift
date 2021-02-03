@@ -1,6 +1,6 @@
 // Copyright © 2018 INLOOPX. All rights reserved.
 
-import Foundation
+import UIKit
 
 //TODO: add a recording indicator (red dot with timer)
 final class VideoCameraCell: CameraCollectionViewCell {

@@ -1,6 +1,6 @@
 // Copyright © 2018 INLOOPX. All rights reserved.
 
-import Foundation
+import UIKit
 import Photos
 
 /// Group of methods informing what image picker is currently doing

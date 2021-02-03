@@ -1,6 +1,6 @@
 // Copyright © 2018 INLOOPX. All rights reserved.
 
-import Foundation
+import UIKit
 
 /// A label whose transparent text is carved into solid color.
 /// - please note that text is always aligned to center

@@ -1,6 +1,6 @@
 //  Copyright © 2018 INLOOPX. All rights reserved.
 
-import Foundation
+import UIKit
 
 /// Each image picker asset cell must conform to this protocol.
 

@@ -1,5 +1,6 @@
 // Copyright © 2018 INLOOPX. All rights reserved.
 
+import UIKit
 import Photos
 
 /// Wraps collectionView's `performBatchUpdates` block into AsynchronousOperation.

@@ -1,6 +1,6 @@
 // Copyright © 2018 INLOOPX. All rights reserved.
 
-import Foundation
+import UIKit
 
 /// Label that can be used to show duration during recording or just any duration in general.
 

@@ -1,5 +1,6 @@
 // Copyright © 2018 INLOOPX. All rights reserved.
 
+import UIKit
 import Photos
 
 /// Makes sure that all updates are performed in a serial queue, especially batch animations. This

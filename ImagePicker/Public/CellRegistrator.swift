@@ -1,6 +1,6 @@
 // Copyright © 2018 INLOOPX. All rights reserved.
 
-import Foundation
+import UIKit
 import Photos
 
 /// Convenient API to register custom cell classes or nibs for each item type.

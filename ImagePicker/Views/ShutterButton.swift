@@ -1,6 +1,6 @@
 // Copyright © 2018 INLOOPX. All rights reserved.
 
-import Foundation
+import UIKit
 
 /// A rounded button that has a circle inside and is used when taking pictures.
 

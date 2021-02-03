@@ -1,6 +1,6 @@
 //  Copyright © 2018 INLOOPX. All rights reserved.
 
-import Foundation
+import UIKit
 
 final class CheckView: UIImageView {
     var foregroundImage: UIImage? {

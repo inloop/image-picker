@@ -1,6 +1,7 @@
 // Copyright © 2018 INLOOPX. All rights reserved.
 
 import Photos
+import UIKit
 
 extension ImagePickerController: ImagePickerDelegateDelegate {
     func imagePicker(delegate pickerDelegate: ImagePickerDelegate, didSelectActionItemAt index: Int) {

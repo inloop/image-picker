@@ -1,5 +1,6 @@
 // Copyright © 2018 INLOOPX. All rights reserved.
 
+import UIKit
 import AVFoundation
 
 /// A view whose layer is AVCaptureVideoPreviewLayer so it's used for previewing

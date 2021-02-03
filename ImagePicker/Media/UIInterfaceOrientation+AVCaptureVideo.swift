@@ -1,6 +1,7 @@
 // Copyright © 2018 INLOOPX. All rights reserved.
 
 import AVFoundation
+import UIKit
 
 extension UIInterfaceOrientation {
     var captureVideoOrientation: AVCaptureVideoOrientation {

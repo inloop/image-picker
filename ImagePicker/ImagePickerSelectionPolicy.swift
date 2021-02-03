@@ -1,6 +1,6 @@
 // Copyright © 2018 INLOOPX. All rights reserved.
 
-import Foundation
+import UIKit
 
 /// Helper class that determines which cells are selected, multiple selected or
 /// highlighted.

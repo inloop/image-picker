@@ -1,6 +1,7 @@
 // Copyright © 2018 INLOOPX. All rights reserved.
 
 import Photos
+import UIKit
 
 /// A default collection view cell that represents asset item. It supports:
 /// - shows image view of image thumbnail

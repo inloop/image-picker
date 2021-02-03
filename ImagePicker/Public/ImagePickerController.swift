@@ -1,6 +1,7 @@
 // Copyright © 2018 INLOOPX. All rights reserved.
 
 import Photos
+import UIKit
 
 open class ImagePickerController: UIViewController {
     /// Use this object to configure layout of action, camera and asset items.

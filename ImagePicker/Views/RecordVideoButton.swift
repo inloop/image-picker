@@ -1,6 +1,6 @@
 // Copyright © 2018 INLOOPX. All rights reserved.
 
-import Foundation
+import UIKit
 
 /// A rounded button with 2 circles where middle circle animates based on 3 states - initial, pressed, recording.
 

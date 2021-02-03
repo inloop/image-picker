@@ -1,6 +1,7 @@
 // Copyright © 2018 INLOOPX. All rights reserved.
 
 import Foundation
+import UIKit
 
 /// A helper struct that is used by ImagePickerLayout when configuring and laying out
 /// collection view items.

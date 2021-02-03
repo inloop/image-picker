@@ -1,6 +1,7 @@
 // Copyright © 2018 INLOOPX. All rights reserved.
 
 import Photos
+import UIKit
 
 /// Model that is used when accessing an caching PHAsset objects
 

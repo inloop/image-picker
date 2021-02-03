@@ -1,6 +1,6 @@
 // Copyright © 2018 INLOOPX. All rights reserved.
 
-import Foundation
+import UIKit
 
 /// A helper class that contains all code and logic when doing layout of collection
 /// view cells. This is used sollely by collection view's delegate. Typically 

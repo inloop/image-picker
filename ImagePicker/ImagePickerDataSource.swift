@@ -1,6 +1,7 @@
 // Copyright © 2018 INLOOPX. All rights reserved.
 
 import Photos
+import UIKit
 
 /// Datasource for a collection view that is used by Image Picker VC.
 

@@ -1,6 +1,6 @@
 // Copyright © 2018 INLOOPX. All rights reserved.
 
-import Foundation
+import UIKit
 
 extension UICollectionView {
     /// Used by datasource when registering all cells to the collection view. If user
