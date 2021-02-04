@@ -1,6 +1,6 @@
 // Copyright © 2018 INLOOPX. All rights reserved.
 
-import Foundation
+import UIKit
 
 /// A model that contains info that is used by layout code and collection view data source
 /// when figuring out layout structure.

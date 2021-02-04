@@ -240,10 +240,10 @@
 		420C24171F5D82F9008935D4 /* ImagePicker */ = {
 			isa = PBXGroup;
 			children = (
-				42887C072080D5D200194155 /* Operations */,
-				42D7036F1F7909100057D557 /* Public */,
-				42D703701F790A3F0057D557 /* Media */,
-				42990DBD1FA07A6C001658C4 /* Views */,
+				61B6DA5F25CAE598007CC22D /* Public */,
+				61B6DA5E25CAE58B007CC22D /* Operations */,
+				61B6DA6225CAE5CD007CC22D /* Views */,
+				61B6DA6125CAE5BE007CC22D /* Media */,
 				425BEC841F7D351A0091D008 /* Assets.xcassets */,
 				420C24351F5ED4AA008935D4 /* ImagePickerLayout.swift */,
 				429BFDA91F68161D00029440 /* ImagePickerAssetCacheItem.swift */,
@@ -273,41 +273,20 @@
 			path = "Custom Views";
 			sourceTree = "<group>";
 		};
-		42887C072080D5D200194155 /* Operations */ = {
+		61B6DA5E25CAE58B007CC22D /* Operations */ = {
 			isa = PBXGroup;
 			children = (
 				429CCBCF2080D62F0050078B /* AsynchronousOperation.swift */,
 				429CCBD12080D6620050078B /* CollectionViewBatchAnimation.swift */,
 				429CCBD32080D6AE0050078B /* CollectionViewUpdatesCoordinator.swift */,
 			);
-			name = Operations;
+			path = Operations;
 			sourceTree = "<group>";
 		};
-		42990DBD1FA07A6C001658C4 /* Views */ = {
+		61B6DA5F25CAE598007CC22D /* Public */ = {
 			isa = PBXGroup;
 			children = (
-				51D4B1D421007E7F000F005A /* Assets */,
-				425777511F98D10F000824F0 /* ActionCell.swift */,
-				425777521F98D10F000824F0 /* ActionCell.xib */,
-				427925FF1F963E9B00B6D55F /* LivePhotoCameraCell.swift */,
-				427926001F963E9C00B6D55F /* LivePhotoCameraCell.xib */,
-				427925F61F96388000B6D55F /* RecordVideoButton.swift */,
-				42990DBE1FA07AF7001658C4 /* RecordDurationLabel.swift */,
-				427925F41F96381400B6D55F /* ShutterButton.swift */,
-				427925F21F9636D700B6D55F /* StationaryButton.swift */,
-				427925FB1F963A8C00B6D55F /* VideoCameraCell.swift */,
-				427925FC1F963A8C00B6D55F /* VideoCameraCell.xib */,
-				4272716F1FA1D304008AC2B4 /* CarvedLabel.swift */,
-				42B296AA1FB1CC7400590260 /* ImagePickerView.swift */,
-				42B296A81FB1CC3200590260 /* ImagePickerView.xib */,
-			);
-			name = Views;
-			sourceTree = "<group>";
-		};
-		42D7036F1F7909100057D557 /* Public */ = {
-			isa = PBXGroup;
-			children = (
-				85F70C3120D1414F00DC3997 /* Protocols */,
+				61B6DA6025CAE5A0007CC22D /* Portocols */,
 				42F7D8001F7A5B71009D378A /* Appearance.swift */,
 				4217080D1F62D06D000DA508 /* CameraCollectionViewCell.swift */,
 				42D7036A1F7908B00057D557 /* CaptureSettings.swift */,
@@ -318,10 +297,20 @@
 				85F70C3220D1417600DC3997 /* ImagePickerController+Delegate.swift */,
 				420C24401F5EEA3C008935D4 /* LayoutConfiguration.swift */,
 			);
-			name = Public;
+			path = Public;
 			sourceTree = "<group>";
 		};
-		42D703701F790A3F0057D557 /* Media */ = {
+		61B6DA6025CAE5A0007CC22D /* Portocols */ = {
+			isa = PBXGroup;
+			children = (
+				85F70C2C20D1393100DC3997 /* ImagePickerControllerDelegate.swift */,
+				85F70C2E20D1398600DC3997 /* ImagePickerControllerDataSource.swift */,
+				5163663A2100BAE1006FC981 /* CameraCollectionViewCellDelegate.swift */,
+			);
+			path = Portocols;
+			sourceTree = "<group>";
+		};
+		61B6DA6125CAE5BE007CC22D /* Media */ = {
 			isa = PBXGroup;
 			children = (
 				420CBBC01F711E83002288C5 /* AVPreviewView.swift */,
@@ -336,10 +325,31 @@
 				42E736511F8510B70060E24D /* VideoCaptureDelegate.swift */,
 				42311FFB1F73DBBE00B1AEB4 /* VideoOuptutSampleBufferDelegate.swift */,
 			);
-			name = Media;
+			path = Media;
 			sourceTree = "<group>";
 		};
-		51D4B1D421007E7F000F005A /* Assets */ = {
+		61B6DA6225CAE5CD007CC22D /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				61B6DA6325CAE5DF007CC22D /* Assets */,
+				425777511F98D10F000824F0 /* ActionCell.swift */,
+				425777521F98D10F000824F0 /* ActionCell.xib */,
+				427925FF1F963E9B00B6D55F /* LivePhotoCameraCell.swift */,
+				427926001F963E9C00B6D55F /* LivePhotoCameraCell.xib */,
+				427925F61F96388000B6D55F /* RecordVideoButton.swift */,
+				42990DBE1FA07AF7001658C4 /* RecordDurationLabel.swift */,
+				427925F41F96381400B6D55F /* ShutterButton.swift */,
+				427925F21F9636D700B6D55F /* StationaryButton.swift */,
+				427925FB1F963A8C00B6D55F /* VideoCameraCell.swift */,
+				427925FC1F963A8C00B6D55F /* VideoCameraCell.xib */,
+				4272716F1FA1D304008AC2B4 /* CarvedLabel.swift */,
+				42B296AA1FB1CC7400590260 /* ImagePickerView.swift */,
+				42B296A81FB1CC3200590260 /* ImagePickerView.xib */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		61B6DA6325CAE5DF007CC22D /* Assets */ = {
 			isa = PBXGroup;
 			children = (
 				42D0979B1F7BF6B300A66E33 /* AssetCell.swift */,
@@ -347,17 +357,7 @@
 				51D4B1D521007F75000F005A /* ImagePickerAssetCell.swift */,
 				51636636210098D6006FC981 /* CheckView.swift */,
 			);
-			name = Assets;
-			sourceTree = "<group>";
-		};
-		85F70C3120D1414F00DC3997 /* Protocols */ = {
-			isa = PBXGroup;
-			children = (
-				85F70C2C20D1393100DC3997 /* ImagePickerControllerDelegate.swift */,
-				85F70C2E20D1398600DC3997 /* ImagePickerControllerDataSource.swift */,
-				5163663A2100BAE1006FC981 /* CameraCollectionViewCellDelegate.swift */,
-			);
-			name = Protocols;
+			path = Assets;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -419,7 +419,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0830;
-				LastUpgradeCheck = 0930;
+				LastUpgradeCheck = 1230;
 				ORGANIZATIONNAME = INLOOPX;
 				TargetAttributes = {
 					420C23FB1F5D82C6008935D4 = {
@@ -432,7 +432,7 @@
 						CreatedOnToolsVersion = 8.3.3;
 						DevelopmentTeam = VQHLE7RNUG;
 						LastSwiftMigration = 0900;
-						ProvisioningStyle = Automatic;
+						ProvisioningStyle = Manual;
 					};
 				};
 			};
@@ -441,6 +441,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -588,6 +589,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
@@ -609,6 +611,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -646,6 +649,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
@@ -667,6 +671,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -700,7 +705,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = 74JL49Z2D8;
 				INFOPLIST_FILE = ExampleApp/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = eu.inloop.ExampleApp;
 				PRODUCT_NAME = "Image Picker";
@@ -716,7 +721,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = 74JL49Z2D8;
 				INFOPLIST_FILE = ExampleApp/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = eu.inloop.ExampleApp;
 				PRODUCT_NAME = "Image Picker";
@@ -730,6 +735,7 @@
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = VQHLE7RNUG;
@@ -743,10 +749,12 @@
 				OTHER_SWIFT_FLAGS = "-DDEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = eu.inloop.ImagePicker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -758,6 +766,7 @@
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = VQHLE7RNUG;
@@ -770,9 +779,11 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = eu.inloop.ImagePicker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
 				SKIP_INSTALL = YES;
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";

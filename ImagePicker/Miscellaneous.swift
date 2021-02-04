@@ -1,6 +1,6 @@
 // Copyright © 2018 INLOOPX. All rights reserved.
 
-import Foundation
+import UIKit
 
 func log(_ message: String) {
     #if DEBUG
@@ -19,19 +19,19 @@ extension UICollectionView {
 extension UIInterfaceOrientation : CustomDebugStringConvertible {
     public var debugDescription: String {
         switch self {
-        case .unknown: return "unknown"
         case .portrait: return "portrait"
         case .portraitUpsideDown: return "portrait upside down"
         case .landscapeRight: return "landscape right"
         case .landscapeLeft: return "landscape left"
+        default: return "unknown"
         }
     }
 }
 
-func differencesBetweenRects(_ old: CGRect, _ new: CGRect, _ scrollDirection: UICollectionViewScrollDirection) -> (added: [CGRect], removed: [CGRect]) {
+func differencesBetweenRects(_ old: CGRect, _ new: CGRect, _ scrollDirection: UICollectionView.ScrollDirection) -> (added: [CGRect], removed: [CGRect]) {
     switch scrollDirection {
     case .horizontal: return differencesBetweenRectsHorizontal(old, new)
-    case .vertical: return differencesBetweenRectsVertical(old, new)
+    default: return differencesBetweenRectsVertical(old, new)
     }
 }
 
